@@ -27,6 +27,7 @@
                     <el-option label="收款通码离线码" value="RPASSOFF"></el-option>
                     <el-option label="收款通码在线码" value="RPASSQR"></el-option>
                     <el-option label="收款固码(二开)" value="RSOLID"></el-option>
+                    <el-option label="红包" value="RedEnvelope"></el-option>
                 </el-select>
                 <el-button @click="getRate" type="success">查看费率</el-button>
             </el-form-item>
@@ -102,6 +103,8 @@ import config from '../../../../config'
                                 this.formparameters.rate = res.data.alipay_RPASSQR;
                             if(this.formparameters.codeType == 'RSOLID')
                                 this.formparameters.rate = res.data.alipay_RSOLID;
+                                if(this.formparameters.codeType == 'RedEnvelope')
+                                this.formparameters.rate = res.data.alipay_RedEnvelope;
                         }
                     })
                 },

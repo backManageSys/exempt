@@ -94,6 +94,9 @@
                 <el-form-item label="收款固码(二开)点位">
                     <el-input v-model="newRow.alipay_RSOLID" style="width: 30%;"  placeholder="收款固码(二开)点位"></el-input>%
                 </el-form-item>
+                <el-form-item label="红包点位">
+                                    <el-input v-model="newRow.alipay_RedEnvelope" style="width: 30%;"  placeholder="红包点位"></el-input>%
+                                </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="alipayRateDialogFormVisible = false">取 消</el-button>
@@ -211,7 +214,9 @@ import {getTime} from '@/utils/index'
                 this.newRow.alipay_TSOLID,
                 this.newRow.alipay_RPASSOFF,
                 this.newRow.alipay_RPASSQR,
-                this.newRow.alipay_RSOLID).then(response=> {
+                this.newRow.alipay_RSOLID,
+                this.newRow.alipay_RedEnvelope,
+                ).then(response=> {
                     if(response.code!=200){
                         this.$message({
                             message: response.data.description,

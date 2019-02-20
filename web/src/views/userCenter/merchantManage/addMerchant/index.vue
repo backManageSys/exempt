@@ -43,6 +43,9 @@
       <el-form-item label="收款固码(二开)点位">
         <el-input v-model="form.RSOLID" style="width: 15%;"  placeholder="收款固码(二开)点位"></el-input>%
       </el-form-item>
+       <el-form-item label="红包点位">
+              <el-input v-model="form.RedEnvelope" style="width: 15%;"  placeholder="红包点位"></el-input>%
+            </el-form-item>
       <!-- <el-form-item label="申请人id">
               <el-input v-model="form.applyId" style="width: 30%;"></el-input>
       </el-form-item>-->
@@ -156,12 +159,13 @@ export default {
             this.form.TSOLID.length == 0||
             this.form.RPASSOFF.length == 0||
             this.form.RPASSQR.length == 0||
-            this.form.RSOLID.length == 0
+            this.form.RSOLID.length == 0  ||
+            this.form.RedEnvelope.length == 0
           ) {
             alert("请输入完整信息");
             return;
           }
-
+                       console.log(111111,this.form.RedEnvelope)
           // alert('submit!');
           addMerchant(
             this.form.applyId,
@@ -174,7 +178,8 @@ export default {
             this.form.TSOLID,
             this.form.RPASSOFF,
             this.form.RPASSQR,
-            this.form.RSOLID
+            this.form.RSOLID,
+            this.form.RedEnvelope,
           )
             .then(response => {
               // console.log(response.data.infoCode)

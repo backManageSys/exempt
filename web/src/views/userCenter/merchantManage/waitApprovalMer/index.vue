@@ -57,6 +57,9 @@
                 <el-form-item label="收款固码(二开)点位:">
                     <div>{{'&#12288;'+newRow.alipay_RSOLID+"%"}}</div>
                 </el-form-item>
+                <el-form-item label="红包点位:">
+                                    <div>{{'&#12288;'+newRow.alipay_RedEnvelope+"%"}}</div>
+                                </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="alipayRateDialogFormVisible = false">取 消</el-button>
@@ -182,4 +185,3 @@
     <style scoped>
     
     </style>
-    

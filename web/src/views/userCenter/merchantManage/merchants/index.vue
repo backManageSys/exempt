@@ -41,7 +41,7 @@
         </el-pagination>
     </div>
       <el-dialog title="查看或修改商户信息" :visible.sync="dialogFormVisible">
-            <el-form ref="form" :model="newRow.user" :rules="addRules" label-width="13%">
+            <el-form ref="form" :model="newRow.user" :rules="addRules" label-width="20%">
                 <el-form-item label="用户名" prop="username">
                     <el-input v-model="newRow.user.username" placeholder="用户名" style="width:90%;"></el-input>
                 </el-form-item>
@@ -49,13 +49,13 @@
                     <el-input v-model="newRow.user.password" type="password" placeholder="密码" style="width:90%;"></el-input>
                 </el-form-item>
                 <el-form-item label="状态" >
-                    <el-select v-model="newRow.user.status" placeholder="启用" style="width:20%;">
+                    <el-select v-model="newRow.status" placeholder="启用" style="width:20%;">
                     <el-option label="启用" value="启用"></el-option>
                     <el-option label="停用" value="停用"></el-option>
                     </el-select>
                 </el-form-item> 
                 <el-form-item label="等级">
-                    <el-select v-model="newRow.priority" placeholder="请选择" style="width:10%;">
+                    <el-select v-model="newRow.priority" placeholder="请选择" style="width:15%;">
                         <el-option
                         v-for="item in options"
                         :key="item.value"
@@ -68,7 +68,7 @@
                     <el-button type="primary" @click="alipayRateDialogFormVisible = true">查看或修改支付宝点位</el-button>  
                 </el-form-item>
                 <el-form-item label="微信点位">
-                    <el-input v-model="newRow.wechat" placeholder="微信点位" style="width:10%;"></el-input>%
+                    <el-input v-model="newRow.wechat" placeholder="微信点位" style="width:20%;"></el-input>%
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -93,6 +93,9 @@
                 <el-form-item label="收款固码(二开)点位">
                     <el-input v-model="newRow.alipay_RSOLID" style="width: 30%;"  placeholder="收款固码(二开)点位"></el-input>%
                 </el-form-item>
+                 <el-form-item label="红包">
+                                    <el-input v-model="newRow.alipay_RedEnvelope" style="width: 30%;"  placeholder="红包"></el-input>%
+                                </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="alipayRateDialogFormVisible = false">取 消</el-button>
@@ -154,7 +157,7 @@ import {getTime} from '@/utils/index'
                         "password": "string",
                         "role": 0,
                         "tableId": 0,
-                        "username": "string"
+                        "username": "string",
                     },
                     "verifyCode": "string",
                     "wechat": 0
@@ -163,10 +166,11 @@ import {getTime} from '@/utils/index'
                 currentPage:1,
                 pagesize:10,
                 newRow: {
+                "status":"",
                     "codeType": "",
                     "level": 0,
                     "password": "",
-                    "user": {}
+                    "user": {},
                     },
                 newRowIndex:1,
                 dialogFormVisible: false,
@@ -225,13 +229,14 @@ import {getTime} from '@/utils/index'
                 this.newRow.level,
                 this.newRow.user.username,
                 this.newRow.user.password,
-                this.newRow.user.status,
+                this.newRow.status,
                 this.newRow.wechat,
                 this.newRow.alipay_TPASS,
                 this.newRow.alipay_TSOLID,
                 this.newRow.alipay_RPASSOFF,
                 this.newRow.alipay_RPASSQR,
-                this.newRow.alipay_RSOLID
+                this.newRow.alipay_RSOLID,
+                this.newRow.alipay_RedEnvelope,
                 ).then(response=> {
                     this.dialogFormVisible = false;
                     if(response.code!=200){

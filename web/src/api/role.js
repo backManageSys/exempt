@@ -43,8 +43,9 @@ export function addMerchant(
    alipay_TSOLID,
    alipay_RPASSOFF,
    alipay_RPASSQR,
-   alipay_RSOLID
-  ) {
+   alipay_RSOLID,
+  alipay_RedEnvelope
+) {
   return request({
     url: '/merchant/add',
     method: 'post',

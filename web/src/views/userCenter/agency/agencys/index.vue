@@ -35,7 +35,7 @@
       ></el-pagination>
     </div>
      <el-dialog title="修改代理信息" :visible.sync="dialogFormVisible" >
-            <el-form ref="form" :model="newRow.user" :rules="addRules" label-width="13%">
+            <el-form ref="form" :model="newRow.user" :rules="addRules" label-width="20%">
                 <el-form-item label="用户名" prop="username">
                     <el-input v-model="newRow.user.username" placeholder="请输入用户名" style="width:90%;"></el-input>
                 </el-form-item>
@@ -49,10 +49,10 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="支付宝点位">
-                    <el-input v-model="newRow.alipay" placeholder="请输入支付宝点位" style="width:10%;"></el-input>%
+                    <el-input v-model="newRow.alipay" placeholder="请输入支付宝点位" style="width:15%;"></el-input>%
                 </el-form-item>
                 <el-form-item label="微信点位">
-                    <el-input v-model="newRow.wechat" placeholder="请输入微信点位" style="width:10%;"></el-input>%
+                    <el-input v-model="newRow.wechat" placeholder="请输入微信点位" style="width:15%;"></el-input>%
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
