@@ -1,0 +1,160 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
+  <title>在线支付 - 支付宝转卡 - 网上支付 安全快速！</title>
+  <link rel="stylesheet" type="text/css" href="CSS/test_phone.css">
+  <script type="text/javascript" src="%E5%9C%A8%E7%BA%BF%E6%94%AF%E4%BB%98%20-%20%E6%94%AF%E4%BB%98%E5%AE%9D%20-%20%E7%BD%91%E4%B8%8A%E6%94%AF%E4%BB%98%20%E5%AE%89%E5%85%A8%E5%BF%AB%E9%80%9F%EF%BC%81_files/jquery.js"></script>
+  
+  <link rel="stylesheet" href="CSS/layer.css" id="layuicss-layer">
+  
+</head>
+<body>
+<div style="width: 100%; text-align: center;font-family:微软雅黑;">
+  <div id="panelWrap" class="panel-wrap">
+      <!-- CUSTOM LOGO -->
+      <div class="panel-heading">
+          <div class="row">
+              <div class="col-md-12 text-center">
+                  <img src="pic/T1HHFgXXVeXXXXXXXX.png" alt="Logo-QQPay" class="img-responsive center-block">
+              </div>
+          </div>
+      </div>
+      <!-- PANEL TlogoEMPLATE START -->
+      <div class="panel panel-easypay">
+          <!-- PANEL HEADER -->
+          <div class="panel-heading">
+              <h3>
+                  <!-- <small>订单号：F62622<br><font color="blue">发送红包后实时到账</font></small> -->
+
+              </h3>
+              <div class="money">
+                  <!-- <span class="price">0.01</span>
+                  <span class="currency">元</span> -->
+              </div>
+          </div>
+          <div class="panel-footer">
+              <input type="button" id="btnDL" value="立即支付" class="btn  btn-primary btn-lg btn-block">
+          </div>
+
+          <div class="qrcode-warp">
+              <div id="qrcode">
+                  
+              <img id=qrcode_IMG alt="Scan me!"  style="display: block;"></div>
+          </div>
+          <div class="panel-footer">
+              <!-- SYSTEM MESSAGE -->
+              <span id="Span1" class="warning" style="color:red;font-size:50px"><b><small> 1.如无法启动支付宝请先截屏保存二维码到手机 <br> 2.打开支付宝，扫一扫本地图片</small></b></span>
+          </div>
+    
+      </div>
+      </div>
+  </div>
+
+  <script type="text/javascript">
+    console.log(window.location.search);
+    console.log(window.location.search.split('?img_src=')[1]);
+    $('#qrcode_IMG').attr("src", window.location.search.split('?img_src=')[1]);
+    // $('#qrcode_IMG').width("172");
+    // $('#qrcode_IMG').height("172");
+    var number=window.location.search.split('?orderId=')[1];
+    var pay_url=window.location.search.split('?text=')[1];
+    $(function() {  
+        $('#btnDL').click(function(){
+              location.href = pay_url ;
+        });
+    });
+    var intDiff;//失效时间
+    var i = 0;
+    var base_url='http://47.102.146.253:1024';
+    var riskcontrol_url=base_url+'/company/riskcontrol/get';
+        $.ajax({
+          url:riskcontrol_url,
+          dataType:'json',
+          processData: false, 
+          type:'get',
+          success:function(data){
+              intDiff  = parseInt(data.data*60);
+          },
+          error:function(XMLHttpRequest, textStatus, errorThrown) {
+            alert(XMLHttpRequest.status);
+            alert(XMLHttpRequest.readyState);
+            alert(textStatus);
+          }
+        });
+    function timer(intDiff){//这里的intDiff就是剩余时间
+        window.setInterval(function(){
+        var day=0,
+            hour=0,
+            minute=0,
+            second=0;//时间默认值       
+        if(intDiff > 0){
+            day = Math.floor(intDiff / (60 * 60 * 24));
+            hour = Math.floor(intDiff / (60 * 60)) - (day * 24);
+            minute = Math.floor(intDiff / 60) - (day * 24 * 60) - (hour * 60);
+            second = Math.floor(intDiff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
+        }
+      
+        if (minute <= 9) minute = '0' + minute;
+        if (second <= 9) second = '0' + second;
+        // $('#day_show').html(day+"天");
+        // $('#hour_show').html('<s id="h"></s>'+hour+'时');
+        // $('#minute_show').html('<s></s>'+minute+'分');
+        // $('#second_show').html('<s></s>'+second+'秒');
+        $('#btnDL').attr("value","立即支付("+day+"天"+hour+"时"+minute+"分"+second+"秒)");
+        intDiff--;
+       }, 1000);
+    } 
+    
+        var updateQrImg = 0;
+    
+        //订单监控  {订单监控}
+        function order(){
+          $.get(base_url+"/order/list/"+number, function(result){
+            var orderTime = result.data.time;
+            var currentTime = (new Date()).valueOf();
+            var expireTime = intDiff*1000;
+            var remainingTime = expireTime-(currentTime-orderTime);
+
+           // alert(remainingTime);
+           if(i == 0)
+              $(function(){
+                    timer(remainingTime/1000);
+                    i = 1;
+                });
+    
+            if(result.data.orderState == 'PAID'){
+            //回调页面
+                window.clearInterval(orderlst);
+                layer.confirm("支付成功", {
+                  icon: 1,
+                  title: '支付成功',
+                  btn: ['我知道了'] //按钮
+                }, function(){
+              //    location.href=base_url+"/#/user/qrcodePersonal";
+                });
+               // setTimeout(function(){location.href=base_url+"/#/user/qrcodePersonal";},5000);
+            }
+              //订单已经超时
+              if(remainingTime <=0){
+                  window.clearInterval(orderlst);
+                  layer.confirm("订单失效", {
+                    icon: 2,
+                    title: '订单失效',
+                    btn: ['确认'] //按钮
+                  }, function(){
+                 //   location.href=base_url+"/#/user/qrcodePersonal";
+                  });
+                 // setTimeout(function(){location.href=base_url+"/#/user/qrcodePersonal";},5000);
+              }
+            },'json');
+         }
+        //周期监听
+        var orderlst = setInterval("order()",1000);
+
+    </script>
+
+
+
+
+</body></html>

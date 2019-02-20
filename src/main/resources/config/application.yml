@@ -1,0 +1,57 @@
+server:
+  port: 1024
+#server:
+#  port: 443
+#  ssl:
+#      key-store: config/jrq.jks
+#      key-store-password: njujrq123
+#      key-store-type: JKS
+logging:
+  level:
+    org.springframework:
+      data: DEBUG
+      security: DEBUG
+jwt:
+  claimKey:
+    username: "username"
+    authorities: "authorities"
+  secret: "wfhg9hr-1jfpjf-p3j-=vgf0pvmo3k=2-3rj0-3j=gn[=3-g[mj"
+  header: Authorization
+  tokenHead: "Bearer "
+oos:
+  accessKey: "c4582dec5d0809103126"
+  secretKey: "47c783687d4c452c5d71b817b8c481915fb0094a"
+  endPoint: "http://oos-bj2.ctyunapi.cn"
+  bucketName: "njutakeout"
+spring:
+  jpa:
+    database: mysql
+    properties:
+      dialect: org.hibernate.dialect.MySQL5Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    open-in-view: true
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/exempt?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    username: debian-sys-maint   #debian-sys-maint（服务器数据库名）
+    password: su4B1V2efWUxbRSm   #su4B1V2efWUxbRSm（服务器数据库密码）
+  aop:
+    auto: true
+    proxy-target-class: false
+  encrypt:
+    privateKey: "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJFUF/b5yuXRNV20Cvgzh1jmhQ5SPQ5C4DwfQfANnTv62HU5t0nR58/eJRc8bwfVke1lygpEy+SD/MTwPf0m3UiSyYBPyx5m+YRmI+4Qhla2lCzduLfmVvCJuMxdnWor66WCRtcdrlRWE4tpDcHTOMCrGFFM2p/c2Pgd6Ipc6S1LAgMBAAECgYAopHPvRfxQOSnLgsZukzqOyij70FPy4REEv1kZYTVPyN8wKWvw4RsLLv0Aeo4yiq+8zHKsXIEI70CJcwZi/bN0Ys9MMl7Yy+ALl0/VMfUcAfoOC6PC8LiFojevN8iC0BnqlOR5rnB9bqJOYkxNnkOOE3KdP8YDlEeQoeEA5TTXAQJBAOW3lfls/iffzBX0bt9Zu/u5AEfnrmBiVbMegxrn3O4HYoLGYiHAau1sWCOPjL7wajEP2Ch3s1g7Qw9KPJsxX5sCQQCh9MPDYo0oEefP+Fhkiw3ywQa8rWlVvxqFStFeiWCl+ACj4whxOkn3PTL70VghVwbuPBaNfVwdqHpCx2LKBLwRAkBBB/TsFJ/qt991w6nzjtq5y0i6Emt6G7x5JcUlw8f2lp6buP+k4G0k44wcHRJSJ4tYckzWP/TEoJo+ZNy9bn/LAkBi8e3T5dbFX0MXvOsL6iSIZcNe7DcJauqh+pa1Qgro+v4xIhhbTLg5s4r9a+WC4O9cBxvkL21itTaUq8nAEGpxAkEAkSTVfttBdtoJVYPklkpCrWxcXQ+F5fDUm4Hyqd6wcxTsx5qCvsHAUe9hInTvj/5Vqjq+QI65WSPeR+Shu/olIA=="
+    publicKey: "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRVBf2+crl0TVdtAr4M4dY5oUOUj0OQuA8H0HwDZ07+th1ObdJ0efP3iUXPG8H1ZHtZcoKRMvkg/zE8D39Jt1IksmAT8seZvmEZiPuEIZWtpQs3bi35lbwibjMXZ1qK+ulgkbXHa5UVhOLaQ3B0zjAqxhRTNqf3Nj4HeiKXOktSwIDAQAB"
+wechat:
+  url: https://api.weixin.qq.com/sns/jscode2session?appid=
+  order_url: https://api.mch.weixin.qq.com/pay/unifiedorder
+  id: wx8b0d0433876f8f70
+  secret: 62eb76d04c849fcc23b49a23acf720a1
+  mch_id: 1511954771
+  body: 鍐夐様椁愰ギ-涔濋鍘�
+  device_info: WEB
+  notify_url: https://www.sandc.com
+  trade_type: JSAPI
+  api_key: Ccwk4VueI0EN3VMcFodm58XYsFSIRKHZ
+  sign_type: MD5

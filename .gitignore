@@ -1,0 +1,15 @@
+#node_module
+/web/node_modules/*
+
+#workspack.xml
+.idea
+
+out
+bin
+.project
+lib
+.classpath
+.gradle/*
+/.gradle/
+/build/
+web/dist/*
