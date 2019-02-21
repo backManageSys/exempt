@@ -54,6 +54,7 @@
                     <el-option label="收款通码离线码" value="RPASSOFF"></el-option>
                     <el-option label="收款通码在线码" value="RPASSQR"></el-option>
                     <el-option label="收款固码(二开)" value="RSOLID"></el-option>
+                     <el-option label="红包" value="RedEnvelope"></el-option>
                     </el-select>
                 </el-form-item>
                  <el-form-item label="状态">
