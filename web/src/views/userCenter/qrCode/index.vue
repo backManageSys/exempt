@@ -103,7 +103,7 @@ import config from '../../../../config'
                                 this.formparameters.rate = res.data.alipay_RPASSQR;
                             if(this.formparameters.codeType == 'RSOLID')
                                 this.formparameters.rate = res.data.alipay_RSOLID;
-                                if(this.formparameters.codeType == 'RedEnvelope')
+                            if(this.formparameters.codeType == 'RedEnvelope')
                                 this.formparameters.rate = res.data.alipay_RedEnvelope;
                         }
                     })
