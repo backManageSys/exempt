@@ -64,7 +64,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="等级" >
-                    <el-select v-model="newRow.priority" placeholder="请选择" style="width:10%;">
+                    <el-select v-model="newRow.priority" placeholder="请选择" style="width:15%;">
                         <el-option
                         v-for="item in options"
                         :key="item.value"
