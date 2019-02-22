@@ -9,11 +9,12 @@ public class MerchantUpdateParameters {
     private double alipay_RPASSOFF;
     private double alipay_RPASSQR;
     private double alipay_RSOLID;
+    private double alipay_RedEnvelope;
     private double wechat;
     private String status;
     private int level;
 
-    public MerchantUpdateParameters(String password, String name, double alipay_TPASS, double alipay_TSOLID, double alipay_RPASSOFF, double alipay_RPASSQR, double alipay_RSOLID, double wechat, String status, int level) {
+    public MerchantUpdateParameters(String password, String name, double alipay_TPASS, double alipay_TSOLID, double alipay_RPASSOFF, double alipay_RPASSQR, double alipay_RSOLID, double alipay_RedEnvelope, double wechat, String status, int level) {
         this.password = password;
         this.name = name;
         this.alipay_TPASS = alipay_TPASS;
@@ -21,6 +22,7 @@ public class MerchantUpdateParameters {
         this.alipay_RPASSOFF = alipay_RPASSOFF;
         this.alipay_RPASSQR = alipay_RPASSQR;
         this.alipay_RSOLID = alipay_RSOLID;
+        this.alipay_RedEnvelope = alipay_RedEnvelope;
         this.wechat = wechat;
         this.status = status;
         this.level = level;
@@ -80,6 +82,14 @@ public class MerchantUpdateParameters {
 
     public void setAlipay_RSOLID(double alipay_RSOLID) {
         this.alipay_RSOLID = alipay_RSOLID;
+    }
+
+    public double getAlipay_RedEnvelope() {
+        return alipay_RedEnvelope;
+    }
+
+    public void setAlipay_RedEnvelope(double alipay_RedEnvelope) {
+        this.alipay_RedEnvelope = alipay_RedEnvelope;
     }
 
     public double getWechat() {

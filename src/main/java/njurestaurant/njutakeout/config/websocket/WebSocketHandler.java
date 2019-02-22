@@ -96,7 +96,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         String type = jsonObject.getString("type");
         String imei = jsonObject.getString("imei");
         //回复客户端的心跳检测
-        if (cmd.equals("HeartBeat") && type.equals("HeartBeat")){
+        if (cmd.equals("HeartBeat") && type.equals("HeartBeat")) {
             session.sendMessage(new TextMessage(jsonObject.toString()));
             System.out.println(new TextMessage(jsonObject.toString()));
         }
@@ -189,7 +189,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
                         Merchant merchant = merchantDataService.findMerchantById(user.getTableId());
                         User suser = userDataService.getUserById(merchant.getApplyId());
                         if (merchant != null) {
-                            merchant.setBalance(merchant.getBalance() + money * (1 - getRate(platformOrders.getCodetype(),merchant)  / 100));
+                            merchant.setBalance(merchant.getBalance() + money * (1 - getRate(platformOrders.getCodetype(), merchant) / 100));
                             merchantDataService.saveMerchant(merchant);
                         }
                         // 操作上级,商户的代理商
@@ -207,9 +207,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
                                 }
                                 // 计算代理的每日流量
                                 if (AgentDailyFlow.flow.containsKey(agent.getId())) {
-                                    AgentDailyFlow.flow.put(agent.getId(), AgentDailyFlow.flow.get(agent.getId()) + money * (1 - getRate(platformOrders.getCodetype(),merchant)  / 100));
+                                    AgentDailyFlow.flow.put(agent.getId(), AgentDailyFlow.flow.get(agent.getId()) + money * (1 - getRate(platformOrders.getCodetype(), merchant) / 100));
                                 } else {
-                                    AgentDailyFlow.flow.put(agent.getId(), money * (1 - getRate(platformOrders.getCodetype(),merchant)  / 100));
+                                    AgentDailyFlow.flow.put(agent.getId(), money * (1 - getRate(platformOrders.getCodetype(), merchant) / 100));
                                 }
                                 // 计算代理的每日佣金
                                 if (AgentDailyFlow.commission.containsKey(agent.getId())) {
@@ -241,7 +241,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
                         Merchant merchant = merchantDataService.findMerchantById(user.getTableId());
                         User suser = userDataService.getUserById(merchant.getApplyId());
                         if (merchant != null) {
-                            merchant.setBalance(merchant.getBalance() + money * (1 - getRate(platformOrder.getCodetype(),merchant) / 100));
+                            merchant.setBalance(merchant.getBalance() + money * (1 - getRate(platformOrder.getCodetype(), merchant) / 100));
                             merchantDataService.saveMerchant(merchant);
                         }
                         // 操作上级,商户的代理商
@@ -259,9 +259,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
                                 }
                                 // 计算代理的每日流量
                                 if (AgentDailyFlow.flow.containsKey(agent.getId())) {
-                                    AgentDailyFlow.flow.put(agent.getId(), AgentDailyFlow.flow.get(agent.getId()) + money * (1 - getRate(platformOrder.getCodetype(),merchant)  / 100));
+                                    AgentDailyFlow.flow.put(agent.getId(), AgentDailyFlow.flow.get(agent.getId()) + money * (1 - getRate(platformOrder.getCodetype(), merchant) / 100));
                                 } else {
-                                    AgentDailyFlow.flow.put(agent.getId(), money * (1 - getRate(platformOrder.getCodetype(),merchant)  / 100));
+                                    AgentDailyFlow.flow.put(agent.getId(), money * (1 - getRate(platformOrder.getCodetype(), merchant) / 100));
                                 }
                                 // 计算代理的每日佣金
                                 if (AgentDailyFlow.commission.containsKey(agent.getId())) {
@@ -277,33 +277,66 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 System.out.println("77:");
             }
 
-            // String imei = jsonObject.getString("imei");
-            // String orderId = jsonObject.getString("orderId");
-            // String money = jsonObject.getString("money");
-            // String memo = jsonObject.getString("memo");
-            // String time = jsonObject.getString("time");
-            // System.out.println("收到用户 " + imei + "的消息：" +
-            // message.getPayload().toString());
+        }
+        //收到红包订单消息
+        //{"cmd":"rednews","imei":"304517300097652","type":"alipay","id":"2088012315627731","orderId":"201902210206302200000000730038022629",
+        // "money":"0.01","memo":"恭喜发财，万事如意！","time":"1550723566007"}
+        if (cmd.equals("rednews") && type.equals("alipay")) {
+            String orderId = jsonObject.getString("orderId");
+            Double money = Double.parseDouble(jsonObject.getString("money"));
+            String memo = jsonObject.getString("memo");
+            String time = jsonObject.getString("time");
 
-            // 如果订单成功入库，则回复一条信息
-            // if(true){
-            // JSONObject jsonObject2 = new JSONObject();
-            // jsonObject2.put("cmd", cmd);
-            // jsonObject2.put("status", "success");
-            // jsonObject2.put("orderId", orderId);
-            // jsonObject2.put("imei", imei);
-            // session.sendMessage(new TextMessage(jsonObject2.toString()));
-            // }
-            // //如果订单入库失败，则回复一条信息
-            // else {
-            // JSONObject jsonObject3 = new JSONObject();
-            // jsonObject3.put("cmd", cmd);
-            // jsonObject3.put("status", "failed");
-            // jsonObject3.put("err", "错误信息");
-            // jsonObject3.put("orderId", orderId);
-            // jsonObject3.put("imei", imei);
-            // session.sendMessage(new TextMessage(jsonObject3.toString()));
-            // }
+            Device device = deviceDataService.findByImei(imei);
+            // 提取memo备注里的值（99.9%是订单号）。查询订单表中是否存在一个与memo的值匹配的订单号，如果存在，则把订单状态更新成已成功付款，保留订单金额，新插入实收金额。
+            System.out.println(memo);
+            PlatformOrder platformOrder = platformOrderDataService.findByNumber(memo);
+            if (platformOrder != null) {
+                platformOrder.setState(OrderState.PAID);
+                platformOrder.setPayMoney(money);
+                Date payTime = FormatDateTime.ThirdTimestampToDate(Long.parseLong(time));
+                platformOrder.setPayTime(payTime);
+                platformOrderDataService.savePlatformOrder(platformOrder);
+                AlipayOrder alipayOrder = new AlipayOrder(imei, orderId, money, memo, payTime);
+                alipayOrderDataService.saveAlipayOrder(alipayOrder);
+                User user = userDataService.getUserById(platformOrder.getUid());
+                if (user != null) {
+                    Merchant merchant = merchantDataService.findMerchantById(user.getTableId());
+                    User suser = userDataService.getUserById(merchant.getApplyId());
+                    if (merchant != null) {
+                        merchant.setBalance(merchant.getBalance() + money * (1 - getRate(platformOrder.getCodetype(), merchant) / 100));
+                        merchantDataService.saveMerchant(merchant);
+                    }
+                    // 操作上级,商户的代理商
+                    if (suser != null) {
+                        if (suser.getRole() == 2) {
+                            Agent agent = agentDataService.findAgentById(suser.getTableId());
+                            agent.setBalance(agent.getBalance() + money * agent.getAlipay() / 100);
+                            agentDataService.saveAgent(agent);
+                            if (AgentDailyFlow.date == null)
+                                AgentDailyFlow.date = new Date();
+                            if (!DateUtils.isSameDay(AgentDailyFlow.date, new Date())) {
+                                AgentDailyFlow.commission.clear();
+                                AgentDailyFlow.flow.clear();
+                                AgentDailyFlow.date = new Date();
+                            }
+                            // 计算代理的每日流量
+                            if (AgentDailyFlow.flow.containsKey(agent.getId())) {
+                                AgentDailyFlow.flow.put(agent.getId(), AgentDailyFlow.flow.get(agent.getId()) + money * (1 - getRate(platformOrder.getCodetype(), merchant) / 100));
+                            } else {
+                                AgentDailyFlow.flow.put(agent.getId(), money * (1 - getRate(platformOrder.getCodetype(), merchant) / 100));
+                            }
+                            // 计算代理的每日佣金
+                            if (AgentDailyFlow.commission.containsKey(agent.getId())) {
+                                AgentDailyFlow.commission.put(agent.getId(), AgentDailyFlow.commission.get(agent.getId()) + money * agent.getAlipay() / 100);
+                            } else {
+                                AgentDailyFlow.commission.put(agent.getId(), money * agent.getAlipay() / 100);
+                            }
+                        }
+                    }
+                }
+            }
+
         }
 
         // 收到通码链接

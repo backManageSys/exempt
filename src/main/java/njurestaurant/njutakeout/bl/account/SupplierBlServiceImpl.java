@@ -144,35 +144,38 @@ public class SupplierBlServiceImpl implements SupplierBlService {
 //                user.setPassword(encoder.encode(supplierUpdateParameters.getPassword()));
 //            supplier.setPriority(supplierUpdateParameters.getLevel());
 
-                user.setUsername(supplierUpdateParameters.getName());
-                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-                user.setPassword(encoder.encode(supplierUpdateParameters.getPassword()));
-                userDataService.saveUser(user);
-                supplier.setUser(user);
-                supplier.setPriority(supplierUpdateParameters.getLevel());
-                supplier.setStatus(supplierUpdateParameters.getStatus());
-                switch (supplierUpdateParameters.getCodeType()) {
-                    case "TSOLID":
-                        supplier.setCodeType(CodeType.TSOLID);
-                        break;
-                    case "TPASS":
-                        supplier.setCodeType(CodeType.TPASS);
-                        break;
-                    case "RSOLID":
-                        supplier.setCodeType(CodeType.RSOLID);
-                        break;
-                    case "RPASSOFF":
-                        supplier.setCodeType(CodeType.RPASSOFF);
-                        break;
-                    case "RPASSQR":
-                        supplier.setCodeType(CodeType.RPASSQR);
-                        break;
-                    default:
-                        throw new BlankInputException();
+                    user.setUsername(supplierUpdateParameters.getName());
+                    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                    user.setPassword(encoder.encode(supplierUpdateParameters.getPassword()));
+                    userDataService.saveUser(user);
+                    supplier.setUser(user);
+                    supplier.setPriority(supplierUpdateParameters.getLevel());
+                    supplier.setStatus(supplierUpdateParameters.getStatus());
+                    switch (supplierUpdateParameters.getCodeType()) {
+                        case "TSOLID":
+                            supplier.setCodeType(CodeType.TSOLID);
+                            break;
+                        case "TPASS":
+                            supplier.setCodeType(CodeType.TPASS);
+                            break;
+                        case "RSOLID":
+                            supplier.setCodeType(CodeType.RSOLID);
+                            break;
+                        case "RPASSOFF":
+                            supplier.setCodeType(CodeType.RPASSOFF);
+                            break;
+                        case "RPASSQR":
+                            supplier.setCodeType(CodeType.RPASSQR);
+                            break;
+                        case "RedEnvelope":
+                            supplier.setCodeType(CodeType.RedEnvelope);
+                            break;
+                        default:
+                            throw new BlankInputException();
+                    }
+                    return supplierDataService.saveSupplier(supplier);
                 }
-                return supplierDataService.saveSupplier(supplier);
-            }
-        }else {
+            } else {
                 //            user.setOriginPassword(RSAUtils.encryptedDataOnJava(supplierUpdateParameters.getPassword(), publicKey));
 //            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 //            if(!supplierUpdateParameters.getPassword().equals(user.getPassword()))

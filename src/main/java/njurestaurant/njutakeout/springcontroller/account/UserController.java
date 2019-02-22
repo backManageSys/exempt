@@ -210,7 +210,7 @@ public class UserController {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             User user = new User(merchantAddParameters.getUsername(), encoder.encode(merchantAddParameters.getPassword()), 3, new ArrayList<>());
             Merchant merchant = new Merchant(merchantAddParameters.getAlipay_TPASS(),merchantAddParameters.getAlipay_TSOLID(),merchantAddParameters.getAlipay_RPASSOFF(),
-                    merchantAddParameters.getAlipay_RPASSQR(),merchantAddParameters.getAlipay_RSOLID(), merchantAddParameters.getWechat(), 0, merchantAddParameters.getStatus(),
+                    merchantAddParameters.getAlipay_RPASSQR(),merchantAddParameters.getAlipay_RSOLID(), merchantAddParameters.getAlipay_RedEnvelope(), merchantAddParameters.getWechat(), 0, merchantAddParameters.getStatus(),
                     new Date(), merchantAddParameters.getUsername(), merchantAddParameters.getApplyId(), user, merchantAddParameters.getLevel());
 //            if (userDataService.getUserById(merchantAddParameters.getApplyId()).getRole() == 2)
 //                merchant.setStatus("申请启用");//代理商新增商户需要等待管理员审批，所以账号暂时不可用

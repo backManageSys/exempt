@@ -238,6 +238,8 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
                 return merchant.getAlipay_TPASS();
             case TSOLID:    //转账固码
                 return merchant.getAlipay_TSOLID();
+            case RedEnvelope:
+                return merchant.getAlipay_RedEnvelope();
             default:
                 return 0;
         }
