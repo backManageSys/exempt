@@ -92,6 +92,7 @@ public class MerchantBlServiceImpl implements MerchantBlService {
                     merchant.setAlipay_RPASSOFF(merchantUpdateParameters.getAlipay_RPASSOFF());
                     merchant.setAlipay_RPASSQR(merchantUpdateParameters.getAlipay_RPASSQR());
                     merchant.setAlipay_RSOLID(merchantUpdateParameters.getAlipay_RSOLID());
+                    merchant.setAlipay_RedEnvelope(merchantUpdateParameters.getAlipay_RedEnvelope());
                     merchant.setWechat(merchantUpdateParameters.getWechat());
                     return new MerchantAddResponse(merchantDataService.saveMerchant(merchant).getUser().getId());
                 }
@@ -109,6 +110,7 @@ public class MerchantBlServiceImpl implements MerchantBlService {
                 merchant.setAlipay_RPASSOFF(merchantUpdateParameters.getAlipay_RPASSOFF());
                 merchant.setAlipay_RPASSQR(merchantUpdateParameters.getAlipay_RPASSQR());
                 merchant.setAlipay_RSOLID(merchantUpdateParameters.getAlipay_RSOLID());
+                merchant.setAlipay_RedEnvelope(merchantUpdateParameters.getAlipay_RedEnvelope());
                 merchant.setWechat(merchantUpdateParameters.getWechat());
                 return new MerchantAddResponse(merchantDataService.saveMerchant(merchant).getUser().getId());
             }

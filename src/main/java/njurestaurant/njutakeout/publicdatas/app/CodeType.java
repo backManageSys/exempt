@@ -6,6 +6,7 @@ public enum CodeType {
     RPASSOFF,  //收款通码离线2
     RPASSQR,  //收款通码在线3
     RSOLID, //收款固码4
+    RedEnvelope,//红包
     NONE
 
 //    TSOLID, //转账固码0

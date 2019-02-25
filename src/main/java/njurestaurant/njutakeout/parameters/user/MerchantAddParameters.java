@@ -8,6 +8,7 @@ public class MerchantAddParameters {
     private double alipay_RPASSOFF;
     private double alipay_RPASSQR;
     private double alipay_RSOLID;
+    private double alipay_RedEnvelope;
     private double wechat;
     private int applyId;
     private int level;
@@ -15,7 +16,7 @@ public class MerchantAddParameters {
 
     public MerchantAddParameters() {
     }
-    public MerchantAddParameters(String username, String password, double alipay_TPASS, double alipay_TSOLID, double alipay_RPASSOFF, double alipay_RPASSQR, double alipay_RSOLID, double wechat, int applyId, int level, String status) {
+    public MerchantAddParameters(String username, String password, double alipay_TPASS, double alipay_TSOLID, double alipay_RPASSOFF, double alipay_RPASSQR, double alipay_RSOLID, double alipay_redEnvelope, double wechat, int applyId, int level, String status) {
         this.username = username;
         this.password = password;
         this.alipay_TPASS = alipay_TPASS;
@@ -23,6 +24,7 @@ public class MerchantAddParameters {
         this.alipay_RPASSOFF = alipay_RPASSOFF;
         this.alipay_RPASSQR = alipay_RPASSQR;
         this.alipay_RSOLID = alipay_RSOLID;
+        this.alipay_RedEnvelope = alipay_redEnvelope;
         this.wechat = wechat;
         this.applyId = applyId;
         this.level = level;
@@ -68,6 +70,14 @@ public class MerchantAddParameters {
 
     public void setAlipay_RSOLID(double alipay_RSOLID) {
         this.alipay_RSOLID = alipay_RSOLID;
+    }
+
+    public double getAlipay_RedEnvelope() {
+        return alipay_RedEnvelope;
+    }
+
+    public void setAlipay_RedEnvelope(double alipay_RedEnvelope) {
+        this.alipay_RedEnvelope = alipay_RedEnvelope;
     }
 
     public int getLevel() {

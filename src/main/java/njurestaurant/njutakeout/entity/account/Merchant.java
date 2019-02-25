@@ -20,6 +20,8 @@ public class Merchant {
     private double alipay_RPASSQR;
     @Column(name = "alipay_RSOLID")
     private double alipay_RSOLID;
+    @Column(name = "alipay_RedEnvelope")
+    private double alipay_RedEnvelope;
     /*微信点位*/
     @Column(name = "wechat")
     private double wechat;
@@ -52,12 +54,13 @@ public class Merchant {
     public Merchant() {
     }
 
-    public Merchant(double alipay_TPASS, double alipay_TSOLID, double alipay_RPASSOFF, double alipay_RPASSQR, double alipay_RSOLID, double wechat, double balance, String status, Date addTime, String name, int applyId, User user, int priority) {
+    public Merchant(double alipay_TPASS, double alipay_TSOLID, double alipay_RPASSOFF, double alipay_RPASSQR, double alipay_RSOLID, double alipay_RedEnvelope, double wechat, double balance, String status, Date addTime, String name, int applyId, User user, int priority) {
         this.alipay_TPASS = alipay_TPASS;
         this.alipay_TSOLID = alipay_TSOLID;
         this.alipay_RPASSOFF = alipay_RPASSOFF;
         this.alipay_RPASSQR = alipay_RPASSQR;
         this.alipay_RSOLID = alipay_RSOLID;
+        this.alipay_RedEnvelope = alipay_RedEnvelope;
         this.wechat = wechat;
         this.balance = balance;
         this.status = status;
@@ -132,6 +135,14 @@ public class Merchant {
 
     public void setAlipay_RSOLID(double alipay_RSOLID) {
         this.alipay_RSOLID = alipay_RSOLID;
+    }
+
+    public double getAlipay_RedEnvelope() {
+        return alipay_RedEnvelope;
+    }
+
+    public void setAlipay_RedEnvelope(double alipay_RedEnvelope) {
+        this.alipay_RedEnvelope = alipay_RedEnvelope;
     }
 
     public double getWechat() {

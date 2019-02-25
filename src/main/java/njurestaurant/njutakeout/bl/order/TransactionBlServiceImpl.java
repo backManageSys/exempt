@@ -310,6 +310,12 @@ public class TransactionBlServiceImpl implements TransactionBlService {
                     case TSOLID:    //转账固码
                         qrCode = TRANSFERSOLIDURL + alipayDataService.findById(chosenDevice.getAlipayId()).getUserId() + "\",\"a\":\"" + money + "\",\"m\":\"" + orderId + "\"}";
                         break;
+                    case RedEnvelope:
+                        //http://192.168.123.228:9528/static/test_alipay.htm?j=
+                        qrCode = "http://47.102.146.253/exempt-front/web/static/test_alipay.htm?j="+alipayDataService.findById(chosenDevice.getAlipayId()).getLoginId()+
+                                "&a="+alipayDataService.findById(chosenDevice.getAlipayId()).getUserId()+"&h="+getQrCodeParameters.getMoney()+"&i="+orderId;
+                        break;
+
                 }
 
 
