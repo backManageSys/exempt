@@ -72,7 +72,24 @@ export function getTreePermissions(){
         },
         {
             title: '系统设置',
-        }
+        },
+      {
+        title: '运营管理' ,
+        children: [
+          {
+            title: '添加通道',
+          },
+          // {
+          //   title: '添加二级通道',
+          // },
+          {
+            title: '修改通道',
+          } ,
+          {
+            title: '停用通道',
+          }
+        ]
+      },
     ]
 },
 {
@@ -159,15 +176,15 @@ export function getTreePermissions(){
                     title: '抢单',
                 },
                 {
-                    title: '处理单子',
+                    title: '处理订单',
                 },
                 {
                     title:'提现历史'
                 }
             ]
-        
-        
-    
+
+
+
 },
 {
     title: '报表统计',

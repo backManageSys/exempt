@@ -8,12 +8,11 @@
             style="width: 100%">
             <el-table-column prop="mid" label="商户id"  align="center"></el-table-column>
             <el-table-column prop="user.username" label="用户名"  align="center"></el-table-column>
-            <el-table-column label="支付宝点位"  align="center">
+            <el-table-column label="查看点位"  align="center">
                   <template scope="scope">
                         <el-button size="small" @click="alipayRate(scope.row)">查看</el-button>
                     </template>
             </el-table-column>
-            <el-table-column prop="wechatp" label="微信点位"  align="center"></el-table-column>
             <!-- <el-table-column prop="approverId" label="审核人id"  align="center"></el-table-column> -->
             <el-table-column prop="priority" label="等级"  align="center"></el-table-column>
             <!-- <el-table-column prop="user.password" label="密码"  align="center"></el-table-column> -->
@@ -40,27 +39,30 @@
             :total=total>
             </el-pagination>
         </div>
-         <el-dialog title="支付宝点位信息" :visible.sync="alipayRateDialogFormVisible">
-            <el-form  :model="newRow"  label-width="30%">
-                <el-form-item label="转账通码点位:">
-                    <div>{{'&#12288;'+newRow.alipay_TPASS+"%"}}</div>
-                </el-form-item>
-                <el-form-item label="转账固码点位:">
-                    <div>{{'&#12288;'+newRow.alipay_TSOLID+"%"}}</div>
-                </el-form-item>
-                <el-form-item label="收款通码离线码点位:">
-                    <div>{{'&#12288;'+newRow.alipay_RPASSOFF+"%"}}</div>
-                </el-form-item>
-                <el-form-item label="收款通码在线码点位:">
-                    <div>{{'&#12288;'+newRow.alipay_RPASSQR+"%"}}</div>
-                </el-form-item>
-                <el-form-item label="收款固码(二开)点位:">
-                    <div>{{'&#12288;'+newRow.alipay_RSOLID+"%"}}</div>
-                </el-form-item>
-                <el-form-item label="红包点位:">
-                                    <div>{{'&#12288;'+newRow.alipay_RedEnvelope+"%"}}</div>
-                                </el-form-item>
-            </el-form>
+         <el-dialog title="点位信息" :visible.sync="alipayRateDialogFormVisible">
+           <el-select v-model="value" placeholder="请选择" @change="firstChange" @visible-change="getSelect" style="width: 20%">
+             <el-option
+               v-for="item in options1"
+               :key="item.id"
+               :label="item.codeCategory"
+               :value="item.codeCategory">
+             </el-option>
+           </el-select>
+           <el-select v-model="value1" placeholder="请选择" :disabled="secondState" @change="secondChange"
+                      @visible-change="getPayType" style="width: 30%">
+             <el-option
+               v-for="item in options2"
+               :key="item.id"
+               :label="item.codeType"
+               :value="item.id">
+             </el-option>
+           </el-select>
+           <el-input v-model="point" style="width: 15%;" type="number" placeholder="请输入点位" :disabled="thirdState"></el-input>
+           %
+           <el-select v-model="status" placeholder="启用" style="width: 14%" :disabled="selectState">
+             <el-option label="启用" value="启用"></el-option>
+             <el-option label="停用" value="停用"></el-option>
+           </el-select>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="alipayRateDialogFormVisible = false">取 消</el-button>
                 <el-button type="primary" @click="alipayRateDialogFormVisible = false">确 定</el-button>
@@ -68,9 +70,10 @@
     </el-dialog>
       </div>
     </template>
-    
+
     <script>
-    import { waitApprovalMer, ApprovalMer } from '@/api/company'
+    import { waitApprovalMer, ApprovalMer } from '@/api/company';
+    import {getSelect, getPayType, getPayRateList} from '@/api/role'
     import store from '../../../../store'
         export default {
             data() {
@@ -89,11 +92,19 @@
                         mid:0,
                         }
                     ],
-                    newRow:{
-                     
-                    },
+                    newRow:{},
                     alipayRateDialogFormVisible :false,
-                    currentPage:1
+                    currentPage:1,
+                  point: "",
+                  options1: [],
+                  options2: [],
+                  value: '',
+                  value1: '',
+                  value2: '',
+                  secondState: true,
+                  thirdState: true,
+                  selectState: true,
+                  status: '',
                 }
             },
             computed:{
@@ -106,6 +117,56 @@
                 // this.
             },
             methods: {
+              getPayType() {
+                getPayType(this.value).then(response => {
+                  if (response.code !== 200) {
+                    this.$message({
+                      message: response.data.description,
+                      type: "warning"
+                    });
+                  } else {
+                    this.options2 = response.data;
+                  }
+                });
+              },
+              getSelect() {
+                getSelect().then(response => {
+                  if (response.code !== 200) {
+                    this.$message({
+                      message: response.data.description,
+                      type: "warning"
+                    });
+                  } else {
+                    this.options1 = response.data;
+                  }
+                });
+              },
+              firstChange() {
+                console.log(111);
+                this.secondState = false;
+              },
+              secondChange() {
+                getPayRateList(this.newRow.user.id, this.value1).then(response => {
+                  if (response.code !== 200) {
+                    this.$message({
+                      message: response.data.description,
+                      type: "warning"
+                    });
+                  } else {
+                    console.log(2222,response.data);
+                    if(response.data === undefined){
+                      this.point = 0;
+                    }else{
+                      this.point = response.data.rate;
+                    }
+                    if(response.data === undefined){
+                      this.status  = "停用";
+                    } else{
+                      this.status = response.data.status;
+                    }
+                  }
+                });
+              },
                 alipayRate(row){
                     this.newRow = row ;
                     this.alipayRateDialogFormVisible = true;
@@ -144,7 +205,7 @@
                 },
                 handleSizeChange(val) {
                     console.log(`每页 ${val} 条`);
-                  
+
                 },
                 handleCurrentChange(val) {
                     console.log(`当前页: ${val}`);
@@ -181,7 +242,7 @@
             }
         }
     </script>
-    
+
     <style scoped>
-    
+
     </style>

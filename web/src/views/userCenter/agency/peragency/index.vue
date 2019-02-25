@@ -10,14 +10,17 @@
         <!-- <el-table-column prop="userInfo.username" label="用户名" align="center"></el-table-column> -->
 
         <el-table-column prop="name" label="代理名"  align="center"></el-table-column>
-        <el-table-column prop="alipayp" label="支付宝点位"  align="center"></el-table-column>
-        <el-table-column prop="wechatp" label="微信点位"  align="center"></el-table-column>
+          <el-table-column label="查看点位"  align="center">
+            <template scope="scope">
+              <el-button size="small" @click="alipayRate(scope.row)">查看</el-button>
+            </template>
+          </el-table-column>
         <el-table-column prop="dailyFlow" label="当日流量"  align="center"></el-table-column>
         <el-table-column prop="dailyCommission" label="当日佣金"  align="center"></el-table-column>
         <el-table-column prop="status" label="状态"  align="center"></el-table-column>
         <el-table-column label="操作" fixed="right" align="center" >
         <template scope="scope" >
-            <el-button size="small" 
+            <el-button size="small"
                     @click="openDialog(scope.$index,scope.row)">修改</el-button>
         </template>
         </el-table-column>
@@ -42,37 +45,51 @@
                 <el-form-item label="密码" prop="password">
                     <el-input v-model="newRow.user.password" type="password" placeholder="请输入密码" style="width:90%;"></el-input>
                 </el-form-item>
-                <!-- <el-form-item label="状态">
-                    <el-select v-model="newRow.status" placeholder="请输入状态" style="width:20%;">
-                    <el-option label="启用" value="启用"></el-option>
-                    <el-option label="停用" value="停用"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="支付宝点位">
-                    <el-input v-model="newRow.alipay" placeholder="请输入支付宝点位" style="width:10%;"></el-input>%
-                </el-form-item>
-                <el-form-item label="微信点位">
-                    <el-input v-model="newRow.wechat" placeholder="请输入微信点位" style="width:10%;"></el-input>%
-                </el-form-item> -->
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
                 <el-button type="primary" @click="updateSupplier('form')">确 定</el-button>
             </div>
     </el-dialog>
+    <el-dialog title="查看或修改点位" :visible.sync="alipayRateDialogFormVisible">
+      <el-select v-model="value" placeholder="请选择" @change="firstChange" @visible-change="getSelect" style="width: 20%">
+        <el-option
+          v-for="item in options1"
+          :key="item.id"
+          :label="item.codeCategory"
+          :value="item.codeCategory">
+        </el-option>
+      </el-select>
+      <el-select v-model="value1" placeholder="请选择" :disabled="secondState" @change="secondChange"
+                 @visible-change="getPayType" style="width: 30%">
+        <el-option
+          v-for="item in options2"
+          :key="item.id"
+          :label="item.codeType"
+          :value="item.id">
+        </el-option>
+      </el-select>
+      <el-input v-model="point" style="width: 15%;" type="number" placeholder="请输入点位" :disabled="thirdState"></el-input>
+      %
+      <el-select v-model="status" placeholder="启用" style="width: 14%" :disabled="selectState">
+        <el-option label="启用" value="启用"></el-option>
+        <el-option label="停用" value="停用"></el-option>
+      </el-select>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="alipayRateDialogFormVisible = false">关 闭</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
-import { agentsGet,updateAgent } from '@/api/role'
-import { isvalidUsername,isvalidPassword } from '@/utils/validate'  
+import { agentsGet,updateAgent,getSelect, getPayType, getPayRateList, } from '@/api/role'
+import { isvalidUsername,isvalidPassword } from '@/utils/validate'
 import store from '../../../../store';
     export default {
         data() {
             const validateUsername = (rule, value, callback) => {
-                console.log(rule)
-                console.log(value)
-                console.log(callback)
             if (!isvalidUsername(value)) {
                 callback(new Error('请输入正确的用户名（只能由英文字母组成）'))
             } else {
@@ -104,6 +121,18 @@ import store from '../../../../store';
                 // }
                 }
                 ],
+              user:{},
+              point: "",
+              options1: [],
+              options2: [],
+              value: '',
+              value1: '',
+              value2: '',
+              secondState: true,
+              thirdState: true,
+              selectState: true,
+              status: '',
+              alipayRateDialogFormVisible: false,
                 currentPage:1,
                 pagesize:10,
                 dialogFormVisible: false,
@@ -140,6 +169,52 @@ import store from '../../../../store';
             this.getData();
         },
         methods: {
+          getPayType() {
+            getPayType(this.value).then(response => {
+              if (response.code !== 200) {
+                this.$message({
+                  message: response.data.description,
+                  type: "warning"
+                });
+              } else {
+                this.options2 = response.data;
+              }
+            });
+          },
+          getSelect() {
+            getSelect().then(response => {
+              if (response.code !== 200) {
+                this.$message({
+                  message: response.data.description,
+                  type: "warning"
+                });
+              } else {
+                this.options1 = response.data;
+              }
+            });
+          },
+          firstChange() {
+            console.log(111);
+            this.secondState = false;
+          },
+          secondChange() {
+            getPayRateList(this.user.userInfo.id, this.value1).then(response => {
+              if (response.code !== 200) {
+                this.$message({
+                  message: response.data.description,
+                  type: "warning"
+                });
+              } else {
+                if( response.data === undefined){
+                  this.point = "";
+                  this.status = "停用";
+                }else{
+                  this.point = response.data.rate;
+                  this.status = response.data.status;
+                }
+              }
+            });
+          },
             updateSupplier(formName) {
             this.$refs[formName].validate((valid) => {
             if (valid) {
@@ -181,6 +256,10 @@ import store from '../../../../store';
             getData(){
                 this.getTeams();
             },
+          alipayRate(row){
+            this.user = row ;
+            this.alipayRateDialogFormVisible = true;
+          },
             getTeams(){
                 agentsGet().then(response=>{
                     console.log(response,'sdll')

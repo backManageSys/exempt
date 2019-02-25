@@ -15,20 +15,21 @@ export function addAdmin(code, operator, password, post, status, team, username)
     }
   })
 }
-export function addAgent(alipay,
+export function addAgent(applyId,
   password,
   status,
   username,
-  wechat) {
+  list,
+  ) {
   return request({
     url: '/agent/add',
     method: 'post',
     data: {
-      alipay,
+      applyId,
       password,
       status,
       username,
-      wechat
+      list,
     }
   })
 }
@@ -38,13 +39,7 @@ export function addMerchant(
   password,
   username,
   status,
-  wechat,
-   alipay_TPASS,
-   alipay_TSOLID,
-   alipay_RPASSOFF,
-   alipay_RPASSQR,
-   alipay_RSOLID,
-  alipay_RedEnvelope
+  list
 ) {
   return request({
     url: '/merchant/add',
@@ -55,12 +50,7 @@ export function addMerchant(
       password,
       username,
       status,
-      wechat,
-      alipay_TPASS,
-      alipay_TSOLID,
-      alipay_RPASSOFF,
-      alipay_RPASSQR,
-      alipay_RSOLID
+      list
     }
   })
 }
@@ -281,5 +271,66 @@ export function withdrewHistory() {
     //   money,
     //   type
     // }
+  })
+}
+
+export function addPlatform(codeCategory) {
+  return request({
+    url: '/company/payPlatform/add',
+    method: 'post',
+    data: {codeCategory}
+  })
+}
+
+export function getSelect() {
+  return request({
+    url: '/company/payPlatform/get',
+    method: 'get',
+  })
+}
+
+export function addPayType(codeCategory,codeType,status) {
+  return request({
+    url: '/company/payType/add',
+    method: 'post',
+    data: {codeCategory,codeType,status}
+  })
+}
+
+export function updatePayPlatform(id,codeCategory) {
+  return request({
+    url: '/company/payPlatform/update/' + id,
+    method: 'put',
+    data: {codeCategory}
+  })
+}
+
+export function getPayType(codeCategory) {
+  return request({
+    url: '/company/payType/get/'+codeCategory,
+    method: 'get',
+  })
+}
+
+export function updatePayType(id,codeCategory,codeType,status) {
+  return request({
+    url: '/company/payType/update/' + id,
+    method: 'put',
+    data: {codeCategory,codeType,status}
+  })
+}
+
+export function getPayRateList(uid,payTypeId) {
+  return request({
+    url: '/payRateList/get/' + uid+'/'+payTypeId,
+    method: 'get',
+  })
+}
+
+export function updatePayRateList(uid,payType_id,rate,status) {
+  return request({
+    url: '/payRateList/update/' + uid,
+    method: 'put',
+    data: {payType_id,rate,status}
   })
 }
