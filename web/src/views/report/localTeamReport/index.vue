@@ -18,6 +18,8 @@
             style="width: 100%">
             <el-table-column prop="number" label="编号"  align="center"></el-table-column>
             <el-table-column prop="supplierName" label="供码用户名"  align="center"></el-table-column>
+            <el-table-column prop="realReceipt" label="收款金额"  align="center"></el-table-column>
+            <el-table-column prop="withdrew" label="已提现金额"  align="center"></el-table-column>
             <el-table-column prop="realReceipt" label="转账金额"  align="center"></el-table-column>
             <el-table-column prop="withdrew" label="提现金额"  align="center"></el-table-column>
             <el-table-column prop="date" label="日期"  align="center"></el-table-column>

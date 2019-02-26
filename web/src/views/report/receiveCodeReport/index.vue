@@ -19,8 +19,10 @@
       <el-table-column prop="number" label="编号" align="center"></el-table-column>
       <el-table-column prop="supplierName" label="供码用户名" align="center"></el-table-column>
       <el-table-column prop="alipayLoginId" label="支付宝账号" align="center"></el-table-column>
-      <el-table-column prop="payMoney" label="实收帐款" align="center"></el-table-column>
-      <el-table-column prop="withdrew" label="提现金额" align="center"></el-table-column>
+      <el-table-column prop="payMoney" label="收款金额" align="center"></el-table-column>
+      <el-table-column prop="withdrew" label="已提现金额" align="center"></el-table-column>
+      <el-table-column prop="withdrewing" label="正在提现金额" align="center"></el-table-column>
+      <el-table-column prop="fee" label="提现手续费" align="center"></el-table-column>
       <el-table-column prop="date" label="查询时间" align="center"></el-table-column>
     </el-table>
     <div class="block">
