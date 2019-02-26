@@ -23,7 +23,7 @@
             <el-table-column prop="wechat" label="微信点位"  align="center"></el-table-column> -->
             <!-- <el-table-column prop="depositList" label="depositList"  align="center"></el-table-column> -->
             <el-table-column prop="withdrewed" label="已提现"  align="center"></el-table-column>
-            <el-table-column prop="balance" label="余额"  align="center"></el-table-column>    
+            <el-table-column prop="balance" label="余额"  align="center"></el-table-column>
             <el-table-column prop="depositList" label="平台分析"  align="center">
                 <template slot-scope="scope">
                     <el-tag :type="device.type?'success':'info'" v-for="device in scope.row.depositList" :key="device.type">{{ device.type }} : {{ device.money }}</el-tag>
@@ -92,8 +92,8 @@ export default {
                 currentPage:1,
                 pagesize:10,
                 searchStr:'',
-                startDate:"",
-                endDate:""
+                startDate:getTimeFormat(new Date()),
+                endDate:getTimeFormat(new Date())
           }
       },
     computed: {
@@ -148,7 +148,7 @@ export default {
               this.getTeams();
           },
           getTeams(){
-            agencyReport("2000-01-01",getTimeFormat(new Date())).then(response=>{
+            agencyReport(getTimeFormat(new Date()),getTimeFormat(new Date())).then(response=>{
                 console.log(response,'sdll')
                   if(response.code!=200){
                     this.$message({

@@ -21,7 +21,7 @@
             <el-table-column prop="comToAgent" label="公司转入代理商金额"  align="center"></el-table-column>
             <el-table-column prop="comToMerchant" label="公司转入商户金额"  align="center"></el-table-column>
             <el-table-column prop="date" label="日期"  align="center"></el-table-column>
-            
+
 
         </el-table>
            <div class="block">
@@ -62,8 +62,8 @@ export default {
                 currentPage:1,
                 pagesize:10,
                 searchStr:'',
-                startDate:"",
-                endDate:""
+                startDate:getTimeFormat(new Date()),
+                endDate:getTimeFormat(new Date())
           }
       },
     computed: {
@@ -118,7 +118,7 @@ export default {
               this.getTeams();
           },
           getTeams(){
-            fundingReport("2000-01-01",getTimeFormat(new Date())).then(response=>{
+            fundingReport(getTimeFormat(new Date()),getTimeFormat(new Date())).then(response=>{
                 console.log(response,'sdll')
                   if(response.code!=200){
                     this.$message({
@@ -128,7 +128,7 @@ export default {
                 }else{
                   if(response.data.length!=0)
                     this.teams = response.data;
-                    
+
                 }
             });
           },

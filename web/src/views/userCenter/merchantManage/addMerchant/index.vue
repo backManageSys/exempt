@@ -25,9 +25,9 @@
       </el-form-item>
 
 
-
       <el-form-item label="点位设置:" v-for="(optionData, index) in selectData">
-        <el-select v-model="optionData.value" placeholder="请选择" @change="firstChange(index)" @visible-change="getSelect(index)">
+        <el-select v-model="optionData.value" placeholder="请选择" @change="firstChange(index)"
+                   @visible-change="getSelect(index)">
           <el-option
             v-for="item in optionData.options1"
             :key="item.id"
@@ -49,11 +49,13 @@
         <el-input v-model="selectData[index].point" style="width: 15%;" type="number" placeholder="请输入点位"
                   :disabled="selectData[index].thirdState"></el-input>
         %
-        <el-select v-model="selectData[index].status" placeholder="启用" style="width: 12.5%" :disabled="selectData[index].selectState">
+        <el-select v-model="selectData[index].status" placeholder="启用" style="width: 12.5%"
+                   :disabled="selectData[index].selectState">
           <el-option label="启用" value="启用"></el-option>
           <el-option label="停用" value="停用"></el-option>
         </el-select>
-        <i class="el-icon-circle-plus" style="font-size: 22px;line-height: 2;color:#66b1ff;cursor: pointer;" @click="addSelect()"></i>
+        <i class="el-icon-circle-plus" style="font-size: 22px;line-height: 2;color:#66b1ff;cursor: pointer;"
+           @click="addSelect()"></i>
       </el-form-item>
 
 
@@ -88,8 +90,8 @@
         }
       };
       return {
-        disableData:[],
-        selectData:[
+        disableData: [],
+        selectData: [
           {
             point: 0,
             options1: [],
@@ -101,7 +103,7 @@
             status: "停用",
             selectState: true,
           }
-          ],
+        ],
         form: {
           alipay: "",
           applyId: "",
@@ -162,7 +164,7 @@
       },
       getPayType(index) {
         this.disableData = [];
-        this.selectData.map((item)=>{
+        this.selectData.map((item) => {
           this.disableData.push(item.value1);
         });
         getPayType(this.selectData[index].value).then(response => {
@@ -172,16 +174,16 @@
               type: "warning"
             });
           } else {
-            response.data.map((item)=>{
+            response.data.map((item) => {
               item.disabled = false;
-              this.disableData.map((item1)=>{
-                if(item.id === item1){
+              this.disableData.map((item1) => {
+                if (item.id === item1) {
                   item.disabled = true;
                 }
               });
 
             });
-            this.selectData[index].options2 =  response.data;
+            this.selectData[index].options2 = response.data;
           }
         });
       },
@@ -193,8 +195,7 @@
               type: "warning"
             });
           } else {
-            this.selectData[index].options1 =  response.data;
-            console.log(222,this.selectData,this.selectData.options1);
+            this.selectData[index].options1 = response.data;
           }
         });
       },
@@ -208,13 +209,13 @@
         this.selectData[index].value1 = "";
         this.selectData[index].thirdState = true;
         this.selectData[index].selectState = true;
-        this.selectData[index].status= "停用";
+        this.selectData[index].status = "停用";
       },
       secondChange(index) {
         this.selectData[index].thirdState = false;
         this.selectData[index].selectState = false;
       },
-      addSelect(){
+      addSelect() {
         const obj = {
           point: 0,
           options1: [],
@@ -222,6 +223,7 @@
           value: '',
           secondState: true,
           thirdState: true,
+          selectState: true,
           value1: '',
           status: "停用"
         };
@@ -229,12 +231,12 @@
       },
       onSubmit(formName) {
         const list = [];
-        this.selectData.map((item)=>{
-                   const obj =  {
-                     payType_id: item.value1,
-                     rate: item.point,
-                     status: item.status
-                   };
+        this.selectData.map((item) => {
+          const obj = {
+            payType_id: item.value1,
+            rate: item.point,
+            status: item.status
+          };
           list.push(obj);
         });
         this.$refs[formName].validate(valid => {

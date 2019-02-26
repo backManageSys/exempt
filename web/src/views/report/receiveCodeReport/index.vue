@@ -65,8 +65,8 @@ export default {
       currentPage: 1,
       pagesize: 10,
       searchStr: "",
-      startDate:"",
-      endDate:""
+      startDate:getTimeFormat(new Date()),
+      endDate:getTimeFormat(new Date())
     };
   },
   computed: {
@@ -121,7 +121,7 @@ export default {
       this.getTeams();
     },
     getTeams() {
-      receiveCodeReport("2000-01-01",getTimeFormat(new Date())).then(response => {
+      receiveCodeReport(getTimeFormat(new Date()),getTimeFormat(new Date())).then(response => {
         console.log(response, "sdll");
         if (response.code != 200) {
           this.$message({
@@ -129,7 +129,7 @@ export default {
             type: "warning"
           });
         } else {
-          if (response.data.length != 0) 
+          if (response.data.length != 0)
           this.teams = response.data;
           console.log("4141ads");
           console.log(store.getters.name);

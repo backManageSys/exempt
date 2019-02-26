@@ -6,19 +6,11 @@
             border
             style="width: 100%">
             <el-table-column prop="orderNumber" label="订单编号"  align="center" min-width="110%"></el-table-column>
-            <el-table-column prop="codeType" label="供码模式"  align="center" min-width="100%">
-             <template slot-scope="scope">
-                    <el-tag  v-if="scope.row.codeType=='TPASS'" >转账通码</el-tag>
-                    <el-tag  v-else-if="scope.row.codeType=='TSOLID'" >转账固码</el-tag>
-                    <el-tag  v-else-if="scope.row.codeType=='RPASSOFF'" >收款通码离线码</el-tag>
-                    <el-tag  v-else-if="scope.row.codeType=='RPASSQR'" >收款通码在线码</el-tag>
-                    <el-tag  v-else-if="scope.row.codeType=='RSOLID'" >收款固码(二开)</el-tag>
-              </template>
-            </el-table-column>
+              <el-table-column prop="codeCategory" label="供码平台"  align="center"></el-table-column>
+              <el-table-column prop="codeType" label="供码平台"  align="center"></el-table-column>
             <el-table-column prop="money" label="订单金额"  align="center"></el-table-column>
             <el-table-column prop="paymoney" label="成交金额"  align="center"></el-table-column>
             <el-table-column prop="rechargeId" label="充值方编号"  align="center"></el-table-column>
-            <el-table-column prop="nickname" label="支付宝昵称"  align="center"></el-table-column>
             <!-- <el-table-column prop="code" label="收款码"  align="center"></el-table-column> -->
             <el-table-column prop="time" label="订单时间"  align="center"></el-table-column>
             <el-table-column prop="payTime" label="支付时间"  align="center"></el-table-column>
@@ -110,7 +102,7 @@ export default {
           // merchantId:26,
           // supplierId:28,
           // agentId:0
-          
+
         }
       ],
       newRow:{
@@ -131,7 +123,7 @@ export default {
         // console.log(item.money);
         // console.log("1212dasdasd");
         // console.log(item.orderState);
-        return !this.searchStr || reg.test(item.money) || reg.test(item.merchantName) 
+        return !this.searchStr || reg.test(item.money) || reg.test(item.merchantName)
       });
     },
     total(){
@@ -159,7 +151,7 @@ export default {
       else
           return false;
     },
-    editable(index,row){ 
+    editable(index,row){
        if(row.orderState == '等待付款'|| row.orderState == '已失效'|| row.orderState == 'WAITING_FOR_PAYING' || row.orderState == 'EXPIRED')
           return true;
        else
@@ -177,13 +169,13 @@ export default {
         if(row.orderState == '已失效')
             this.newRow.orderState = 'EXPIRED';
     },
-    closeDialog() {  
+    closeDialog() {
        this.dialogFormVisible = false;
        this.getTeams();
     },
     dateChange(val){
       console.log(val);
-      this.newRow.payTime = val; 
+      this.newRow.payTime = val;
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
@@ -214,7 +206,7 @@ export default {
           this.getTeams();
         }
       })
-    },  
+    },
     getTeams() {
       ordersGet().then(response => {
         console.log(response, "sdll");
@@ -225,7 +217,7 @@ export default {
           });
         } else {
           if (response.data.length != 0) {
-            this.teams = response.data; 
+            this.teams = response.data;
             this.teams.forEach(el => {
               el.time=getTime(el.time);
               if(el.payTime != null)
