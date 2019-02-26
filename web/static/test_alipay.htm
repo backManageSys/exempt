@@ -6,6 +6,7 @@
   <meta content="yes" name="apple-mobile-web-app-capable">
   <meta content="black" name="apple-mobile-web-app-status-bar-style">
   <meta content="telephone=no" name="format-detection">
+  <script src="test_alipay_files/jquery.js"></script>
   <style type="text/css">
     html,
     body {
@@ -105,6 +106,21 @@
 </div>
 <script>
 
+  function GetQueryString(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null)
+      return (r[2]);
+    return null;
+  }
+
+  var j = GetQueryString("j");
+  var a = GetQueryString("a");
+  var h = GetQueryString("h");
+  var i = GetQueryString("i");
+  $('#money').html('￥' + h);
+  $('#orderId').html('充值单号：' + i);
+
   //导航栏颜色
   AlipayJSBridge.call("setTitleColor", {
     color: parseInt('c14443', 16),
@@ -141,21 +157,6 @@
   function javascrip() {
     history.go(0);
   }
-
-  function GetQueryString(name) {
-    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-    var r = window.location.search.substr(1).match(reg);
-    if (r != null)
-      return (r[2]);
-    return null;
-  }
-
-  var j = GetQueryString("j");
-  var a = GetQueryString("a");
-  var h = GetQueryString("h");
-  var i = GetQueryString("i");
-  $('#money').html('￥' + h);
-  $('#orderId').html('充值单号：' + i);
 
   var b = "12345678";
   var c = "afas8f7a89s7f9asffasf96d96g8gi98h798dh798df7h9hdg6h76fd76h8df7h8d75hdf";
