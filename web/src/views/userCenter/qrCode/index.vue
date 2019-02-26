@@ -176,9 +176,9 @@
             var ispc = this.IsPC();
             if (ispc) {
               //window.open("static/test.htm?img_src="+this.img_src);
-              window.location = "static/test.htm?img_src=" + this.img_src;
+              window.open = "static/test.htm?img_src=" + this.img_src;
             } else {
-              window.location = "static/test_phone.htm?img_src=" + this.img_src;
+              window.open = "static/test_phone.htm?img_src=" + this.img_src;
             }
 
             // console.log(this.img_src)
