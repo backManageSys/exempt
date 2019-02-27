@@ -23,6 +23,7 @@ import njurestaurant.njutakeout.response.JSONResponse;
 import njurestaurant.njutakeout.response.Response;
 import njurestaurant.njutakeout.response.SuccessResponse;
 import njurestaurant.njutakeout.response.WrongResponse;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -116,6 +117,8 @@ public class ChangeController {
     @ResponseBody
     public ResponseEntity<Response> UpdateCardChangeOrder(@PathVariable("id") int id , @RequestParam("uid") int uid) {
         CardChangeOrder cardChangeOrder = cardChangeOrderDao.findById(id);
+        if (cardChangeOrder.getState()!=WithdrewState.WAITING)
+            return new ResponseEntity<>(new JSONResponse(200, "不能修改当前状态的订单"), HttpStatus.OK);
         cardChangeOrder.setMoney_in(cardChangeOrder.getMoney_out());
         cardChangeOrder.setState(WithdrewState.SUCCESS);
         cardChangeOrder.setFinalOperateTime(new Date());
@@ -137,6 +140,10 @@ public class ChangeController {
     @ResponseBody
     public ResponseEntity<Response> RevokeCardChangeOrder(@PathVariable("id") int id,@RequestBody String reason) {
         CardChangeOrder cardChangeOrder = cardChangeOrderDao.findById(id);
+        if (cardChangeOrder.getState()!=WithdrewState.SUCCESS)
+            return new ResponseEntity<>(new JSONResponse(200, "不能撤销当前状态的订单"), HttpStatus.OK);
+        if (StringUtils.isBlank(reason))
+            return new ResponseEntity<>(new JSONResponse(200, "撤销原因不能为空"), HttpStatus.OK);
         double money = cardChangeOrder.getMoney_out();
         cardChangeOrder.setState(WithdrewState.FAILED);
         cardChangeOrder.setReason(reason);

@@ -1,24 +1,18 @@
 package njurestaurant.njutakeout.parameters.order;
 
+import njurestaurant.njutakeout.publicdatas.order.WithdrewState;
+
 public class WithdrewDealParameters {
     private int operatorId;
     private String memo;
-    private String state;
+    private WithdrewState state;
     private String companyCardId;
 
-    public WithdrewDealParameters(int operatorId, String memo, String state, String companyCardId) {
+    public WithdrewDealParameters(int operatorId, String memo, WithdrewState state, String companyCardId) {
         this.operatorId = operatorId;
         this.memo = memo;
         this.state = state;
         this.companyCardId = companyCardId;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
     }
 
     public int getOperatorId() {
@@ -35,6 +29,14 @@ public class WithdrewDealParameters {
 
     public void setMemo(String memo) {
         this.memo = memo;
+    }
+
+    public WithdrewState getState() {
+        return state;
+    }
+
+    public void setState(WithdrewState state) {
+        this.state = state;
     }
 
     public String getCompanyCardId() {

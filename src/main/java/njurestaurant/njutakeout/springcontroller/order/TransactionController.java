@@ -30,6 +30,7 @@ import njurestaurant.njutakeout.response.SuccessResponse;
 import njurestaurant.njutakeout.response.WrongResponse;
 import njurestaurant.njutakeout.response.transaction.FailedToLoadCodeResponse;
 import njurestaurant.njutakeout.response.transaction.GetQrCodeResponse;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -182,6 +183,8 @@ public class TransactionController {
     @ResponseBody
     public ResponseEntity<Response> dealWithdrewOrder(@PathVariable("id") int id, @RequestBody WithdrewDealParameters withdrewDealParameters) {
         try {
+            if (StringUtils.isBlank(withdrewDealParameters.getMemo())&&withdrewDealParameters.getState()==WithdrewState.FAILED)
+                return new ResponseEntity<>(new JSONResponse(200, new SuccessResponse("备注不能为空")), HttpStatus.OK);
             transactionBlService.dealWithdrewOrder(id, withdrewDealParameters);
             return new ResponseEntity<>(new JSONResponse(200, new SuccessResponse("处理成功。")), HttpStatus.OK);
         } catch (WrongIdException e) {
@@ -200,6 +203,8 @@ public class TransactionController {
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     @ResponseBody
     public ResponseEntity<Response> revokeWithdrewOrder(@PathVariable("id") int id, @RequestBody String reason) {
+        if (StringUtils.isBlank(reason))
+            return new ResponseEntity<>(new JSONResponse(200, "撤销原因不能为空"), HttpStatus.OK);
         WithdrewOrder withdrewOrder = withdrewOrderDataService.findWithdrewOrderById(id);
         CompanyCard companyCard = companyCardDataService.findCompanyCardByCardNumber(withdrewOrder.getCard_out());
         companyCard.setBalance(companyCard.getBalance() + withdrewOrder.getMoney_in());
