@@ -55,61 +55,39 @@
       <div class="text item">{{ '状 &#x3000;态: ' + info.status }}</div>
       <div class="text item">{{ '角 &#x3000;色: ' + userInfo.role_ch }}</div>
       <div class="text item">{{ '等&#x3000;级: ' + info.priority }}</div>
-      <div class="text item">{{ '支付宝点位: '}}
+      <div class="text item">{{ '查看点位: '}}
         <el-button size="small" @click="alipayRate()">查看</el-button>
       </div>
-      <div class="text item">{{ '微信点位: ' + info.wechat + '%' }}</div>
-      <el-form>
-        <el-form-item>{{ '余额:' + info.balance }}</el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="openDialog">提现</el-button>
-        </el-form-item>
-      </el-form>
     </el-card>
-    <el-dialog title="支付宝点位信息" :visible.sync="alipayRateDialogFormVisible">
-            <el-form  :model="info"  label-width="30%">
-                <el-form-item label="转账通码点位:">
-                    <div>{{'&#12288;'+info.alipay_TPASS+"%"}}</div>
-                </el-form-item>
-                <el-form-item label="转账固码点位:">
-                    <div>{{'&#12288;'+info.alipay_TSOLID+"%"}}</div>
-                </el-form-item>
-                <el-form-item label="收款通码离线码点位:">
-                    <div>{{'&#12288;'+info.alipay_RPASSOFF+"%"}}</div>
-                </el-form-item>
-                <el-form-item label="收款通码在线码点位:">
-                    <div>{{'&#12288;'+info.alipay_RPASSQR+"%"}}</div>
-                </el-form-item>
-                <el-form-item label="收款固码(二开)点位:">
-                    <div>{{'&#12288;'+info.alipay_RSOLID+"%"}}</div>
-                </el-form-item>
-                 <el-form-item label="红包点位:">
-                 <div>{{'&#12288;'+info.alipay_RedEnvelope+"%"}}</div>
-                 </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="alipayRateDialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="alipayRateDialogFormVisible = false">确 定</el-button>
-            </div>
-        </el-dialog>
-    <!-- <el-table :data="list" style="width: 100%;padding-top: 15px;">
-      <el-table-column label="卡号" min-width="200" prop="cardNumber"></el-table-column>
-      <el-table-column label="姓名" min-width="200" prop="name"></el-table-column>
-      <el-table-column label="银行" min-width="200" prop="bank"></el-table-column>
-      <el-table-column label="开户行" min-width="200" prop="accountWithBank"></el-table-column>
-      <el-table-column label="银行编号" min-width="200" prop="bin"></el-table-column>
-    <el-table-column label="状态" min-width="200" prop="status"></el-table-column>-->
-    <!-- </el-table-column>
-            <template slot-scope="scope">
-                ¥{{ scope.row.price | toThousandFilter }}
-            </template>
-            </el-table-column>
-            <el-table-column label="Status" width="100" align="center">
-            <template slot-scope="scope">
-                <el-tag :type="scope.row.status | statusFilter"> {{ scope.row.status }}</el-tag>
-            </template>
-    </el-table-column>-->
-    <!-- </el-table> -->
+    <el-dialog title="点位信息" :visible.sync="alipayRateDialogFormVisible">
+      <el-select v-model="value" placeholder="请选择" @change="firstChange" @visible-change="getSelect" style="width: 20%">
+        <el-option
+          v-for="item in options1"
+          :key="item.id"
+          :label="item.codeCategory"
+          :value="item.codeCategory">
+        </el-option>
+      </el-select>
+      <el-select v-model="value1" placeholder="请选择" :disabled="secondState" @change="secondChange"
+                 @visible-change="getPayType" style="width: 30%">
+        <el-option
+          v-for="item in options2"
+          :key="item.id"
+          :label="item.codeType"
+          :value="item.id">
+        </el-option>
+      </el-select>
+      <el-input v-model="point" style="width: 15%;" type="number" placeholder="请输入点位" :disabled="thirdState"></el-input>
+      %
+      <el-select v-model="status" placeholder="启用" style="width: 14%" :disabled="selectState">
+        <el-option label="启用" value="启用"></el-option>
+        <el-option label="停用" value="停用"></el-option>
+      </el-select>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="alipayRateDialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="alipayRateDialogFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
     <el-dialog title="申请提现" :visible.sync="dialogFormVisible">
       <el-form :model="newRow">
         <el-form-item label="申请金额">
@@ -135,123 +113,189 @@
 </template>
 
 <script>
-import { getInfo } from "@/api/login";
-import store from "../../store";
-import { withdrew } from "@/api/transaction";
-import { getTime } from "@/utils/index";
-// getInfo(uid)
-export default {
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        success: "success",
-        pending: "danger"
-      };
-      return statusMap[status];
-    },
-    orderNoFilter(str) {
-      return str.substring(0, 30);
-    }
-  },
-  data() {
-    return {
-      list: null,
-      info: {},
-      userInfo: {},
-      newRowIndex: 1,
-      dialogFormVisible: false,
-      alipayRateDialogFormVisible:false,
-      newRow: {
-        cardId: "",
-        id: 0,
-        money: 0,
-        type: "string"
+  import {getInfo} from "@/api/login";
+  import store from "../../store";
+  import {withdrew} from "@/api/transaction";
+  import {getTime} from "@/utils/index";
+  import {getSelect, getPayType, getPayRateList} from '@/api/role'
+  // getInfo(uid)
+  export default {
+    filters: {
+      statusFilter(status) {
+        const statusMap = {
+          success: "success",
+          pending: "danger"
+        };
+        return statusMap[status];
+      },
+      orderNoFilter(str) {
+        return str.substring(0, 30);
       }
-    };
-  },
-  created() {
-    this.fetchData();
-  },
-  methods: {
-    openDialog() {
-      this.dialogFormVisible = true;
-      this.newRow.type = this.userInfo.role == 2 ? "agent" : "merchant";
-      this.newRow.id = store.getters.uid;
-      // console.log("opendialog");
-      //this.newRow = JSON.parse(JSON.stringify(row));
     },
-    alipayRate(){
-      this.alipayRateDialogFormVisible = true;
-    },
-    fetchData() {
-      getInfo(store.getters.uid).then(response => {
-        //   getInfo(33).then(response => {
-        if (response.data.info.userInfo) {
-          this.userInfo = response.data.info.userInfo;
-        } else {
-          this.userInfo = response.data.info.user;
+    data() {
+      return {
+        point: "",
+        options1: [],
+        options2: [],
+        value: '',
+        value1: '',
+        value2: '',
+        secondState: true,
+        thirdState: true,
+        selectState: true,
+        status: '',
+        list: null,
+        info: {},
+        userInfo: {},
+        newRowIndex: 1,
+        dialogFormVisible: false,
+        alipayRateDialogFormVisible: false,
+        newRow: {
+          cardId: "",
+          id: 0,
+          money: 0,
+          type: "string"
         }
-        this.list = this.userInfo.cards;
-        this.userInfo.role_ch = this.userInfo.role == 1 ? "管理员" : this.userInfo.role == 2 ? "代理" : this.userInfo.role == 3 ? "商户" : "供码用户";
-        this.info = response.data.info;
-       // this.info.status = this.info.status == "已通过" || this.info.status == "WORKING" ? "未审批" : "已通过";
-        // console.log(this.userInfo, "klkll");
-      });
+      };
     },
-    gettime(date) {
-      return getTime(date);
+    created() {
+      this.fetchData();
     },
-    getMoney() {
-      // console.log("get money", this.newRow);
-      withdrew(
-        this.newRow.cardId,
-        this.newRow.id,
-        // 33,
-        this.newRow.money,
-        this.newRow.type
-      ).then(res => {
-        if (res.code != 200) {
-          this.$message({
-            message: res.data.description,
-            type: "warning"
-          });
-        } else {
-          this.$message({
-            message: "提交提现申请成功",
-            type: "success"
-          });
-        }
-      });
-      this.dialogFormVisible = false;
+    methods: {
+      getPayType() {
+        getPayType(this.value).then(response => {
+          if (response.code !== 200) {
+            this.$message({
+              message: response.data.description,
+              type: "warning"
+            });
+          } else {
+            this.options2 = response.data;
+          }
+        });
+      },
+      getSelect() {
+        getSelect().then(response => {
+          if (response.code !== 200) {
+            this.$message({
+              message: response.data.description,
+              type: "warning"
+            });
+          } else {
+            this.options1 = response.data;
+          }
+        });
+      },
+      firstChange() {
+        console.log(111);
+        this.secondState = false;
+        this.options2 = [];
+        this.point = "";
+        this.status = "";
+        this.value1 = "";
+      },
+      secondChange() {
+        getPayRateList(store.getters.uid, this.value1).then(response => {
+          if (response.code !== 200) {
+            this.$message({
+              message: response.data.description,
+              type: "warning"
+            });
+          } else {
+            console.log(2222, response.data);
+            if (response.data === undefined) {
+              this.point = 0;
+            } else {
+              this.point = response.data.rate;
+            }
+            if (response.data === undefined) {
+              this.status = "停用";
+            } else {
+              this.status = response.data.status;
+            }
+          }
+        });
+      },
+      openDialog() {
+        this.dialogFormVisible = true;
+        this.newRow.type = this.userInfo.role == 2 ? "agent" : "merchant";
+        this.newRow.id = store.getters.uid;
+        // console.log("opendialog");
+        //this.newRow = JSON.parse(JSON.stringify(row));
+      },
+      alipayRate() {
+        this.alipayRateDialogFormVisible = true;
+      },
+      fetchData() {
+        getInfo(store.getters.uid).then(response => {
+          //   getInfo(33).then(response => {
+          if (response.data.info.userInfo) {
+            this.userInfo = response.data.info.userInfo;
+          } else {
+            this.userInfo = response.data.info.user;
+          }
+          this.list = this.userInfo.cards;
+          this.userInfo.role_ch = this.userInfo.role == 1 ? "管理员" : this.userInfo.role == 2 ? "代理" : this.userInfo.role == 3 ? "商户" : "供码用户";
+          this.info = response.data.info;
+          // this.info.status = this.info.status == "已通过" || this.info.status == "WORKING" ? "未审批" : "已通过";
+          // console.log(this.userInfo, "klkll");
+        });
+      },
+      gettime(date) {
+        return getTime(date);
+      },
+      getMoney() {
+        // console.log("get money", this.newRow);
+        withdrew(
+          this.newRow.cardId,
+          this.newRow.id,
+          // 33,
+          this.newRow.money,
+          this.newRow.type
+        ).then(res => {
+          if (res.code != 200) {
+            this.$message({
+              message: res.data.description,
+              type: "warning"
+            });
+          } else {
+            this.$message({
+              message: "提交提现申请成功",
+              type: "success"
+            });
+          }
+        });
+        this.dialogFormVisible = false;
+      }
     }
-  }
-};
+  };
 </script>
 <style>
-.text {
-  font-size: 14px;
-}
+  .text {
+    font-size: 14px;
+  }
 
-.item {
-  margin-bottom: 18px;
-  color: black;
-  /* border: 1px solid black; */
-  width: 310px;
-  display: inline-block;
-}
+  .item {
+    margin-bottom: 18px;
+    color: black;
+    /* border: 1px solid black; */
+    width: 310px;
+    display: inline-block;
+  }
 
-.clearfix:before,
-.clearfix:after {
-  display: table;
-  content: "";
-}
-.clearfix:after {
-  clear: both;
-}
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
 
-.box-card {
-  width: 680px;
-  height: 350px;
-  margin: 80px auto;
-}
+  .clearfix:after {
+    clear: both;
+  }
+
+  .box-card {
+    width: 680px;
+    height: 350px;
+    margin: 80px auto;
+  }
 </style>

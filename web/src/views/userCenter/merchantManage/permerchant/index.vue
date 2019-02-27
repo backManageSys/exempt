@@ -21,13 +21,13 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" align="center" >
             <template scope="scope" >
-                <el-button size="small" 
+                <el-button size="small"
                         @click="openDialog(scope.$index,scope.row)">查看或修改</el-button>
             </template>
-                
+
         </el-table-column>
         <!-- <el-table-column prop="approvalTime" label="审批时间"  align="center"></el-table-column> -->
-        
+
 
     </el-table>
     <div class="block">
@@ -50,8 +50,8 @@
                 <el-form-item label="密码" prop="password">
                     <el-input v-model="newRow.user.password" type="password" placeholder="密码" style="width:90%;"></el-input>
                 </el-form-item>
-                <el-form-item label="支付宝点位">
-                    <el-button type="primary" @click="alipayRateDialogFormVisible = true">查看支付宝点位</el-button>  
+                <el-form-item label="点位">
+                    <el-button type="primary" @click="alipayRateDialogFormVisible = true">查看点位</el-button>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -59,45 +59,44 @@
                 <el-button type="primary" @click="updateSupplier('form')">确 定</el-button>
             </div>
     </el-dialog>
-    <el-dialog title="支付宝点位信息" :visible.sync="alipayRateDialogFormVisible">
-            <el-form  :model="newRow"  label-width="30%">
-                <el-form-item label="转账通码点位:">
-                    <div>{{'&#12288;'+newRow.alipay_TPASS+"%"}}</div>
-                </el-form-item>
-                <el-form-item label="转账固码点位:">
-                    <div>{{'&#12288;'+newRow.alipay_TSOLID+"%"}}</div>
-                </el-form-item>
-                <el-form-item label="收款通码离线码点位:">
-                    <div>{{'&#12288;'+newRow.alipay_RPASSOFF+"%"}}</div>
-                </el-form-item>
-                <el-form-item label="收款通码在线码点位:">
-                    <div>{{'&#12288;'+newRow.alipay_RPASSQR+"%"}}</div>
-                </el-form-item>
-                <el-form-item label="收款固码(二开)点位:">
-                    <div>{{'&#12288;'+newRow.alipay_RSOLID+"%"}}</div>
-                </el-form-item>
-                <el-form-item label="红包点位:">
-                                    <div>{{'&#12288;'+newRow.alipay_RedEnvelope+"%"}}</div>
-                                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="alipayRateDialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="alipayRateDialogFormVisible = false">确 定</el-button>
-            </div>
+    <el-dialog title="点位信息" :visible.sync="alipayRateDialogFormVisible">
+      <el-select v-model="value" placeholder="请选择" @change="firstChange" @visible-change="getSelect" style="width: 20%">
+        <el-option
+          v-for="item in options1"
+          :key="item.id"
+          :label="item.codeCategory"
+          :value="item.codeCategory">
+        </el-option>
+      </el-select>
+      <el-select v-model="value1" placeholder="请选择" :disabled="secondState" @change="secondChange"
+                 @visible-change="getPayType" style="width: 30%">
+        <el-option
+          v-for="item in options2"
+          :key="item.id"
+          :label="item.codeType"
+          :value="item.id">
+        </el-option>
+      </el-select>
+      <el-input v-model="point" style="width: 15%;" type="number" placeholder="请输入点位" :disabled="thirdState"></el-input>
+      %
+      <el-select v-model="status" placeholder="启用" style="width: 14%" :disabled="selectState">
+        <el-option label="启用" value="启用"></el-option>
+        <el-option label="停用" value="停用"></el-option>
+      </el-select>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="alipayRateDialogFormVisible = false">关 闭</el-button>
+      </div>
         </el-dialog>
   </div>
 </template>
 <script>
-import { merchantsGet,updateMerchant } from '@/api/role'
-import { isvalidUsername,isvalidPassword } from '@/utils/validate'  
+import { merchantsGet,updateMerchant,getSelect, getPayType, getPayRateList, } from '@/api/role'
+import { isvalidUsername,isvalidPassword } from '@/utils/validate'
 import store from '../../../../store'
 import {getTime} from '@/utils/index'
     export default {
         data() {
             const validateUsername = (rule, value, callback) => {
-            console.log(rule)
-            console.log(value)
-            console.log(callback)
             if (!isvalidUsername(value)) {
                 callback(new Error('请输入正确的用户名（只能由英文字母组成）'))
             } else {
@@ -112,9 +111,19 @@ import {getTime} from '@/utils/index'
             }
             }
             return {
+              point: "",
+              options1: [],
+              options2: [],
+              value: '',
+              value1: '',
+              value2: '',
+              secondState: true,
+              thirdState: true,
+              selectState: true,
+              status: '',
                 teams:[{
                     // "addTime": "2019-01-17T16:37:02.184Z",	//申请时间
-                    // "alipay": 0,	
+                    // "alipay": 0,
                     // "applyId": 0,	//申请人id
                     // "approvalTime": "2019-01-17T16:37:02.184Z",	//审批时间
                     // "approverId": 0,	//审批人id
@@ -204,6 +213,51 @@ import {getTime} from '@/utils/index'
             this.getData();
         },
         methods: {
+          getPayType() {
+            getPayType(this.value).then(response => {
+              if (response.code !== 200) {
+                this.$message({
+                  message: response.data.description,
+                  type: "warning"
+                });
+              } else {
+                this.options2 = response.data;
+              }
+            });
+          },
+          getSelect() {
+            getSelect().then(response => {
+              if (response.code !== 200) {
+                this.$message({
+                  message: response.data.description,
+                  type: "warning"
+                });
+              } else {
+                this.options1 = response.data;
+              }
+            });
+          },
+          firstChange() {
+            this.secondState = false;
+          },
+          secondChange() {
+            getPayRateList(this.newRow.user.id, this.value1).then(response => {
+              if (response.code !== 200) {
+                this.$message({
+                  message: response.data.description,
+                  type: "warning"
+                });
+              } else {
+                if( response.data === undefined){
+                  this.point = "";
+                  this.status = "停用";
+                }else{
+                  this.point = response.data.rate;
+                  this.status = response.data.status;
+                }
+              }
+            });
+          },
              updateSupplier(formName) {
                 this.$refs[formName].validate((valid) => {
                  if (valid) {
@@ -251,7 +305,7 @@ import {getTime} from '@/utils/index'
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
                 this.pagesize=val;
-              
+
             },
             handleCurrentChange(val) {
                 console.log(`当前页: ${val}`);
@@ -259,7 +313,7 @@ import {getTime} from '@/utils/index'
             },
             getData(){
                 this.getTeams();
-                
+
             },
             getTeams(){
                 merchantsGet().then(response=>{

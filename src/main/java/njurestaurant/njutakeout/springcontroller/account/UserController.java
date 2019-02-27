@@ -487,7 +487,7 @@ public class UserController {
         return new ResponseEntity<>(new JSONResponse(200, supplierBlService.findAllSuppliers()), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "全部商户", notes = "管理员查看平台全部商户")
+    @ApiOperation(value = "全部商户", notes = "管理员查看渠道全部商户")
     @RequestMapping(value = "/merchants", method = RequestMethod.GET)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Merchant.class),

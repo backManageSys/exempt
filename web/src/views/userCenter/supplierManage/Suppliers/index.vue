@@ -48,13 +48,31 @@
                     <el-input v-model="newRow.user.password" type="password" placeholder="密码" style="width:90%;"></el-input>
                 </el-form-item>
                 <el-form-item label="码类型">
-                    <el-select v-model="newRow.codeType" placeholder="码类型" style="width:40%;">
+
+                  <el-select v-model="value1" placeholder="请选择" @change = "firstChange">
+                                                               <el-option
+                                                                 v-for="item in options1"
+                                                                 :key="item.value"
+                                                                 :label="item.label"
+                                                                 :value="item.value">
+                                                               </el-option>
+                                                             </el-select>
+                                                             <el-select v-model="value2" placeholder="请选择" :disabled="secondState">
+                                                                                          <el-option
+                                                                                            v-for="item in options2"
+                                                                                            :key="item.value"
+                                                                                            :label="item.label"
+                                                                                            :value="item.value">
+                                                                                          </el-option>
+                                                                                        </el-select>
+
+                     <!-- <el-select v-model="newRow.codeType" placeholder="码类型" style="width:40%;">
                     <el-option label="转账通码" value="TPASS"></el-option>
                     <el-option label="转账固码" value="TSOLID"></el-option>
                     <el-option label="收款通码离线码" value="RPASSOFF"></el-option>
                     <el-option label="收款通码在线码" value="RPASSQR"></el-option>
                     <el-option label="收款固码(二开)" value="RSOLID"></el-option>
-                     <el-option label="红包" value="RedEnvelope"></el-option>
+                     <el-option label="红包" value="RedEnvelope"></el-option>      -->
                     </el-select>
                 </el-form-item>
                  <el-form-item label="状态">
@@ -107,6 +125,23 @@ import {getTime} from '@/utils/index'
             }
         }
       return {
+      options1: [{
+                                                  value: '微信',
+                                                  label: '微信'
+                                                }, {
+                                                  value: '支付宝',
+                                                  label: '支付宝'
+                                                }],
+                                                  options2: [{
+                                                              value: 'vx',
+                                                              label: '微信1'
+                                                            }, {
+                                                              value: 'zfb',
+                                                              label: '支付宝1'
+                                                            }],
+                                                            value1: '',
+                                                                                                       value2: '',
+                                                                                                       secondState:true,
         teams: [
           {
             priority: 0,
@@ -179,6 +214,10 @@ import {getTime} from '@/utils/index'
       this.getData();
     },
     methods: {
+      firstChange(){
+                      console.log(111);
+                      this.secondState = false;
+                      },
       updateSupplier(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {

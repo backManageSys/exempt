@@ -17,7 +17,9 @@
             border
             style="width: 100%">
             <el-table-column prop="number" label="编号"  align="center"></el-table-column>
-            <el-table-column prop="supplierName" label="供码用户名"  align="center"></el-table-column>  
+            <el-table-column prop="supplierName" label="供码用户名"  align="center"></el-table-column>
+            <el-table-column prop="realReceipt" label="收款金额"  align="center"></el-table-column>
+            <el-table-column prop="withdrew" label="已提现金额"  align="center"></el-table-column>
             <el-table-column prop="realReceipt" label="转账金额"  align="center"></el-table-column>
             <el-table-column prop="withdrew" label="提现金额"  align="center"></el-table-column>
             <el-table-column prop="date" label="日期"  align="center"></el-table-column>
@@ -61,8 +63,8 @@ export default {
                 currentPage:1,
                 pagesize:10,
                 searchStr:'',
-                startDate:"",
-                endDate:""
+                startDate:getTimeFormat(new Date()),
+                endDate:getTimeFormat(new Date())
           }
       },
         computed: {
@@ -117,7 +119,7 @@ export default {
               this.getTeams();
           },
           getTeams(){
-            supplierReport("2000-01-01",getTimeFormat(new Date())).then(response=>{
+            supplierReport(getTimeFormat(new Date()),getTimeFormat(new Date())).then(response=>{
                 console.log(response,'sdll')
                   if(response.code!=200){
                     this.$message({
@@ -128,7 +130,7 @@ export default {
                   if(response.data.length!=0)
                     this.teams = response.data;
                     // this.teams.forEach(el => {
-                    //     el.orderState = (el.orderState=='WAITING_FOR_PAYING')?'等待支付':'PAID'?'已支付':'失效';  
+                    //     el.orderState = (el.orderState=='WAITING_FOR_PAYING')?'等待支付':'PAID'?'已支付':'失效';
                     // });
                     var a=[];
                     if(store.getters.role == 4){

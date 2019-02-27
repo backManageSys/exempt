@@ -47,7 +47,7 @@ export default new Router({
 
 
 export const asyncRouterMap = [
-  
+
   {
     path: '/company',
     redirect: '/company/announcement',
@@ -175,7 +175,7 @@ export const asyncRouterMap = [
             component: () => import('@/views/companyManage/bankCard/cards/index'),
             meta: { title: '公司所有银行卡', role: ['公司所有银行卡'] },
           },
-         
+
           {
             path: 'personalCards',
             name: 'personalCards',
@@ -196,7 +196,41 @@ export const asyncRouterMap = [
         name: 'settings',
         component: () => import('@/views/companyManage/settings/index'),
         meta: { title: '系统设置',role:['系统设置'] }
-      }
+      },
+      {
+        path: 'operations',
+        name: 'operations',
+        component: () => import('@/views/companyManage/operations/index'),
+        meta: { title: '运营管理',role:['运营管理'] },
+       children: [
+         {
+           path: 'addStair',
+           name: 'addStair',
+           component: () => import('@/views/companyManage/operations/addStair/index'),
+           meta: { title: '添加通道',role:['添加通道'] }
+         },
+         // {
+         //   path: 'addSecond',
+         //   name: 'addSecond',
+         //   component: () => import('@/views/companyManage/operations/addSecond/index'),
+         //   meta: { title: '添加二级通道',role:['添加二级通道'] }
+         // },
+          {
+            path: 'editOperations',
+            name: 'editOperations',
+            component: () => import('@/views/companyManage/operations/editOperations/index'),
+            meta: { title: '修改通道',role:['修改通道'] }
+          },
+         {
+           path: 'terminationOperations',
+           name: 'terminationOperations',
+           component: () => import('@/views/companyManage/operations/terminationOperations/index'),
+           meta: { title: '停用通道',role:['停用通道'] }
+         }
+        ]
+      },
+
+
     ]
   },
 
@@ -222,7 +256,7 @@ export const asyncRouterMap = [
         name: 'agency',
         meta: { title: '代理管理',role:['代理管理'] },
         children: [
-          
+
           {
             path: 'addAgency',
             name: 'addAgency',
@@ -251,13 +285,13 @@ export const asyncRouterMap = [
         children: [
           {
             path: 'addsupplier',
-            name: 'addsupplier',  
+            name: 'addsupplier',
             component: () => import('@/views/userCenter/supplierManage/addSupplier/index'),
             meta: { title: '添加供码用户',role:['添加供码用户'] }
           },
           // {
           //   path: 'waitApprovalSup',
-          //   name: 'waitApprovalSup',  
+          //   name: 'waitApprovalSup',
           //   component: () => import('@/views/userCenter/supplierManage/waitApprovalSup/index'),
           //   meta: { title: '审批供码用户',role:['审批供码用户'] }
           // },
@@ -278,7 +312,7 @@ export const asyncRouterMap = [
             name: 'persupplier',
             component: () => import('@/views/userCenter/supplierManage/Suppliers/perSupplier'),
             meta: { title: '我是供码用户', role: ['我是供码用户'] }
-          }    
+          }
         ]
       },
       {
@@ -289,13 +323,13 @@ export const asyncRouterMap = [
         children: [
           {
             path: 'addmerchant',
-            name: 'addmerchant',  
+            name: 'addmerchant',
             component: () => import('@/views/userCenter/merchantManage/addMerchant/index'),
             meta: { title: '添加商户',role:['添加商户'] }
           },
           {
             path: 'waitApprovalMer',
-            name: 'waitApprovalMer',  
+            name: 'waitApprovalMer',
             component: () => import('@/views/userCenter/merchantManage/waitApprovalMer/index'),
             meta: { title: '审批商户',role:['审批商户'] }
           },
@@ -316,7 +350,7 @@ export const asyncRouterMap = [
             name: 'permerchant',
             component: () => import('@/views/userCenter/merchantManage/permerchant/index'),
             meta: { title: '我是商户',role:['我是商户'] }
-          } 
+          }
         ]
       },
       {
@@ -343,7 +377,7 @@ export const asyncRouterMap = [
             name: 'cardskiting',
             component: () => import('@/views/userCenter/bankCardSetting/cardskiting/index'),
             meta: { title: '提现历史',role:['提现历史'] },
-           }    
+           }
         ]
       },
       {
@@ -381,14 +415,14 @@ export const asyncRouterMap = [
         path: 'mylist',
         name: 'mylist',
         component: () => import('@/views/financeManage/agencyWithdrew/mylist'),
-        meta: { title: '处理单子', role: ['处理单子'] },
+        meta: { title: '处理订单', role: ['处理订单'] },
       },
       {
         path: 'cardskiting',
         name: 'cardskiting',
         component: () => import('@/views/userCenter/bankCardSetting/cardskiting/index'),
         meta: { title: '提现历史',role:['提现历史'] },
-      },    
+      },
       {
         path: 'c2p',
         name: 'c2p',

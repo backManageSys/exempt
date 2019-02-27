@@ -19,8 +19,10 @@
       <el-table-column prop="number" label="编号" align="center"></el-table-column>
       <el-table-column prop="supplierName" label="供码用户名" align="center"></el-table-column>
       <el-table-column prop="alipayLoginId" label="支付宝账号" align="center"></el-table-column>
-      <el-table-column prop="payMoney" label="实收帐款" align="center"></el-table-column>
-      <el-table-column prop="withdrew" label="提现金额" align="center"></el-table-column>
+      <el-table-column prop="payMoney" label="收款金额" align="center"></el-table-column>
+      <el-table-column prop="withdrew" label="已提现金额" align="center"></el-table-column>
+      <el-table-column prop="withdrewing" label="正在提现金额" align="center"></el-table-column>
+      <el-table-column prop="fee" label="提现手续费" align="center"></el-table-column>
       <el-table-column prop="date" label="查询时间" align="center"></el-table-column>
     </el-table>
     <div class="block">
@@ -65,8 +67,8 @@ export default {
       currentPage: 1,
       pagesize: 10,
       searchStr: "",
-      startDate:"",
-      endDate:""
+      startDate:getTimeFormat(new Date()),
+      endDate:getTimeFormat(new Date())
     };
   },
   computed: {
@@ -121,7 +123,7 @@ export default {
       this.getTeams();
     },
     getTeams() {
-      receiveCodeReport("2000-01-01",getTimeFormat(new Date())).then(response => {
+      receiveCodeReport(getTimeFormat(new Date()),getTimeFormat(new Date())).then(response => {
         console.log(response, "sdll");
         if (response.code != 200) {
           this.$message({
@@ -129,7 +131,7 @@ export default {
             type: "warning"
           });
         } else {
-          if (response.data.length != 0) 
+          if (response.data.length != 0)
           this.teams = response.data;
           console.log("4141ads");
           console.log(store.getters.name);

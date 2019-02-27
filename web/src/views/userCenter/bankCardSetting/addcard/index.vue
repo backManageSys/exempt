@@ -5,7 +5,7 @@
               <el-input v-model="form.number" type="number"></el-input>
             </el-form-item>
             <el-form-item label="银行卡号">
-              <el-input v-model="form.accountOfBank" type="number"></el-input>
+              <el-input v-model="form.accountOfBank" type="number" onkeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"></el-input>
             </el-form-item>
             <el-form-item label="归属银行">
               <el-input v-model="form.bank" ></el-input>
@@ -50,7 +50,7 @@
               status:'',
               uid: 0
           },
-          
+
         }
 
         },
@@ -94,9 +94,16 @@
         },
       }
     }
-    
+
 </script>
 
-<style scoped>
+<style>
+  .el-input>input::-webkit-outer-spin-button,
+  .el-input>input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
 
+  .el-input>input[type="number"] {
+    -moz-appearance: textfield;
+  }
 </style>

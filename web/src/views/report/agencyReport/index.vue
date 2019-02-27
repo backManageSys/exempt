@@ -11,6 +11,15 @@
     <el-date-picker v-model="startDate" type="date"  @change="startDateChange"   placeholder="起始日期" style="margin:20px 20px 20px 20px;"></el-date-picker>
      <el-date-picker v-model="endDate" type="date"  @change="endDateChange"   placeholder="截止日期" style="margin:20px 20px 20px 20px;"></el-date-picker>
      <el-button type="primary" @click="dateSearch">查询</el-button>
+    <el-select v-model="platform" placeholder="请选择" style="width: 12.5%" @change="selectChang"
+               @visible-change="getSelect">
+      <el-option
+        v-for="item in options1"
+        :key="item.id"
+        :label="item.codeCategory"
+        :value="item.codeCategory">
+      </el-option>
+    </el-select>
      <el-table
             :data="filterData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
             height="600"
@@ -19,14 +28,18 @@
             <el-table-column prop="number" label="编号"  align="center"></el-table-column>
             <!-- <el-table-column prop="username" label="用户名"  align="center"></el-table-column> -->
             <el-table-column prop="agentName" label="代理名"  align="center"></el-table-column>
-            <!-- <el-table-column prop="alipay" label="支付宝点位"  align="center"></el-table-column>
-            <el-table-column prop="wechat" label="微信点位"  align="center"></el-table-column> -->
-            <!-- <el-table-column prop="depositList" label="depositList"  align="center"></el-table-column> -->
             <el-table-column prop="withdrewed" label="已提现"  align="center"></el-table-column>
-            <el-table-column prop="balance" label="余额"  align="center"></el-table-column>    
-            <el-table-column prop="depositList" label="平台分析"  align="center">
+            <el-table-column prop="withdrewed" label="已提现金额"  align="center"></el-table-column>
+            <el-table-column prop="withdrewing" label="正在提现金额"  align="center"></el-table-column>
+            <el-table-column prop="balance" label="余额"  align="center"></el-table-column>
+       <el-table-column prop="profitList" label="代理商的各渠道利润"  align="center">
+         <template slot-scope="scope">
+           <el-tag :type="device.type?'success':'info'" v-for="device in scope.row.profitList1" :key="device.type">{{ device.type }} : {{ device.money }}</el-tag>
+         </template>
+       </el-table-column>
+            <el-table-column prop="depositList" label="渠道分析"  align="center">
                 <template slot-scope="scope">
-                    <el-tag :type="device.type?'success':'info'" v-for="device in scope.row.depositList" :key="device.type">{{ device.type }} : {{ device.money }}</el-tag>
+                    <el-tag :type="device.type?'success':'info'" v-for="device in scope.row.depositList1" :key="device.type">{{ device.type }} : {{ device.money }}</el-tag>
                 </template>
             </el-table-column>
             <el-table-column prop="date" label="日期"  align="center"></el-table-column>
@@ -63,11 +76,14 @@ import Chart from '@/components/Charts/lineMarker'
 import { agencyReport,getPermerchantReport} from '@/api/report'
 import { getTime,getTimeFormat } from "@/utils/index";
 import store from '../../../store';
+import {getSelect} from '@/api/role'
 export default {
   name: 'LineChart',
   components: { Chart },
   data() {
           return {
+            platform: "全部",
+            options1:[],
               activeNames: ['1'],
               labelPosition: 'right',
               postaddParameters: {
@@ -92,8 +108,8 @@ export default {
                 currentPage:1,
                 pagesize:10,
                 searchStr:'',
-                startDate:"",
-                endDate:""
+                startDate:getTimeFormat(new Date()),
+                endDate:getTimeFormat(new Date())
           }
       },
     computed: {
@@ -112,6 +128,49 @@ export default {
           this.getData();
       },
       methods: {
+        selectChang() {
+          if (this.platform === "全部") {
+            this.teams.map((item) => {
+              item.depositList1 = item.depositList;
+              item.profitList1 = item.profitList;
+            })
+          } else {
+            this.teams.map((item) => {
+              const list = [];
+              item.profitList.map((item1) => {
+                if (item1.type === this.platform) {
+                  list.push(item1);
+                }
+              });
+              item.profitList1 = list;
+              const list1 = [];
+              item.depositList.map((item1) => {
+                if (item1.type === this.platform) {
+                  list1.push(item1);
+                }
+              });
+              item.depositList1 = list1;
+              console.log(222,item.depositList1)
+            });
+          }
+        },
+        getSelect() {
+          getSelect().then(response => {
+            if (response.code !== 200) {
+              this.$message({
+                message: response.data.description,
+                type: "warning"
+              });
+            } else {
+              this.options1 = response.data;
+              const all = {
+                codeCategory: "全部",
+                id: 0
+              };
+              this.options1.unshift(all);
+            }
+          });
+        },
            startDateChange(val){
             this.startDate = val;
             },
@@ -148,7 +207,7 @@ export default {
               this.getTeams();
           },
           getTeams(){
-            agencyReport("2000-01-01",getTimeFormat(new Date())).then(response=>{
+            agencyReport(getTimeFormat(new Date()),getTimeFormat(new Date())).then(response=>{
                 console.log(response,'sdll')
                   if(response.code!=200){
                     this.$message({
@@ -158,6 +217,10 @@ export default {
                 }else{
                   if(response.data.length!=0)
                     this.teams = response.data;
+                    this.teams.map((item) => {
+                      item.depositList1 = item.depositList;
+                      item.profitList1 = item.profitList;
+                    });
                     var a=[];
                     if(store.getters.role == 2){
                         this.teams.forEach(el => {
