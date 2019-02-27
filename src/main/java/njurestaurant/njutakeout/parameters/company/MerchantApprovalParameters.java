@@ -1,30 +1,16 @@
 package njurestaurant.njutakeout.parameters.company;
 
 public class MerchantApprovalParameters {
-    private String username;
     private String password;
-    private double alipay;
-    private double wechat;
     private int approverId;
     private int level;
     private int status;
 
-    public MerchantApprovalParameters(String username, String password, double alipay, double wechat, int approverId, int level, int status) {
-        this.username = username;
+    public MerchantApprovalParameters(String password, int approverId, int level, int status) {
         this.password = password;
-        this.alipay = alipay;
-        this.wechat = wechat;
         this.approverId = approverId;
         this.level = level;
         this.status = status;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPassword() {
@@ -33,22 +19,6 @@ public class MerchantApprovalParameters {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public double getAlipay() {
-        return alipay;
-    }
-
-    public void setAlipay(double alipay) {
-        this.alipay = alipay;
-    }
-
-    public double getWechat() {
-        return wechat;
-    }
-
-    public void setWechat(double wechat) {
-        this.wechat = wechat;
     }
 
     public int getApproverId() {

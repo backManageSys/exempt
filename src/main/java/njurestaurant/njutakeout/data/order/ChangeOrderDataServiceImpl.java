@@ -16,6 +16,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ChangeOrderDataServiceImpl implements ChangeOrderDataService {
@@ -54,8 +55,13 @@ public class ChangeOrderDataServiceImpl implements ChangeOrderDataService {
     }
 
     @Override
+    public List<QRcodeChangeOrder> findAllQrCodeChangeOrderByLessThanDateAndisNotQueried( Date endDate) {
+        return QRcodeChangeOrderDao.findAll(dateLessThanOrEqualToQrCode(endDate)).stream().filter(p-> !p.getQuery()).collect(Collectors.toList());
+    }
+
+    @Override
     public List<CardChangeOrder> findAllCardChangeOrderByDate(Date startDate, Date endDate) {
-        return CardChangeOrderDao.findAll();
+        return CardChangeOrderDao.findAll(dateBetweenOfCard(startDate, endDate));
     }
 
     @Override
@@ -68,7 +74,14 @@ public class ChangeOrderDataServiceImpl implements ChangeOrderDataService {
 
         return QRcodeChangeOrderDao.findQRcodeChangeOrderByOperateUsername(username);
     }
-
+    private Specification<QRcodeChangeOrder> dateLessThanOrEqualToQrCode( Date endDate) {
+        return new Specification<QRcodeChangeOrder>() {
+            @Override
+            public Predicate toPredicate(Root<QRcodeChangeOrder> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                return cb.lessThanOrEqualTo(root.get("operateTime"), endDate);
+            }
+        };
+    }
     private Specification<QRcodeChangeOrder> dateBetweenOfQrCode(Date startDate, Date endDate) {
         return new Specification<QRcodeChangeOrder>() {
             @Override
@@ -82,8 +95,24 @@ public class ChangeOrderDataServiceImpl implements ChangeOrderDataService {
         return new Specification<CardChangeOrder>() {
             @Override
             public Predicate toPredicate(Root<CardChangeOrder> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                return cb.between(root.get("operateTime"), startDate, endDate);
+                return cb.between(root.get("finalOperateTime"), startDate, endDate);
             }
         };
     }
+//    private List<QRcodeChangeOrder> JSONFilter(List<QRcodeChangeOrder> list) {
+//        if (list.size() != 0) {
+//            for (QRcodeChangeOrder qRcodeChangeOrder : list) {
+//                List<PersonalCard> cardList = supplier.getUser().getCards();
+//                cardList.stream().peek(c -> c.setUser(null)).collect(Collectors.toList());
+//                List<Device> devices = supplier.getDevices();
+//                devices.stream().peek(d -> d.setSupplier(null)).collect(Collectors.toList());
+//                User user = supplier.getUser();
+////                if(user != null) {
+////                    if(StringUtils.isNotBlank(user.getOriginPassword()))    user.setOriginPassword(RSAUtils.decryptDataOnJava(user.getOriginPassword(), privateKey));
+////                    else user.setOriginPassword("");
+////                }
+//            }
+//        }
+//        return suppliers;
+//    }
 }

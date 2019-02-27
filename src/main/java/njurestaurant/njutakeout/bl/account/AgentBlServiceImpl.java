@@ -72,7 +72,7 @@ public class AgentBlServiceImpl implements AgentBlService {
             agentInfoResponses = agents.stream().map(agent -> {
                 double flow = AgentDailyFlow.flow.containsKey(agent.getId()) ? AgentDailyFlow.flow.get(agent.getId()) : 0;
                 double commission = AgentDailyFlow.commission.containsKey(agent.getId()) ? AgentDailyFlow.commission.get(agent.getId()) : 0;
-                return new AgentInfoResponse(agent.getId(), agent.getUser().getId(), agent.getAgentName(), agent.getStatus(), agent.getAlipay(), agent.getWechat(), agent.getBalance(), agent.getUser(), flow, commission);
+                return new AgentInfoResponse(agent.getId(), agent.getUser().getId(), agent.getAgentName(), agent.getStatus(), agent.getBalance(), agent.getUser(), flow, commission);
             }).collect(Collectors.toList());
         }
         return agentInfoResponses;

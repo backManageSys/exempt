@@ -4,14 +4,17 @@ import njurestaurant.njutakeout.blservice.account.MerchantBlService;
 import njurestaurant.njutakeout.data.dao.account.MerchantDao;
 import njurestaurant.njutakeout.data.dao.account.UserDao;
 import njurestaurant.njutakeout.dataservice.account.MerchantDataService;
+import njurestaurant.njutakeout.dataservice.account.PayRateListDataService;
 import njurestaurant.njutakeout.dataservice.account.UserDataService;
 import njurestaurant.njutakeout.entity.account.Merchant;
+import njurestaurant.njutakeout.entity.account.PayRateList;
 import njurestaurant.njutakeout.entity.account.PersonalCard;
 import njurestaurant.njutakeout.entity.account.User;
 import njurestaurant.njutakeout.exception.UsernameIsExistentException;
 import njurestaurant.njutakeout.exception.WrongIdException;
 import njurestaurant.njutakeout.parameters.company.MerchantApprovalParameters;
 import njurestaurant.njutakeout.parameters.user.MerchantUpdateParameters;
+import njurestaurant.njutakeout.parameters.user.PayRateAddParameters;
 import njurestaurant.njutakeout.response.Response;
 import njurestaurant.njutakeout.response.SuccessResponse;
 import njurestaurant.njutakeout.response.WrongResponse;
@@ -21,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,13 +33,15 @@ import java.util.stream.Collectors;
 public class MerchantBlServiceImpl implements MerchantBlService {
     private final MerchantDataService merchantDataService;
     private final UserDataService userDataService;
+    private final PayRateListDataService payRateListDataService;
     private final UserDao userDao;
     private final MerchantDao merchantDao;
 
     @Autowired
-    public MerchantBlServiceImpl(MerchantDataService merchantDataService, UserDataService userDataService, UserDao userDao, MerchantDao merchantDao) {
+    public MerchantBlServiceImpl(MerchantDataService merchantDataService, UserDataService userDataService, PayRateListDataService payRateListDataService, UserDao userDao, MerchantDao merchantDao) {
         this.merchantDataService = merchantDataService;
         this.userDataService = userDataService;
+        this.payRateListDataService = payRateListDataService;
         this.userDao = userDao;
         this.merchantDao = merchantDao;
     }
@@ -69,53 +75,20 @@ public class MerchantBlServiceImpl implements MerchantBlService {
         if (merchant == null) {
             throw new WrongIdException();
         } else {
-            User user = userDao.findUserById(id);
-            if (!user.getUsername().equals(merchantUpdateParameters.getName())) {
-                if (userDao.findUserByUsername(merchantUpdateParameters.getName()) != null)
-                    throw new UsernameIsExistentException();
-                else {
 
-                    //           user.setOriginPassword(RSAUtils.encryptedDataOnJava(merchantUpdateParameters.getPassword(), publicKey));
-//            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-//            if(!user.getPassword().equals(merchantUpdateParameters.getPassword()))
-//                user.setPassword(encoder.encode(merchantUpdateParameters.getPassword()));
-                    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-                    merchant.setName(merchantUpdateParameters.getName());
-                    user.setUsername(merchantUpdateParameters.getName());
-                    user.setPassword(encoder.encode(merchantUpdateParameters.getPassword()));
-                    userDataService.saveUser(user);
-                    merchant.setUser(user);
-                    merchant.setStatus(merchantUpdateParameters.getStatus());
-                    merchant.setPriority(merchantUpdateParameters.getLevel());
-                    merchant.setAlipay_TPASS(merchantUpdateParameters.getAlipay_TPASS());
-                    merchant.setAlipay_TSOLID(merchantUpdateParameters.getAlipay_TSOLID());
-                    merchant.setAlipay_RPASSOFF(merchantUpdateParameters.getAlipay_RPASSOFF());
-                    merchant.setAlipay_RPASSQR(merchantUpdateParameters.getAlipay_RPASSQR());
-                    merchant.setAlipay_RSOLID(merchantUpdateParameters.getAlipay_RSOLID());
-                    merchant.setAlipay_RedEnvelope(merchantUpdateParameters.getAlipay_RedEnvelope());
-                    merchant.setWechat(merchantUpdateParameters.getWechat());
-                    return new MerchantAddResponse(merchantDataService.saveMerchant(merchant).getUser().getId());
-                }
-            } else {
-                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-                merchant.setName(merchantUpdateParameters.getName());
-                user.setUsername(merchantUpdateParameters.getName());
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            User user = userDao.findUserById(id);
+            if (!merchantUpdateParameters.getPassword().equals(user.getPassword())) {
                 user.setPassword(encoder.encode(merchantUpdateParameters.getPassword()));
                 userDataService.saveUser(user);
-                merchant.setUser(user);
-                merchant.setStatus(merchantUpdateParameters.getStatus());
-                merchant.setPriority(merchantUpdateParameters.getLevel());
-                merchant.setAlipay_TPASS(merchantUpdateParameters.getAlipay_TPASS());
-                merchant.setAlipay_TSOLID(merchantUpdateParameters.getAlipay_TSOLID());
-                merchant.setAlipay_RPASSOFF(merchantUpdateParameters.getAlipay_RPASSOFF());
-                merchant.setAlipay_RPASSQR(merchantUpdateParameters.getAlipay_RPASSQR());
-                merchant.setAlipay_RSOLID(merchantUpdateParameters.getAlipay_RSOLID());
-                merchant.setAlipay_RedEnvelope(merchantUpdateParameters.getAlipay_RedEnvelope());
-                merchant.setWechat(merchantUpdateParameters.getWechat());
-                return new MerchantAddResponse(merchantDataService.saveMerchant(merchant).getUser().getId());
             }
+            merchant.setUser(user);
+            merchant.setStatus(merchantUpdateParameters.getStatus());
+            merchant.setPriority(merchantUpdateParameters.getLevel());
+            return new MerchantAddResponse(merchantDataService.saveMerchant(merchant).getUser().getId());
         }
     }
+
 
     /**
      * @param id the merchant id
@@ -137,9 +110,9 @@ public class MerchantBlServiceImpl implements MerchantBlService {
 //            merchant.setUser(user);
 //            merchant.setAlipay(merchantApprovalParameters.getAlipay());
 //            merchant.setWechat(merchantApprovalParameters.getWechat());
-                merchant.setApproverId(merchantApprovalParameters.getApproverId());
+            merchant.setApproverId(merchantApprovalParameters.getApproverId());
 //            merchant.setPriority(merchantApprovalParameters.getLevel());
-                merchant.setApprovalTime(new Date());
+            merchant.setApprovalTime(new Date());
             if (merchantApprovalParameters.getStatus() == 1) {
                 merchant.setStatus("启用");
             } else if (merchantApprovalParameters.getStatus() == 0) {
@@ -200,6 +173,16 @@ public class MerchantBlServiceImpl implements MerchantBlService {
 //                }
             }
         }
+        Collections.sort(merchantList, (o1, o2) -> {
+            //按照余额大小进行降序排列
+            if (o1.getBalance() < o2.getBalance()) {
+                return 1;
+            }
+            if (o1.getBalance() == o2.getBalance()) {
+                return 0;
+            }
+            return -1;
+        });
         return merchantList;
     }
 }

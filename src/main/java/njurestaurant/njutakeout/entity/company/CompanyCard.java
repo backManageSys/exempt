@@ -22,11 +22,13 @@ public class CompanyCard {
     private String relation;
     @Column(name = "status")
     private String status;
+    @Column(name = "operateId")
+    private int operateId;
 
     public CompanyCard() {
     }
 
-    public CompanyCard(String name, String bank, String cardNumber, double balance, String attribution, String relation, String status) {
+    public CompanyCard(String name, String bank, String cardNumber, double balance, String attribution, String relation, String status, int operateId) {
         this.name = name;
         this.bank = bank;
         this.cardNumber = cardNumber;
@@ -34,6 +36,7 @@ public class CompanyCard {
         this.attribution = attribution;
         this.relation = relation;
         this.status = status;
+        this.operateId = operateId;
     }
 
     public int getId() {
@@ -98,5 +101,13 @@ public class CompanyCard {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getOperateId() {
+        return operateId;
+    }
+
+    public void setOperateId(int operateId) {
+        this.operateId = operateId;
     }
 }

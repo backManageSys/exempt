@@ -21,9 +21,9 @@ public interface PlatformOrderDao extends JpaRepository<PlatformOrder, Integer> 
 
     List<PlatformOrder> findAll(Specification<PlatformOrder> dateBetween);
 
-    List<PlatformOrder> findPlatformOrderByImeiAndCodetype(String imei, CodeType codeType);
+    List<PlatformOrder> findPlatformOrderByImeiAndPayTypeId(String imei, int payTypeId);
 
-    PlatformOrder findPlatformOrderByImeiAndStateAndCodetypeAndMoney(String imei, OrderState state,CodeType codeType,double money);
+    PlatformOrder findPlatformOrderByImeiAndStateAndPayTypeIdAndMoney(String imei, OrderState state,int payTypeId,double money);
 
-    List<PlatformOrder>  findPlatformOrderByImeiAndStateAndCodetype(String imei, OrderState state,CodeType codeType);
+    List<PlatformOrder>  findPlatformOrderByImeiAndStateAndPayTypeId(String imei, OrderState state,int payTypeId);
 }

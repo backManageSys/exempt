@@ -15,38 +15,20 @@ public class GetQrCodeParameters {
     private String money;
     private String memo;
     private String merchantName;
-    private CodeType codeType;
     private String time;
     private String sign;
-    /*选择收款的二维码*/
-    private String type;
+    /*选择收款类型*/
+    private int payTypeId;
 
-    public GetQrCodeParameters(String ip, String id, String money, String memo, String merchantName, CodeType codeType,String time, String sign, String type) {
+    public GetQrCodeParameters(String ip, String id, String money, String memo, String merchantName,  String time, String sign, int payTypeId) {
         this.ip = ip;
         this.id = id;
         this.money = money;
         this.memo = memo;
         this.merchantName = merchantName;
-        this.codeType = codeType;
         this.time = time;
         this.sign = sign;
-        this.type = type;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getMerchantName() {
-        return merchantName;
-    }
-
-    public void setMerchantName(String merchantName) {
-        this.merchantName = merchantName;
+        this.payTypeId = payTypeId;
     }
 
     public String getIp() {
@@ -65,6 +47,13 @@ public class GetQrCodeParameters {
         this.id = id;
     }
 
+    public String getMoney() {
+        return money;
+    }
+
+    public void setMoney(String money) {
+        this.money = money;
+    }
 
     public String getMemo() {
         return memo;
@@ -74,22 +63,14 @@ public class GetQrCodeParameters {
         this.memo = memo;
     }
 
-
-    public String getSign() {
-        return sign;
+    public String getMerchantName() {
+        return merchantName;
     }
 
-    public void setSign(String sign) {
-        this.sign = sign;
+    public void setMerchantName(String merchantName) {
+        this.merchantName = merchantName;
     }
 
-    public String getMoney() {
-        return money;
-    }
-
-    public void setMoney(String money) {
-        this.money = money;
-    }
 
     public String getTime() {
         return time;
@@ -99,11 +80,19 @@ public class GetQrCodeParameters {
         this.time = time;
     }
 
-    public CodeType getCodeType() {
-        return codeType;
+    public String getSign() {
+        return sign;
     }
 
-    public void setCodeType(CodeType codeType) {
-        this.codeType = codeType;
+    public void setSign(String sign) {
+        this.sign = sign;
+    }
+
+    public int getPayTypeId() {
+        return payTypeId;
+    }
+
+    public void setPayTypeId(int payTypeId) {
+        this.payTypeId = payTypeId;
     }
 }

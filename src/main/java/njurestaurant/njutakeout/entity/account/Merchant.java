@@ -9,28 +9,10 @@ public class Merchant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    /*支付宝点位*/
-    @Column(name = "alipay_TPASS")
-    private double alipay_TPASS;
-    @Column(name = "alipay_TSOLID")
-    private double alipay_TSOLID;
-    @Column(name = "alipay_RPASSOFF")
-    private double alipay_RPASSOFF;
-    @Column(name = "alipay_RPASSQR")
-    private double alipay_RPASSQR;
-    @Column(name = "alipay_RSOLID")
-    private double alipay_RSOLID;
-    @Column(name = "alipay_RedEnvelope")
-    private double alipay_RedEnvelope;
-    /*微信点位*/
-    @Column(name = "wechat")
-    private double wechat;
     @Column(name = "balance")
     private double balance;
     @Column(name = "status")
     private String status;
-    @Column(name = "verifyCode")
-    private String verifyCode;
     @Column(name = "addTime")
     private Date addTime;
     @Column(name = "name")
@@ -54,14 +36,7 @@ public class Merchant {
     public Merchant() {
     }
 
-    public Merchant(double alipay_TPASS, double alipay_TSOLID, double alipay_RPASSOFF, double alipay_RPASSQR, double alipay_RSOLID, double alipay_RedEnvelope, double wechat, double balance, String status, Date addTime, String name, int applyId, User user, int priority) {
-        this.alipay_TPASS = alipay_TPASS;
-        this.alipay_TSOLID = alipay_TSOLID;
-        this.alipay_RPASSOFF = alipay_RPASSOFF;
-        this.alipay_RPASSQR = alipay_RPASSQR;
-        this.alipay_RSOLID = alipay_RSOLID;
-        this.alipay_RedEnvelope = alipay_RedEnvelope;
-        this.wechat = wechat;
+    public Merchant(double balance, String status, Date addTime, String name, int applyId, User user, int priority, double withdrewMoney) {
         this.balance = balance;
         this.status = status;
         this.addTime = addTime;
@@ -69,24 +44,7 @@ public class Merchant {
         this.applyId = applyId;
         this.user = user;
         this.priority = priority;
-    }
-
-
-    public Merchant(double alipay_TPASS, double alipay_TSOLID, double alipay_RPASSOFF, double alipay_RPASSQR, double alipay_RSOLID, double wechat, double balance, String status, Date addTime, String name, int approverId, Date approvalTime, User user, int priority) {
-        this.alipay_TPASS = alipay_TPASS;
-        this.alipay_TSOLID = alipay_TSOLID;
-        this.alipay_RPASSOFF = alipay_RPASSOFF;
-        this.alipay_RPASSQR = alipay_RPASSQR;
-        this.alipay_RSOLID = alipay_RSOLID;
-        this.wechat = wechat;
-        this.balance = balance;
-        this.status = status;
-        this.addTime = addTime;
-        this.name = name;
-        this.approverId = approverId;
-        this.approvalTime = approvalTime;
-        this.user = user;
-        this.priority = priority;
+        this.withdrewMoney = withdrewMoney;
     }
 
     public int getId() {
@@ -95,62 +53,6 @@ public class Merchant {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public double getAlipay_TPASS() {
-        return alipay_TPASS;
-    }
-
-    public void setAlipay_TPASS(double alipay_TPASS) {
-        this.alipay_TPASS = alipay_TPASS;
-    }
-
-    public double getAlipay_TSOLID() {
-        return alipay_TSOLID;
-    }
-
-    public void setAlipay_TSOLID(double alipay_TSOLID) {
-        this.alipay_TSOLID = alipay_TSOLID;
-    }
-
-    public double getAlipay_RPASSOFF() {
-        return alipay_RPASSOFF;
-    }
-
-    public void setAlipay_RPASSOFF(double alipay_RPASSOFF) {
-        this.alipay_RPASSOFF = alipay_RPASSOFF;
-    }
-
-    public double getAlipay_RPASSQR() {
-        return alipay_RPASSQR;
-    }
-
-    public void setAlipay_RPASSQR(double alipay_RPASSQR) {
-        this.alipay_RPASSQR = alipay_RPASSQR;
-    }
-
-    public double getAlipay_RSOLID() {
-        return alipay_RSOLID;
-    }
-
-    public void setAlipay_RSOLID(double alipay_RSOLID) {
-        this.alipay_RSOLID = alipay_RSOLID;
-    }
-
-    public double getAlipay_RedEnvelope() {
-        return alipay_RedEnvelope;
-    }
-
-    public void setAlipay_RedEnvelope(double alipay_RedEnvelope) {
-        this.alipay_RedEnvelope = alipay_RedEnvelope;
-    }
-
-    public double getWechat() {
-        return wechat;
-    }
-
-    public void setWechat(double wechat) {
-        this.wechat = wechat;
     }
 
     public double getBalance() {
@@ -167,14 +69,6 @@ public class Merchant {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getVerifyCode() {
-        return verifyCode;
-    }
-
-    public void setVerifyCode(String verifyCode) {
-        this.verifyCode = verifyCode;
     }
 
     public Date getAddTime() {

@@ -4,11 +4,13 @@ public class WithdrewDealParameters {
     private int operatorId;
     private String memo;
     private String state;
+    private String companyCardId;
 
-    public WithdrewDealParameters(int operatorId, String memo, String state) {
+    public WithdrewDealParameters(int operatorId, String memo, String state, String companyCardId) {
         this.operatorId = operatorId;
         this.memo = memo;
         this.state = state;
+        this.companyCardId = companyCardId;
     }
 
     public String getState() {
@@ -33,5 +35,13 @@ public class WithdrewDealParameters {
 
     public void setMemo(String memo) {
         this.memo = memo;
+    }
+
+    public String getCompanyCardId() {
+        return companyCardId;
+    }
+
+    public void setCompanyCardId(String companyCardId) {
+        this.companyCardId = companyCardId;
     }
 }

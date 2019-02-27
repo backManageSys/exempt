@@ -85,17 +85,17 @@ public class PlatformOrderDataServiceImpl implements PlatformOrderDataService {
     }
 
     @Override
-    public List<PlatformOrder> findByImeiAndCodeType(String imei, CodeType codeType) {
-        return platformOrderDao.findPlatformOrderByImeiAndCodetype(imei,codeType);
+    public List<PlatformOrder> findByImeiAndPayTypeId(String imei, int payTypeId) {
+        return platformOrderDao.findPlatformOrderByImeiAndPayTypeId(imei,payTypeId);
     }
 
     @Override
-    public PlatformOrder findByImeiAndStateAndCodeTypeAndMoney(String imei, OrderState orderState, CodeType codeType , double money) {
-        return platformOrderDao.findPlatformOrderByImeiAndStateAndCodetypeAndMoney(imei,orderState,codeType,money);
+    public PlatformOrder findByImeiAndStateAndPayTypeIdAndMoney(String imei, OrderState orderState, int payTypeId , double money) {
+        return platformOrderDao.findPlatformOrderByImeiAndStateAndPayTypeIdAndMoney(imei,orderState,payTypeId,money);
     }
     @Override
-    public List<PlatformOrder>  findByImeiAndStateAndCodeType(String imei, OrderState orderState, CodeType codeType) {
-        return platformOrderDao.findPlatformOrderByImeiAndStateAndCodetype(imei,orderState,codeType);
+    public List<PlatformOrder>  findByImeiAndStateAndPayTypeId(String imei, OrderState orderState, int payTypeId) {
+        return platformOrderDao.findPlatformOrderByImeiAndStateAndPayTypeId(imei,orderState,payTypeId);
     }
     private Specification<PlatformOrder> dateBetween(Date startDate, Date endDate) {
         return new Specification<PlatformOrder>() {

@@ -12,7 +12,7 @@ import njurestaurant.njutakeout.response.transaction.GetQrCodeResponse;
 import java.util.List;
 
 public interface TransactionBlService {
-    GetQrCodeResponse getQrCode(GetQrCodeParameters getQrCodeParameters) throws WrongIdException, BlankInputException, IPRiskControlException, IDRiskControlException, TooLittleMoneyException, OrderNotPayedException;
+    GetQrCodeResponse getQrCode(GetQrCodeParameters getQrCodeParameters) throws WrongIdException, BlankInputException, IPRiskControlException, IDRiskControlException, TooLittleMoneyException, OrderNotPayedException, PayTypeStopUsingException;
 
     void addDevice();
 

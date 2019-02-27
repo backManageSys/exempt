@@ -11,7 +11,6 @@ public class OrderListResponse {
     private double money;
     private double paymoney;
     private String rechargeId;
-    private String code;
     private OrderState orderState;
     private Date time;
     private Date payTime;
@@ -19,17 +18,15 @@ public class OrderListResponse {
     private int supplierId;
     private int agentId;
     private String merchantName;
-    private String type;
-    private int tableId;
-    private String nickname;
-    private CodeType codeType;
-    public OrderListResponse(int orderId, String orderNumber, double money, double paymoney, String rechargeId, String code, OrderState orderState, Date time, Date payTime, int merchantId, int supplierId, int agentId, String merchantName, String type, int tableId, String nickname, CodeType codeType) {
+    private String codeCategory;
+    private String codeType;
+
+    public OrderListResponse(int orderId, String orderNumber, double money, double paymoney, String rechargeId, OrderState orderState, Date time, Date payTime, int merchantId, int supplierId, int agentId, String merchantName, String codeCategory, String codeType) {
         this.orderId = orderId;
         this.orderNumber = orderNumber;
         this.money = money;
         this.paymoney = paymoney;
         this.rechargeId = rechargeId;
-        this.code = code;
         this.orderState = orderState;
         this.time = time;
         this.payTime = payTime;
@@ -37,9 +34,7 @@ public class OrderListResponse {
         this.supplierId = supplierId;
         this.agentId = agentId;
         this.merchantName = merchantName;
-        this.type = type;
-        this.tableId = tableId;
-        this.nickname = nickname;
+        this.codeCategory = codeCategory;
         this.codeType = codeType;
     }
 
@@ -81,14 +76,6 @@ public class OrderListResponse {
 
     public void setRechargeId(String rechargeId) {
         this.rechargeId = rechargeId;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public OrderState getOrderState() {
@@ -147,35 +134,20 @@ public class OrderListResponse {
         this.merchantName = merchantName;
     }
 
-    public String getType() {
-        return type;
+
+    public String getCodeCategory() {
+        return codeCategory;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setCodeCategory(String codeCategory) {
+        this.codeCategory = codeCategory;
     }
 
-    public int getTableId() {
-        return tableId;
-    }
-
-    public void setTableId(int tableId) {
-        this.tableId = tableId;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public CodeType getCodeType() {
+    public String getCodeType() {
         return codeType;
     }
 
-    public void setCodeType(CodeType codeType) {
+    public void setCodeType(String codeType) {
         this.codeType = codeType;
     }
 }

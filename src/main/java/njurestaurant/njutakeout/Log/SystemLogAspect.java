@@ -23,8 +23,10 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -119,14 +121,21 @@ public class SystemLogAspect {
 
     public static String getParamValue(JoinPoint joinPoint) {
         Signature signature = joinPoint.getSignature();
+        System.out.println(signature);
         MethodSignature methodSignature = (MethodSignature) signature;
+        System.out.println(methodSignature);
         String[] strings = methodSignature.getParameterNames();
+        System.out.println(strings);
+        System.out.println(Arrays.asList(strings));
         StringBuilder sb = new StringBuilder();
         int i = 0;
         //获取所有的参数
         Object[] args = joinPoint.getArgs();
+        System.out.println("111");
+        System.out.println(args);
         for (int k = 0; k < args.length; k++) {
             Object arg = args[k];
+            System.out.println(arg);
             // 获取对象类型
             String typeName = arg.getClass().getTypeName();
             for (String t : types) {

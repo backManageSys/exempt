@@ -40,9 +40,10 @@ public class WebSocketConfig extends WebMvcConfigurerAdapter implements WebSocke
     private final PersonalCardDataService personalCardDataService;
     private final ChangeOrderDataService changeOrderDataService;
     private final SupplierDataService supplierDataService;
+    private final PayRateListDataService payRateListDataService;
 
     @Autowired
-    public WebSocketConfig(DeviceDataService deviceDataService, AlipayDataService alipayDataService, AlipayOrderDataService alipayOrderDataService, PlatformOrderDataService platformOrderDataService, MerchantDataService merchantDataService, UserDataService userDataService, AgentDataService agentDataService, PersonalCardDataService personalCardDataService, ChangeOrderDataService changeOrderDataService, SupplierDataService supplierDataService) {
+    public WebSocketConfig(DeviceDataService deviceDataService, AlipayDataService alipayDataService, AlipayOrderDataService alipayOrderDataService, PlatformOrderDataService platformOrderDataService, MerchantDataService merchantDataService, UserDataService userDataService, AgentDataService agentDataService, PersonalCardDataService personalCardDataService, ChangeOrderDataService changeOrderDataService, SupplierDataService supplierDataService, PayRateListDataService payRateListDataService) {
         this.deviceDataService = deviceDataService;
         this.alipayDataService = alipayDataService;
         this.alipayOrderDataService = alipayOrderDataService;
@@ -53,6 +54,7 @@ public class WebSocketConfig extends WebMvcConfigurerAdapter implements WebSocke
         this.personalCardDataService = personalCardDataService;
         this.changeOrderDataService = changeOrderDataService;
         this.supplierDataService = supplierDataService;
+        this.payRateListDataService = payRateListDataService;
     }
 
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
@@ -72,6 +74,6 @@ public class WebSocketConfig extends WebMvcConfigurerAdapter implements WebSocke
 
     @Bean
     public TextWebSocketHandler webSocketHandler() {
-        return new WebSocketHandler(deviceDataService, alipayDataService, alipayOrderDataService, platformOrderDataService, merchantDataService, userDataService, agentDataService, personalCardDataService, changeOrderDataService, supplierDataService);
+        return new WebSocketHandler(deviceDataService, alipayDataService, alipayOrderDataService, platformOrderDataService, merchantDataService, userDataService, agentDataService, personalCardDataService, changeOrderDataService, supplierDataService, payRateListDataService);
     }
 }

@@ -1,42 +1,20 @@
 package njurestaurant.njutakeout.parameters.user;
 
+import java.util.List;
+
 public class AgentAddParameters {
     private String username;
     private String password;
     private String status;
-    private double alipay;
-    private double wechat;
+    private int applyId;
+    private List<PayRateAddParameters> list;
 
-    public AgentAddParameters(String username, String password, String status, double alipay, double wechat) {
+    public AgentAddParameters(String username, String password, String status, int applyId, List<PayRateAddParameters> list) {
         this.username = username;
         this.password = password;
         this.status = status;
-        this.alipay = alipay;
-        this.wechat = wechat;
-    }
-
-    public double getAlipay() {
-        return alipay;
-    }
-
-    public void setAlipay(double alipay) {
-        this.alipay = alipay;
-    }
-
-    public double getWechat() {
-        return wechat;
-    }
-
-    public void setWechat(double wechat) {
-        this.wechat = wechat;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+        this.applyId = applyId;
+        this.list = list;
     }
 
     public String getUsername() {
@@ -47,11 +25,35 @@ public class AgentAddParameters {
         this.username = username;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getApplyId() {
+        return applyId;
+    }
+
+    public void setApplyId(int applyId) {
+        this.applyId = applyId;
+    }
+
+    public List<PayRateAddParameters> getList() {
+        return list;
+    }
+
+    public void setList(List<PayRateAddParameters> list) {
+        this.list = list;
     }
 }

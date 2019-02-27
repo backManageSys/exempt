@@ -12,17 +12,14 @@ public class Agent {
     private String agentName;
     @Column(name = "status")
     private String status;
-    /*代理商手续费*/
-    @Column(name = "alipay")
-    private double alipay;
-    @Column(name = "wechat")
-    private double wechat;
     /*代理商余额*/
     @Column(name = "balance")
     private double balance;
     /*正在提现的金额*/
     @Column(name = "withdrewMoney")
     private double withdrewMoney;
+    @Column(name = "applyId")
+    private int applyId;
     @OneToOne(cascade=CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
@@ -30,48 +27,14 @@ public class Agent {
     public Agent() {
     }
 
-    public Agent(String agentName, String status, double alipay, double wechat, double balance, double withdrewMoney, User user) {
+    public Agent(String agentName, String status, double balance, double withdrewMoney, int applyId, User user) {
         this.agentName = agentName;
         this.status = status;
-        this.alipay = alipay;
-        this.wechat = wechat;
         this.balance = balance;
         this.withdrewMoney = withdrewMoney;
+        this.applyId = applyId;
         this.user = user;
     }
-
-    public double getWithdrewMoney() {
-        return withdrewMoney;
-    }
-
-    public void setWithdrewMoney(double withdrewMoney) {
-        this.withdrewMoney = withdrewMoney;
-    }
-
-    public double getAlipay() {
-        return alipay;
-    }
-
-    public void setAlipay(double alipay) {
-        this.alipay = alipay;
-    }
-
-    public double getWechat() {
-        return wechat;
-    }
-
-    public void setWechat(double wechat) {
-        this.wechat = wechat;
-    }
-
-    public double getBalance() {
-        return balance;
-    }
-
-    public void setBalance(double balance) {
-        this.balance = balance;
-    }
-
 
     public int getId() {
         return id;
@@ -89,8 +52,6 @@ public class Agent {
         this.agentName = agentName;
     }
 
-
-
     public String getStatus() {
         return status;
     }
@@ -99,6 +60,29 @@ public class Agent {
         this.status = status;
     }
 
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    public double getWithdrewMoney() {
+        return withdrewMoney;
+    }
+
+    public void setWithdrewMoney(double withdrewMoney) {
+        this.withdrewMoney = withdrewMoney;
+    }
+
+    public int getApplyId() {
+        return applyId;
+    }
+
+    public void setApplyId(int applyId) {
+        this.applyId = applyId;
+    }
 
     public User getUser() {
         return user;

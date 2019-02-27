@@ -13,9 +13,12 @@ public class CompanyCardAddParameters {
     private String attribution;
     /*关联*/
     private String relation;
+    /*状态*/
     private String status;
+    /*操作人id*/
+    private int operateId;
 
-    public CompanyCardAddParameters(String name, String bank, String number, double balance, String attribution, String relation, String status) {
+    public CompanyCardAddParameters(String name, String bank, String number, double balance, String attribution, String relation, String status, int operateId) {
         this.name = name;
         this.bank = bank;
         this.number = number;
@@ -23,6 +26,7 @@ public class CompanyCardAddParameters {
         this.attribution = attribution;
         this.relation = relation;
         this.status = status;
+        this.operateId = operateId;
     }
 
     public CompanyCardAddParameters() {
@@ -82,5 +86,13 @@ public class CompanyCardAddParameters {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getOperateId() {
+        return operateId;
+    }
+
+    public void setOperateId(int operateId) {
+        this.operateId = operateId;
     }
 }

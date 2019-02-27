@@ -5,8 +5,10 @@ import njurestaurant.njutakeout.blservice.account.UserBlService;
 import njurestaurant.njutakeout.blservice.company.PostAndPermissionBlService;
 import njurestaurant.njutakeout.dataservice.account.*;
 import njurestaurant.njutakeout.dataservice.app.DeviceDataService;
+import njurestaurant.njutakeout.dataservice.company.PayTypeDataService;
 import njurestaurant.njutakeout.entity.account.*;
 import njurestaurant.njutakeout.entity.app.Device;
+import njurestaurant.njutakeout.entity.company.PayType;
 import njurestaurant.njutakeout.exception.*;
 import njurestaurant.njutakeout.publicdatas.account.AgentDailyFlow;
 import njurestaurant.njutakeout.response.Response;
@@ -45,6 +47,7 @@ public class UserBlServiceImpl implements UserBlService {
     private final JwtService jwtService;
     private final PostAndPermissionBlService postAndPermissionBlService;
     private final DeviceDataService deviceDataService;
+    private final PayTypeDataService payTypeDataService;
 
     @Value(value = "${wechat.url}")
     private String wechatUrl;
@@ -62,7 +65,7 @@ public class UserBlServiceImpl implements UserBlService {
     private String publicKey;
 
     @Autowired
-    public UserBlServiceImpl(UserDataService userDataService, AgentDataService agentDataService, MerchantDataService merchantDataService, StaffDataService staffDataService, SupplierDataService supplierDataService, JwtUserDetailsService jwtUserDetailsService, JwtService jwtService, PostAndPermissionBlService postAndPermissionBlService, DeviceDataService deviceDataService) {
+    public UserBlServiceImpl(UserDataService userDataService, AgentDataService agentDataService, MerchantDataService merchantDataService, StaffDataService staffDataService, SupplierDataService supplierDataService, JwtUserDetailsService jwtUserDetailsService, JwtService jwtService, PostAndPermissionBlService postAndPermissionBlService, DeviceDataService deviceDataService, PayTypeDataService payTypeDataService) {
         this.userDataService = userDataService;
         this.agentDataService = agentDataService;
         this.merchantDataService = merchantDataService;
@@ -72,6 +75,7 @@ public class UserBlServiceImpl implements UserBlService {
         this.jwtService = jwtService;
         this.postAndPermissionBlService = postAndPermissionBlService;
         this.deviceDataService = deviceDataService;
+        this.payTypeDataService = payTypeDataService;
     }
 
     /**
@@ -192,7 +196,7 @@ public class UserBlServiceImpl implements UserBlService {
 
     @Override
     public SuccessResponse appDevice(int id, String imei ,String status) {
-        Device device = deviceDataService.findBySupplierIdAndImei(id,imei);
+        Device device = deviceDataService.findById(id);
         device.setStatus(status);
         deviceDataService.saveDevice(device);
         return  new SuccessResponse("修改成功");
@@ -324,7 +328,7 @@ public class UserBlServiceImpl implements UserBlService {
                 cardList.stream().peek(c -> c.setUser(null)).collect(Collectors.toList());
                 double flow = AgentDailyFlow.flow.containsKey(agent.getId()) ? AgentDailyFlow.flow.get(agent.getId()) : 0;
                 double commission = AgentDailyFlow.commission.containsKey(agent.getId()) ? AgentDailyFlow.commission.get(agent.getId()) : 0;
-                AgentInfoResponse agentInfoResponse = new AgentInfoResponse(agent.getId(), agent.getUser().getId(), agent.getAgentName(), agent.getStatus(), agent.getAlipay(), agent.getWechat(), agent.getBalance(), agent.getUser(), flow, commission);
+                AgentInfoResponse agentInfoResponse = new AgentInfoResponse(agent.getId(), agent.getUser().getId(), agent.getAgentName(), agent.getStatus(), agent.getBalance(), agent.getUser(), flow, commission);
                 userInfoResponse.setInfo(agent);
                 userInfoResponse.setPost("代理商");
                 if (postAndPermissionBlService.getPostAndPermissionsByPost("代理商") == null)
@@ -350,6 +354,9 @@ public class UserBlServiceImpl implements UserBlService {
                     personalCardList.stream().peek(p -> p.setUser(null)).collect(Collectors.toList());
                 if (deviceList.size() > 0)
                     deviceList.stream().peek(p -> p.setSupplier(null)).collect(Collectors.toList());
+                PayType payType = payTypeDataService.findById(supplier.getPayTypeId());
+                supplier.setCodeCategory(payType.getCodeCategory());
+                supplier.setCodeType(payType.getCodeType());
                 userInfoResponse.setInfo(supplier);
                 userInfoResponse.setPost("供码用户");
                 if (postAndPermissionBlService.getPostAndPermissionsByPost("供码用户") == null)

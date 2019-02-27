@@ -40,29 +40,40 @@ public class Supplier {
     @Column(name = "priority")
     private int priority;
     // 供码用户当前选择的供码方式
-    @Column(name = "codeType")
-    private CodeType codeType;
+    @Column(name = "payTypeId")
+    private int payTypeId;
+    @Transient
+    private String codeCategory;
+    @Transient
+    private String codeType;
 
     public Supplier() {
     }
 
-    public Supplier(User user, int applicantId, Date time, String status, List<Device> devices, int priority, CodeType codeType) {
+    public Supplier(User user, int applicantId, Date time, String status, List<Device> devices, int priority, int payTypeId) {
         this.user = user;
         this.applicantId = applicantId;
         this.time = time;
         this.status = status;
         this.devices = devices;
         this.priority = priority;
-        this.codeType = codeType;
+        this.payTypeId = payTypeId;
     }
 
-    public Supplier(User user, Date approvalTime, int approverId, String status, List<Device> devices, int priority) {
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
         this.user = user;
-        this.approvalTime = approvalTime;
-        this.approverId = approverId;
-        this.status = status;
-        this.devices = devices;
-        this.priority = priority;
     }
 
     public int getApplicantId() {
@@ -71,6 +82,14 @@ public class Supplier {
 
     public void setApplicantId(int applicantId) {
         this.applicantId = applicantId;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
     }
 
     public Date getApprovalTime() {
@@ -87,39 +106,6 @@ public class Supplier {
 
     public void setApproverId(int approverId) {
         this.approverId = approverId;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-
-    public CodeType getCodeType() {
-        return codeType;
-    }
-
-    public void setCodeType(CodeType codeType) {
-        this.codeType = codeType;
-    }
-
-    public Date getTime() {
-        return time;
-    }
-
-    public void setTime(Date time) {
-        this.time = time;
     }
 
     public String getStatus() {
@@ -144,5 +130,29 @@ public class Supplier {
 
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    public int getPayTypeId() {
+        return payTypeId;
+    }
+
+    public void setPayTypeId(int payTypeId) {
+        this.payTypeId = payTypeId;
+    }
+
+    public String getCodeCategory() {
+        return codeCategory;
+    }
+
+    public void setCodeCategory(String codeCategory) {
+        this.codeCategory = codeCategory;
+    }
+
+    public String getCodeType() {
+        return codeType;
+    }
+
+    public void setCodeType(String codeType) {
+        this.codeType = codeType;
     }
 }

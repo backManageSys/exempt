@@ -1,19 +1,19 @@
 package njurestaurant.njutakeout.bl.order;
 
 import njurestaurant.njutakeout.blservice.order.PlatformOrderBlService;
+import njurestaurant.njutakeout.config.websocket.WebSocketHandler;
 import njurestaurant.njutakeout.data.dao.account.UserDao;
 import njurestaurant.njutakeout.data.dao.app.DeviceDao;
-import njurestaurant.njutakeout.dataservice.account.AgentDataService;
-import njurestaurant.njutakeout.dataservice.account.MerchantDataService;
-import njurestaurant.njutakeout.dataservice.account.SupplierDataService;
-import njurestaurant.njutakeout.dataservice.account.UserDataService;
+import njurestaurant.njutakeout.dataservice.account.*;
 import njurestaurant.njutakeout.dataservice.app.AlipayDataService;
 import njurestaurant.njutakeout.dataservice.app.AlipayOrderDataService;
+import njurestaurant.njutakeout.dataservice.company.PayTypeDataService;
 import njurestaurant.njutakeout.dataservice.order.PlatformOrderDataService;
 import njurestaurant.njutakeout.entity.account.Agent;
 import njurestaurant.njutakeout.entity.account.Merchant;
 import njurestaurant.njutakeout.entity.account.User;
 import njurestaurant.njutakeout.entity.app.Alipay;
+import njurestaurant.njutakeout.entity.company.PayType;
 import njurestaurant.njutakeout.entity.order.AlipayOrder;
 import njurestaurant.njutakeout.entity.order.PlatformOrder;
 import njurestaurant.njutakeout.exception.BlankInputException;
@@ -21,25 +21,20 @@ import njurestaurant.njutakeout.exception.OrderWrongInputException;
 import njurestaurant.njutakeout.exception.WrongIdException;
 import njurestaurant.njutakeout.parameters.order.PlatformUpdateParameters;
 import njurestaurant.njutakeout.publicdatas.account.AgentDailyFlow;
-import njurestaurant.njutakeout.publicdatas.app.CodeType;
 import njurestaurant.njutakeout.publicdatas.order.OrderState;
 import njurestaurant.njutakeout.response.WrongResponse;
 import njurestaurant.njutakeout.response.order.OrderListResponse;
 import njurestaurant.njutakeout.response.report.MerchantReportResponse;
 import njurestaurant.njutakeout.util.FormatDateTime;
 import njurestaurant.njutakeout.util.StringParseUtil;
-import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static njurestaurant.njutakeout.config.websocket.WebSocketHandler.GetThreeBitsPoint;
 import static njurestaurant.njutakeout.publicdatas.order.OrderState.PAID;
 
 @Service
@@ -54,9 +49,11 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
     private final SupplierDataService supplierDataService;
     private final AlipayOrderDataService alipayOrderDataService;
     private final AgentDataService agentDataService;
+    private final PayRateListDataService payRateListDataService;
+    private final PayTypeDataService payTypeDataService;
 
     @Autowired
-    public PlatformOrderBlServiceImpl(PlatformOrderDataService platformOrderDataService, UserDataService userDataService, MerchantDataService merchantDataService, AlipayDataService alipayDataService, UserDao userDao, DeviceDao deviceDao, SupplierDataService supplierDataService, AlipayOrderDataService alipayOrderDataService, AgentDataService agentDataService) {
+    public PlatformOrderBlServiceImpl(PlatformOrderDataService platformOrderDataService, UserDataService userDataService, MerchantDataService merchantDataService, AlipayDataService alipayDataService, UserDao userDao, DeviceDao deviceDao, SupplierDataService supplierDataService, AlipayOrderDataService alipayOrderDataService, AgentDataService agentDataService, PayRateListDataService payRateListDataService, PayTypeDataService payTypeDataService) {
         this.platformOrderDataService = platformOrderDataService;
         this.userDataService = userDataService;
         this.merchantDataService = merchantDataService;
@@ -66,6 +63,8 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
         this.supplierDataService = supplierDataService;
         this.alipayOrderDataService = alipayOrderDataService;
         this.agentDataService = agentDataService;
+        this.payRateListDataService = payRateListDataService;
+        this.payTypeDataService = payTypeDataService;
     }
 
     @Override
@@ -97,33 +96,33 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
         for (User user : merchantUser) {
             usernameMap.put(user.getId(), user.getUsername());
         }
-        // 将错误的商家id信息过滤
-        return platformOrderDataService.findAll().stream().map(p -> {
-            String type = null;
-            if (usernameMap.containsKey(p.getUid())) {
-                if (p.getType().equals("alipay")) {  // 支付宝的收款方式
-                    Alipay alipay = alipayDataService.findById(p.getTableId());
-                    type = "支付宝";
-                    User user = userDao.findUserById(p.getUid());
-                    Merchant merchant = merchantDataService.findMerchantById(user.getTableId());
-                    if (p.getState() == OrderState.WAITING_FOR_PAYING)
-                        if (checkOrderIsExpired(p.getTime())) {
-                            p.setState(OrderState.EXPIRED);
-                            platformOrderDataService.savePlatformOrder(p);
-                        }
 
-                    if (userDao.findUserById(merchant.getApplyId()).getRole() == 1)
-                        return new OrderListResponse(p.getId(), p.getNumber(), p.getMoney(), p.getPayMoney(), p.getRechargeId(),
-                                p.getPayCode(), p.getState(), p.getTime(), p.getPayTime(), p.getUid(), p.getSupplierid(), 0, usernameMap.get(p.getUid()),
-                                type, alipay.getId(), alipay.getName(), p.getCodetype());
-                    else if (userDao.findUserById(merchant.getApplyId()).getRole() == 2)
-                        return new OrderListResponse(p.getId(), p.getNumber(), p.getMoney(), p.getPayMoney(), p.getRechargeId(),
-                                p.getPayCode(), p.getState(), p.getTime(), p.getPayTime(), p.getUid(), p.getSupplierid(), merchant.getApplyId(), usernameMap.get(p.getUid()),
-                                type, alipay.getId(), alipay.getName(), p.getCodetype());
-                } else return null; // 可能有微信的收款方式
+        // 将错误的商家id信息过滤
+        List<OrderListResponse> result= platformOrderDataService.findAll().stream().map(p -> {
+            if (usernameMap.containsKey(p.getUid())) {
+                User user = userDao.findUserById(p.getUid());
+                Merchant merchant = merchantDataService.findMerchantById(user.getTableId());
+                if (p.getState() == OrderState.WAITING_FOR_PAYING)
+                    if (checkOrderIsExpired(p.getTime())) {
+                        p.setState(OrderState.EXPIRED);
+                        platformOrderDataService.savePlatformOrder(p);
+                    }
+                PayType payType = payTypeDataService.findById(p.getPayTypeId());
+                if (userDao.findUserById(merchant.getApplyId()).getRole() == 1)
+                    return new OrderListResponse(p.getId(), p.getNumber(), p.getMoney(), p.getPayMoney(), p.getRechargeId(), p.getState(), p.getTime(), p.getPayTime(), p.getUid(), p.getSupplierid(), 0, usernameMap.get(p.getUid()),
+                            payType.getCodeCategory(), payType.getCodeType());
+                else if (userDao.findUserById(merchant.getApplyId()).getRole() == 2)
+                    return new OrderListResponse(p.getId(), p.getNumber(), p.getMoney(), p.getPayMoney(), p.getRechargeId(), p.getState(), p.getTime(), p.getPayTime(), p.getUid(), p.getSupplierid(), merchant.getApplyId(), usernameMap.get(p.getUid()),
+                            payType.getCodeCategory(), payType.getCodeType());
             } else return null;
             return null;
         }).filter(pf -> pf != null).collect(Collectors.toList());
+
+        Collections.sort(result, (o1, o2) -> {
+            //按照抽成前存款大小进行降序排列
+            return Integer.compare(0, o1.getTime().compareTo(o2.getTime()));
+        });
+        return  result;
     }
 
     /**
@@ -135,7 +134,7 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
         Date now = new Date();
         long diff = now.getTime() - date.getTime();
         double minutes = (double) diff / (1000 * 60);
-        // 预设失效时间为2分钟
+        // 预设失效时间为3分钟
         if (minutes > TransactionBlServiceImpl.time) {
             return true;
         } else {
@@ -180,7 +179,8 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
                         Merchant merchant = merchantDataService.findMerchantById(user.getTableId());
                         User suser = userDataService.getUserById(merchant.getApplyId());
                         if (merchant != null) {
-                            merchant.setBalance(merchant.getBalance() + platformUpdateParameters.getRealPay() * (1 - getRate(platformOrder.getCodetype(),merchant) / 100));
+
+                            merchant.setBalance(GetThreeBitsPoint(merchant.getBalance() + platformUpdateParameters.getRealPay() * (1 - platformOrder.getMerchantRate() / 100)));
                             merchantDataService.saveMerchant(merchant);
                         }
                         System.out.println("#######################################5");
@@ -188,7 +188,7 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
                         if (suser != null) {
                             if (suser.getRole() == 2) {
                                 Agent agent = agentDataService.findAgentById(suser.getTableId());
-                                agent.setBalance(agent.getBalance() + platformUpdateParameters.getRealPay() * agent.getAlipay() / 100);
+                                agent.setBalance(GetThreeBitsPoint(agent.getBalance() + platformUpdateParameters.getRealPay() * (platformOrder.getMerchantRate()-platformOrder.getAgentRate())/ 100));
                                 agentDataService.saveAgent(agent);
                                 System.out.println("#######################################6");
                                 if (AgentDailyFlow.date == null)
@@ -200,15 +200,15 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
                                 }
                                 // 计算代理的每日流量
                                 if (AgentDailyFlow.flow.containsKey(agent.getId())) {
-                                    AgentDailyFlow.flow.put(agent.getId(), AgentDailyFlow.flow.get(agent.getId()) + platformUpdateParameters.getRealPay() * (1 - getRate(platformOrder.getCodetype(),merchant)  / 100));
+                                    AgentDailyFlow.flow.put(agent.getId(), GetThreeBitsPoint(AgentDailyFlow.flow.get(agent.getId()) + platformUpdateParameters.getRealPay() * (1 - platformOrder.getMerchantRate() / 100)));
                                 } else {
-                                    AgentDailyFlow.flow.put(agent.getId(), platformUpdateParameters.getRealPay() * (1 - getRate(platformOrder.getCodetype(),merchant)  / 100));
+                                    AgentDailyFlow.flow.put(agent.getId(), GetThreeBitsPoint(platformUpdateParameters.getRealPay() * (1 - platformOrder.getMerchantRate() / 100)));
                                 }
                                 // 计算代理的每日佣金
                                 if (AgentDailyFlow.commission.containsKey(agent.getId())) {
-                                    AgentDailyFlow.commission.put(agent.getId(), AgentDailyFlow.commission.get(agent.getId()) + platformUpdateParameters.getRealPay() * agent.getAlipay() / 100);
+                                    AgentDailyFlow.commission.put(agent.getId(), GetThreeBitsPoint(AgentDailyFlow.commission.get(agent.getId()) + platformUpdateParameters.getRealPay() * (platformOrder.getMerchantRate()-platformOrder.getAgentRate())  / 100));
                                 } else {
-                                    AgentDailyFlow.commission.put(agent.getId(), platformUpdateParameters.getRealPay() * agent.getAlipay() / 100);
+                                    AgentDailyFlow.commission.put(agent.getId(), GetThreeBitsPoint(platformUpdateParameters.getRealPay() * (platformOrder.getMerchantRate()-platformOrder.getAgentRate()) / 100));
                                 }
                             }
                         }
@@ -220,30 +220,11 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
                     throw new BlankInputException();
             }
             System.out.println("#######################################5");
-
             System.out.println("#######################################6");
             return null;
         }
     }
 
-    public static double getRate(CodeType codeType, Merchant merchant) {
-        switch (codeType) {
-            case RPASSOFF: // 收款通码离线码
-                return merchant.getAlipay_RPASSOFF();
-            case RPASSQR:   //收款通码在线码
-                return merchant.getAlipay_RPASSQR();
-            case RSOLID:    // 收款固码
-                return merchant.getAlipay_RSOLID();
-            case TPASS: //转账通码
-                return merchant.getAlipay_TPASS();
-            case TSOLID:    //转账固码
-                return merchant.getAlipay_TSOLID();
-            case RedEnvelope:
-                return merchant.getAlipay_RedEnvelope();
-            default:
-                return 0;
-        }
-    }
 //    @Override
 //    public List<OrderListResponse> merchantOrderReportByUid(int uid) {
 //        // 找出全部商家的信息

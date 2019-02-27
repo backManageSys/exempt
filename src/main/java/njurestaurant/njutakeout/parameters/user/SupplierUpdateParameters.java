@@ -1,20 +1,27 @@
 package njurestaurant.njutakeout.parameters.user;
 
 public class SupplierUpdateParameters {
-    private String name;
+    private int uid;
     private String password;
     private int level;
-    private String codeType;
+    private int payTypeId;
     private String status;
 
-    public SupplierUpdateParameters(String name, String password, int level, String codeType, String status) {
-        this.name = name;
+    public SupplierUpdateParameters(int uid, String password, int level, int payTypeId, String status) {
+        this.uid = uid;
         this.password = password;
         this.level = level;
-        this.codeType = codeType;
+        this.payTypeId = payTypeId;
         this.status = status;
     }
 
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
 
     public String getPassword() {
         return password;
@@ -32,20 +39,12 @@ public class SupplierUpdateParameters {
         this.level = level;
     }
 
-    public String getCodeType() {
-        return codeType;
+    public int getPayTypeId() {
+        return payTypeId;
     }
 
-    public void setCodeType(String codeType) {
-        this.codeType = codeType;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setPayTypeId(int payTypeId) {
+        this.payTypeId = payTypeId;
     }
 
     public String getStatus() {

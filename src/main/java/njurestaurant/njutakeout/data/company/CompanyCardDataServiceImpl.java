@@ -66,4 +66,9 @@ public class CompanyCardDataServiceImpl implements CompanyCardDataService {
     public CompanyCard findCompanyCardByCardNumber(String cardNumber) {
         return companyCardDao.findCompanyCardByCardNumber(cardNumber);
     }
+
+    @Override
+    public List<CompanyCard> findCompanyCardByOperateId(int uid) {
+        return companyCardDao.findByOperateId(uid);
+    }
 }
