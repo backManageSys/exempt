@@ -11,24 +11,32 @@
       height="500"
       border
       style="width: 100%">
+      <el-table-column prop="cardBalanceIn" label="转入卡余额" align="center"></el-table-column>
+      <el-table-column prop="cardBalanceOut" label="转出卡余额" align="center"></el-table-column>
       <el-table-column prop="cardNumber_in" label="转入卡卡号" align="center"></el-table-column>
       <el-table-column prop="cardNumber_out" label="转出卡卡号" align="center"></el-table-column>
-      <el-table-column prop="money_out" label="发起转帐金额" align="center"></el-table-column>
-      <el-table-column prop="money_in" label="实际到账金额" align="center"></el-table-column>
-      <el-table-column prop="state" label="状态" align="center">
+      <el-table-column prop="operateTime" label="首次操作时间" align="center"></el-table-column>
+      <el-table-column prop="finalOperateTime" label="最终操作时间" align="center"></el-table-column>
+      <el-table-column prop="money_out" label="转出金额" align="center"></el-table-column>
+      <el-table-column prop="money_in" label="转入金额" align="center"></el-table-column>
+      <el-table-column prop="operateUsername" label="操作人用户名" align="center"></el-table-column>
+      <el-table-column prop="reason" label="撤销原因" align="center"></el-table-column>
+      <el-table-column prop="type" label="类型" align="center"></el-table-column>
+      <el-table-column prop="state" label="订单状态" align="center">
         <template scope="scope">
             <el-button type="success" size="small" v-if="scope.row.state=='SUCCESS'">已到账</el-button>
             <el-button type="info" size="small" v-else-if="scope.row.state=='WAITING'">未到账</el-button>
+            <el-button type="danger" size="small" v-else-if="scope.row.state=='FAILED'">失败</el-button>
         </template>
       </el-table-column>
-      <el-table-column prop="operateTimep" label="操作时间" align="center" min-width="100%"></el-table-column>
-      <el-table-column prop="operateUsername" label="操作人" align="center"></el-table-column>
-      <el-table-column label="操作" fixed="right" align="center" v-if="judge">
+      <el-table-column label="操作" fixed="right" align="center" v-if="judge" min-width="150%">
         <template scope="scope">
-          <el-button size="small" @click="openDialog(scope.$index,scope.row)" v-if="editable(scope.$index,scope.row)">修改订单</el-button>
+          <!--<el-button size="small" @click="openDialog(scope.$index,scope.row)" v-if="editable(scope.$index,scope.row)">修改订单</el-button>-->
+          <el-button size="small" @click="revocation(scope.$index,scope.row)">未到账</el-button>
+          <el-button size="small" @click="openDialog(scope.$index,scope.row)">已到账</el-button>
         </template>
       </el-table-column>
-    
+
     </el-table>
     <div class="block">
       <el-pagination
@@ -43,15 +51,9 @@
     </div>
      <el-dialog title="修改订单" :visible.sync="dialogFormVisible">
             <el-form :model="newRow">
-                <el-form-item label="实付金额">
-                    <el-input v-model="newRow.money_in"  placeholder="实付金额"></el-input>
+                <el-form-item label="请输入备注">
+                    <el-input v-model="reason"  placeholder="输入备注"></el-input>
                 </el-form-item>
-                <el-form-item label="订单状态">
-                    <el-select v-model="newRow.state" placeholder="">
-                      <el-option label="未到账" value="WAITING"></el-option>
-                      <el-option label="已到账" value="SUCCESS"></el-option>
-                    </el-select>
-                </el-form-item>   
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -63,7 +65,7 @@
 
 <script>
 // import Chart from '@/components/Charts/lineMarker'
-import { Pcard,Ccard } from "@/api/role";
+import { ShowCardOrder,Ccard,internalaccountchangeUpdate ,internalaccountchangeRevoke} from "@/api/role";
 import { getTime } from "@/utils/index";
 import store from '../../../store';
 export default {
@@ -71,6 +73,7 @@ export default {
   //   components: { Chart },
   data() {
     return {
+      reason:'',
       activeNames: ["1"],
       labelPosition: "right",
       postaddParameters: {
@@ -85,7 +88,7 @@ export default {
         }
       ],
       newRow:{
-        
+
       },
       currentPage: 1,
       pagesize: 10,
@@ -114,7 +117,26 @@ export default {
   },
   methods: {
     confirm(){
-      
+        if(this.reason !== ""){
+          internalaccountchangeRevoke(this.newRow.id,this.reason).then(response => {
+            if (response.code !== 200) {
+              this.$message({
+                message: response.data.description,
+                type: "warning"
+              });
+            } else {
+              this.$message({
+                message: response.data,
+                type: "success"
+              });
+            }
+          });
+        }else{
+          this.$message({
+            message: "请输入备注",
+            type: "warning"
+          });
+        }
     },
     judge(){
       if(store.getters.role == 1)
@@ -122,16 +144,40 @@ export default {
       else
           return false;
     },
-    editable(index,row){ 
+    editable(index,row){
        if(row.state == 'WAITING')
           return true;
        else
           return false;
     },
     openDialog(index, row) {
-        this.dialogFormVisible = true;
-        // console.log(row)
+        // this.dialogFormVisible = true;
         this.newRow = row;
+      internalaccountchangeUpdate(store.getters.uid,row.id).then(response => {
+        if (response.code !== 200) {
+          this.$message({
+            message: response.data.description,
+            type: "warning"
+          });
+        } else {
+          this.$message({
+            message: response.data,
+            type: "success"
+          });
+        }
+      });
+    },
+    revocation(index, row){
+      this.newRow = row;
+      this.$confirm('是否撤销订单?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.dialogFormVisible = true;
+      }).catch(() => {
+        console.log(2)
+      });
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
@@ -145,18 +191,19 @@ export default {
       this.getTeams();
     },
    getTeams() {
-      Pcard().then(response => {
-        console.log(response, "sdll");
+     ShowCardOrder(store.getters.uid).then(response => {
         if (response.code != 200) {
           this.$message({
             message: response.data.description,
             type: "warning"
           });
         } else {
-          if (response.data.length != 0) {
+          if (response.data.length !== 0) {
             this.teams = response.data;
             this.teams.forEach(el => {
               el.operateTimep = getTime(el.operateTime);
+              el.finalOperateTime = getTime(el.finalOperateTime);
+              el.operateTime = getTime(el.operateTime);
             });
 
           }

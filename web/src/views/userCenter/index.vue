@@ -23,11 +23,14 @@
       <div class="text item">{{ '状 &#x3000;态: ' + info.status }}</div>
       <div class="text item">{{ '角 &#x3000;色: ' + userInfo.role_ch }}</div>
       <div class="text item">{{ '等 &#x3000;级: ' + info.priority }}</div>
-      <div class="text item" v-if="info.codeType == 'TPASS' ">码类型: 转账通码</div>
-      <div class="text item" v-if="info.codeType == 'TSOLID' ">码类型: 转账固码</div>
-      <div class="text item" v-if="info.codeType == 'RPASSOFF' ">码类型: 离线收款通码</div>
-      <div class="text item" v-if="info.codeType == 'RPASSQR' ">码类型: 在线收款通码</div>
-      <div class="text item" v-if="info.codeType == 'RSOLID' ">码类型:' 收款固码</div>
+      <div class="text item">{{ '修改或查看: '}}
+        <el-button size="small" @click="equipment()">查看</el-button>
+      </div>
+      <!--<div class="text item" v-if="info.codeType == 'TPASS' ">码类型: 转账通码</div>-->
+      <!--<div class="text item" v-if="info.codeType == 'TSOLID' ">码类型: 转账固码</div>-->
+      <!--<div class="text item" v-if="info.codeType == 'RPASSOFF' ">码类型: 离线收款通码</div>-->
+      <!--<div class="text item" v-if="info.codeType == 'RPASSQR' ">码类型: 在线收款通码</div>-->
+      <!--<div class="text item" v-if="info.codeType == 'RSOLID' ">码类型:' 收款固码</div>-->
     </el-card>
     <el-card v-if="userInfo.role==2" class="box-card">
       <div slot="header" class="clearfix">
@@ -109,6 +112,35 @@
         <el-button type="primary" @click="getMoney">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog title="修改供码用户信息" :visible.sync="dialogFormVisiblEequipment">
+      <el-form ref="form" :model="newRow.user" label-width="13%">
+        <el-form-item label="码类型">
+          <el-select v-model="value" placeholder="请选择" @change="firstChange" @visible-change="getSelect"
+                     style="width:30%">
+            <el-option
+              v-for="item in options1"
+              :key="item.id"
+              :label="item.codeCategory"
+              :value="item.codeCategory">
+            </el-option>
+          </el-select>
+          <el-select v-model="value1" placeholder="请选择"
+                     @visible-change="getPayType" style="width: 35%">
+            <el-option
+              v-for="item in options2"
+              :key="item.id"
+              :label="item.codeType"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisiblEequipment = false">取 消</el-button>
+        <el-button type="primary" @click="updateSupplier">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -117,7 +149,7 @@
   import store from "../../store";
   import {withdrew} from "@/api/transaction";
   import {getTime} from "@/utils/index";
-  import {getSelect, getPayType, getPayRateList} from '@/api/role'
+  import {getSelect, getPayType, supplierUpdate} from '@/api/role'
   // getInfo(uid)
   export default {
     filters: {
@@ -150,6 +182,7 @@
         newRowIndex: 1,
         dialogFormVisible: false,
         alipayRateDialogFormVisible: false,
+        dialogFormVisiblEequipment: false,
         newRow: {
           cardId: "",
           id: 0,
@@ -163,6 +196,7 @@
     },
     methods: {
       getPayType() {
+        console.log(6325, this.value);
         getPayType(this.value).then(response => {
           if (response.code !== 200) {
             this.$message({
@@ -182,7 +216,38 @@
               type: "warning"
             });
           } else {
+            console.log(2131, response.data);
             this.options1 = response.data;
+          }
+        });
+      },
+      equipment() {
+        this.dialogFormVisiblEequipment = true;
+        this.getSelect();
+        this.getPayType();
+      },
+      updateSupplier(formName) {
+        supplierUpdate(
+          this.value1,
+          this.info.priority,
+          this.info.user.password,
+          this.info.status,
+          store.getters.uid,
+          store.getters.uid
+        ).then(response => {
+          if (response.code != 200) {
+            this.$message({
+              message: response.data.description,
+              type: "warning"
+            });
+          } else {
+            this.teams[this.newRowIndex].priority = this.newRow.level;
+            this.dialogFormVisible = false;
+            this.$message({
+              message: "修改成功",
+              type: "success"
+            });
+            this.getData();
           }
         });
       },
@@ -234,6 +299,9 @@
           } else {
             this.userInfo = response.data.info.user;
           }
+          this.value = response.data.info.codeCategory;
+          this.value1 = response.data.info.payTypeId;
+          console.log(5555, this.value);
           this.list = this.userInfo.cards;
           this.userInfo.role_ch = this.userInfo.role == 1 ? "管理员" : this.userInfo.role == 2 ? "代理" : this.userInfo.role == 3 ? "商户" : "供码用户";
           this.info = response.data.info;

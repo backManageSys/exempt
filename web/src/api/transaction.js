@@ -16,6 +16,7 @@ export function withdrew(cardId,
   })
 }
 export function withdrewDeal(
+  companyCardId,
     id, memo,
     operatorId,
     state) {
@@ -23,6 +24,7 @@ export function withdrewDeal(
     url: '/withdrew/deal/'+id,
     method: 'post',
     data:{
+      companyCardId,
         memo,//: "string",		// 备注
         operatorId,//: 0,		// 处理人的userid
         state,//: "string"		// SUCCESS成功/FAILED失败

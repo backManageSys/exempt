@@ -194,16 +194,16 @@ export function suppliersGet() {
     method: 'get'
   })
 }
-export function supplierUpdate(codeType, level,name, password,status, uid) {
+export function supplierUpdate(payTypeId, level, password,status, uid,id) {
   return request({
-    url: '/supplier/update/' + uid,
+    url: '/supplier/update/' +id,
     method: 'put',
     data: {
-      codeType,
+      payTypeId,
       level,
-      name,
       password,
-      status
+      status,
+      uid,
     }
   })
 }
@@ -261,16 +261,13 @@ export function withdrew(cardId,id,money,type) {
     }
   })
 }
-export function withdrewHistory() {
+export function withdrewHistory(uid) {
   return request({
     url: '/withdrew/history',
-    method: 'get'
-    // data: {
-    //   cardId,
-    //   id,
-    //   money,
-    //   type
-    // }
+    method: 'get',
+    data: {
+      uid
+    }
   })
 }
 
@@ -332,5 +329,64 @@ export function updatePayRateList(uid,payType_id,rate,status) {
     url: '/payRateList/update/' + uid,
     method: 'put',
     data: {payType_id,rate,status}
+  })
+}
+
+export function getDevice(uid) {
+  return request({
+    url: '/app/device/get'+'?uid='+uid,
+    method: 'get',
+  })
+}
+
+export function getAlipayByDevice(imei) {
+  return request({
+    url: '/app/getAlipayByDevice'+'?imei='+imei,
+    method: 'get',
+  })
+}
+
+export function addPersonalCard(loginId,cardBalance,cardNumber) {
+  return request({
+    url: '/app/supplier/addPersonalCard'+'?loginId='+loginId,
+    method: 'post',
+    data: {cardBalance,cardNumber}
+  })
+}
+
+export function ShowCardOrder(uid) {
+  return request({
+    url: '/internalaccountchange/ShowCardOrder'+'?uid='+uid,
+    method: 'get',
+  })
+}
+
+export function getCompanyCard(uid) {
+  return request({
+    url: '/app/supplier/getCompanyCard'+'?uid='+uid,
+    method: 'get',
+  })
+}
+
+export function internalaccountchangeUpdate(uid,id) {
+  return request({
+    url: '/internalaccountchange/card/update/' + id + '?uid=' + uid,
+    method: 'put',
+  })
+}
+
+export function internalaccountchangeRevoke(id,reason) {
+  return request({
+    url: '/internalaccountchange/card/revoke/' + id,
+    method: 'put',
+    params:{reason}
+  })
+}
+
+export function withdrewRevoke(id,reason) {
+  return request({
+    url: '/withdrew/revoke/' + id,
+    method: 'put',
+    data:{reason}
   })
 }

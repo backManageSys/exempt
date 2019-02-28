@@ -1,30 +1,22 @@
 <template>
   <div class="app-container">
-    <div>我是供码用户</div>
+    <div>我的供码设备</div>
     <el-input v-model="searchStr" suffix-icon="el-icon-search" placeholder="请输入搜索内容"></el-input>
     <el-table
-      :data="filterData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
+      :data = "equipment"
       border>
-      <el-table-column prop="user.username" label="用户名" align="center"></el-table-column>
-      <el-table-column prop="priority" label="等级" align="center"></el-table-column>
-      <el-table-column prop="devices_team" label="设备状态" align="center" min-width="150%" >
-        <template slot-scope="scope">
-          <el-tag
-            :type="device.online?'success':'info'"
-            v-for="device in scope.row.devices"
-            :key="device.device_team"
-          >{{ device.device_team +"&#12288;&#12288;"}}
-          <el-button type="success" size="mini" @click="turnOn(scope.row,device)">启用</el-button>
-          <el-button type="warning" size="mini" @click="turnDown(scope.row,device)">停用</el-button>
-          <div v-html="text"></div>
-          </el-tag>
-          
-        </template>
-      </el-table-column>
-      <el-table-column prop="status" label="账户状态" align="center"></el-table-column>
-      <el-table-column label="操作" fixed="right" align="center">
+      <el-table-column prop="imei" label="设备号" align="center"></el-table-column>
+      <el-table-column prop="online" label="是否在线" align="center"  :formatter="formatState" ></el-table-column>
+      <el-table-column prop="status" label="是否启用" align="center"></el-table-column>
+      <el-table-column prop="loginId" label="支付宝账号" align="center"></el-table-column>
+      <el-table-column prop="nickName" label="支付宝昵称" align="center"></el-table-column>
+      <el-table-column prop="alipayBalance" label="余额" align="center"></el-table-column>
+      <el-table-column label="操作" fixed="right" align="center" min-width="250%">
         <template scope="scope">
-          <el-button size="small" @click="openDialog(scope.$index,scope.row)" v-if="seen(scope.$index,scope.row)">修改</el-button>
+          <el-button type="success" size="mini" @click="turnOn(scope.row)">启用</el-button>
+          <el-button type="warning" size="mini" @click="turnDown(scope.row)">停用</el-button>
+          <el-button size="small" @click="openDialog(scope.row)">查看</el-button>
+          <el-button size="small" @click="showDialog(scope.row)">添加</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -39,66 +31,72 @@
         :total="total"
       ></el-pagination>
     </div>
-    <el-dialog title="修改供码用户信息" :visible.sync="dialogFormVisible">
-            <el-form ref="form" :model="newRow.user" :rules="addRules" label-width="13%">
-                <el-form-item label="用户名" prop="username">
-                    <el-input v-model="newRow.user.username" type="text" placeholder="用户名" style="width:90%;"></el-input>
-                </el-form-item>
-                <el-form-item label="密码" prop="password">
-                    <el-input v-model="newRow.user.password" type="password" placeholder="密码" style="width:90%;"></el-input>
-                </el-form-item>
-                <el-form-item label="码类型">
-                    <el-select v-model="newRow.codeType" placeholder=""  style="width:30%;">
-                    <el-option label="转账通码" value="TPASS"></el-option>
-                    <el-option label="转账固码" value="TSOLID"></el-option>
-                    <el-option label="收款通码离线码" value="RPASSOFF"></el-option>
-                    <el-option label="收款通码在线码" value="RPASSQR"></el-option>
-                    <el-option label="收款固码(二开)" value="RSOLID"></el-option>
-                    </el-select>
-                </el-form-item>
-                 <!-- <el-form-item label="状态">
-                    <el-select v-model="newRow.status" placeholder="启用">
-                    <el-option label="启用" value="启用"></el-option>
-                    <el-option label="停用" value="停用"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="level">
-                    <el-input v-model="newRow.level" type="number" min="1" placeholder="level"></el-input>
-                </el-form-item> -->
-                
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="updateSupplier">确 定</el-button>
-            </div>
+    <el-dialog :title="equipmentTitle" :visible.sync="dialogFormVisible">
+      <el-table
+        :data = "zfb"
+        border>
+        <el-table-column prop="loginId" label="支付宝账号" align="center"></el-table-column>
+        <el-table-column prop="name" label="支付宝昵称" align="center"></el-table-column>
+        <el-table-column prop="wealth" label="余额" align="center"></el-table-column>
+      </el-table>
+      <div class="block">
+        <el-pagination
+          @size-change="handleSizeChange1"
+          @current-change="handleCurrentChange1"
+          :current-page.sync="currentPage1"
+          :page-sizes="[10, 20, 30, 40]"
+          :page-size="pagesize1"
+          layout="sizes, prev, pager, next"
+          :total="total1"
+        ></el-pagination>
+      </div>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="updateSupplier">确 定</el-button>
+      </div>
     </el-dialog>
+
+    <el-dialog title="添加银行卡" :visible.sync="dialogFormVisible1">
+      <el-form ref="form"  label-width="20%">
+      <el-form-item label="银行卡号">
+        <el-input v-model="accountOfBank" type="number" onkeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"></el-input>
+      </el-form-item>
+      <el-form-item label="卡上余额">
+        <el-input v-model="cardWealth" type="number" onkeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"></el-input>
+      </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible1 = false">取 消</el-button>
+        <el-button type="primary" @click="addPersonalCard">增 加</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
-import {suppliersGet, supplierUpdate , deviceUpdate } from "@/api/role";
-import { isvalidUsername,isvalidPassword } from '@/utils/validate' 
+import {suppliersGet, supplierUpdate , deviceUpdate,getSelect, getPayType,getDevice,getAlipayByDevice ,addPersonalCard} from "@/api/role";
+import { isvalidUsername,isvalidPassword } from '@/utils/validate'
 import store from '../../../../store'
   export default {
     data() {
-      const validateUsername = (rule, value, callback) => {
-                console.log(rule)
-                console.log(value)
-                console.log(callback)
-            if (!isvalidUsername(value)) {
-                callback(new Error('请输入正确的用户名（只能由英文字母组成）'))
-            } else {
-                callback()
-            }
-            }
-            const validatePass = (rule, value, callback) => {
-            if (!isvalidPassword(value)) {
-                callback(new Error('必须包含字母和数字且超过8位'))
-            } else {
-                callback()
-            }
-            }
       return {
+        cardWealth:"",
+        accountOfBank: '',
+        loginId:"",
+        zfb:[],
+        equipment:[],
+        point: "",
+        options1: [],
+        options2: [],
+        value: '',
+        value1: '',
+        value2: '',
+        secondState: true,
+        thirdState: true,
+        selectState: true,
+        status: '',
         teams: [
           {
             priority: "",
@@ -124,46 +122,64 @@ import store from '../../../../store'
           priority: 0
         },
         currentPage: 1,
+        currentPage1: 1,
         pagesize: 10,
+        pagesize1: 10,
         newRowIndex: 1,
         dialogFormVisible: false,
+        dialogFormVisible1: false,
         searchStr: "", // 新增
-        addRules: {
-          username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-          password: [{ required: true, trigger: 'blur', validator: validatePass }]
-          // post: [{ required: true, trigger: 'blur', validator: validateEmpty }]
-        },
-        text:"<br/>"
+        text:"<br/>",
+        equipmentTitle:''
       };
     },
     computed: {
-      filterData() {
-        return this.teams.filter(item => {
-          var reg = new RegExp(this.searchStr, "i");
-          console.log(item.user.username);
-          return !this.searchStr || reg.test(item.user.username);
-        });
-      },
       total(){
           return this.teams.length
+      },
+      total1(){
+        return this.zfb.length
       }
     },
     created() {
       this.getData();
     },
     methods: {
-      turnOn(row,device){
-        console.log(row.user.username)
-        console.log(device.imei)
-        deviceUpdate(row.id,device.imei,"启用").then(response => {
-          if (response.code != 200) {
+      getPayType() {
+        getPayType(this.value).then(response => {
+          if (response.code !== 200) {
             this.$message({
               message: response.data.description,
               type: "warning"
             });
           } else {
-            // this.teams[this.newRowIndex].priority = this.newRow.level;
-            // this.dialogFormVisible = false;
+            this.options2 = response.data;
+          }
+        });
+      },
+      getSelect() {
+        getSelect().then(response => {
+          if (response.code !== 200) {
+            this.$message({
+              message: response.data.description,
+              type: "warning"
+            });
+          } else {
+            this.options1 = response.data;
+          }
+        });
+      },
+      firstChange() {
+        this.value1 = "";
+      },
+      turnOn(row){
+        deviceUpdate(row.id,row.imei,"启用").then(response => {
+          if (response.code !== 200) {
+            this.$message({
+              message: response.data.description,
+              type: "warning"
+            });
+          } else {
             this.$message({
               message: "设备启用成功",
               type: "success"
@@ -172,18 +188,14 @@ import store from '../../../../store'
           }
         });
       },
-      turnDown(row,device){
-        console.log(row.user.username)
-        console.log(device.imei)
-        deviceUpdate(row.id,device.imei,"停用").then(response => {
-          if (response.code != 200) {
+      turnDown(row){
+        deviceUpdate(row.id,row.imei,"停用").then(response => {
+          if (response.code !== 200) {
             this.$message({
               message: response.data.description,
               type: "warning"
             });
           } else {
-            // this.teams[this.newRowIndex].priority = this.newRow.level;
-            // this.dialogFormVisible = false;
             this.$message({
               message: "设备停用成功",
               type: "success"
@@ -192,21 +204,15 @@ import store from '../../../../store'
           }
         });
       },
-      seen(index,row){
-        if(row.user.username == null || row.user.username == '')
-          return false;
-        else
-          return true;
-      },
       updateSupplier(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
         supplierUpdate(
-          this.newRow.codeType,
+          this.value1,
           this.newRow.level,
-          this.newRow.user.username,
           this.newRow.user.password,
           this.newRow.status,
+          store.getters.uid,
           this.newRow.id
         ).then(response => {
           if (response.code != 200) {
@@ -221,6 +227,7 @@ import store from '../../../../store'
               message: "修改成功",
               type: "success"
             });
+            this.getData();
           }
         });
         } else {
@@ -229,34 +236,80 @@ import store from '../../../../store'
             }
           });
       },
-      openDialog(index, row) {
+      formatState(row, column, cellValue) {
+        if (cellValue === 1){
+          return '在线';
+        }else if (cellValue === 0){
+          return '离线';
+        }
+      },
+      openDialog(row) {
         this.dialogFormVisible = true;
-        // console.log(row)
-        this.newRow = row;
-        // if(row.codeType==None){
-        //     this.newRow.codeType = 'TSOLID'
-        // }else{
-        //      this.newRow.codeType = row.codeType;
-        // }
-        this.newRow.level = row.priority;
-        // this.newRow.password = row.user.password;
-        //this.newRow = JSON.parse(JSON.stringify(row));
-        this.newRowIndex = index;
-        console.log(this.newRow);
+        console.log(row);
+        this.equipmentTitle =  row.imei;
+        getAlipayByDevice(row.imei).then(response => {
+          if (response.code !== 200) {
+            this.$message({
+              message: response.data.description,
+              type: "warning"
+            });
+          } else {
+            console.log(response.data);
+            this.zfb = response.data;
+          }
+        });
+      },
+      showDialog(row) {
+        this.dialogFormVisible1 = true;
+        this.loginId = row.loginId;
       },
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
         this.pagesize = val;
       },
+      handleSizeChange1(val) {
+        this.pagesize1 = val;
+      },
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
         this.currentPage = val;
       },
+      handleCurrentChange1(val) {
+        this.currentPage1 = val;
+      },
       getData() {
-        this.getTeams();
+        // this.getTeams();
+        this.getDevice();
+      },
+      addPersonalCard(){
+        addPersonalCard(this.loginId,this.cardWealth,this.accountOfBank).then(response => {
+          if (response.code !== 200) {
+            this.$message({
+              message: response.data.description,
+              type: "warning"
+            });
+          } else {
+            this.$message({
+              message: response.data,
+              type: "warning"
+            });
+            this.dialogFormVisible1 = false;
+          }
+        });
+      },
+      getDevice(){
+        getDevice(store.getters.uid).then(response => {
+          if (response.code != 200) {
+            this.$message({
+              message: response.data.description,
+              type: "warning"
+            });
+          } else {
+            console.log(12323112,response.data);
+           this.equipment = response.data;
+          }
+        });
       },
       getTeams() {
-         suppliersGet().then(response=>{  
+         suppliersGet().then(response=>{
                     console.log(response,'sdll',store.getters.uid)
                      if(response.code!=200){
                         this.$message({
@@ -265,6 +318,8 @@ import store from '../../../../store'
                         });
                     }else{
                        var teams = response.data;
+                       this.equipment = response.data.devices;
+                       console.log(2123213,response.data,this.equipment);
                         var a =[];
                         teams.forEach(el => {
                             //el.devices = [{imei:"123",online:1},{imei:"456",online:0}]
@@ -286,5 +341,14 @@ import store from '../../../../store'
   };
 </script>
 
-<style scoped>
+<style>
+  .el-input>input::-webkit-outer-spin-button,
+  .el-input>input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+
+  .el-input>input[type="number"] {
+    -moz-appearance: textfield;
+  }
 </style>
+

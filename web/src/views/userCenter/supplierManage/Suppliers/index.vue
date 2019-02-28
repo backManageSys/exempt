@@ -40,108 +40,93 @@
       ></el-pagination>
     </div>
     <el-dialog title="修改供码用户信息" :visible.sync="dialogFormVisible">
-            <el-form ref="form" :model="newRow.user" :rules="addRules" label-width="13%">
-               <el-form-item label="用户名" prop="username">
-                    <el-input v-model="newRow.user.username" type="text" placeholder="用户名" style="width:90%;"></el-input>
-                </el-form-item>
-                <el-form-item label="密码" prop="password">
-                    <el-input v-model="newRow.user.password" type="password" placeholder="密码" style="width:90%;"></el-input>
-                </el-form-item>
-                <el-form-item label="码类型">
+      <el-form ref="form" :model="newRow.user" :rules="addRules" label-width="13%">
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="newRow.user.username" type="text" placeholder="用户名" style="width:90%;"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="newRow.user.password" type="password" placeholder="密码" style="width:90%;"></el-input>
+        </el-form-item>
+        <el-form-item label="码类型">
 
-                  <el-select v-model="value1" placeholder="请选择" @change = "firstChange">
-                                                               <el-option
-                                                                 v-for="item in options1"
-                                                                 :key="item.value"
-                                                                 :label="item.label"
-                                                                 :value="item.value">
-                                                               </el-option>
-                                                             </el-select>
-                                                             <el-select v-model="value2" placeholder="请选择" :disabled="secondState">
-                                                                                          <el-option
-                                                                                            v-for="item in options2"
-                                                                                            :key="item.value"
-                                                                                            :label="item.label"
-                                                                                            :value="item.value">
-                                                                                          </el-option>
-                                                                                        </el-select>
+            <el-select v-model="value" placeholder="请选择" @change="firstChange" @visible-change="getSelect" style="width:30%">
+              <el-option
+                v-for="item in options1"
+                :key="item.id"
+                :label="item.codeCategory"
+                :value="item.codeCategory">
+              </el-option>
+            </el-select>
+            <el-select v-model="value1" placeholder="请选择"
+                       @visible-change="getPayType" style="width: 35%">
+              <el-option
+                v-for="item in options2"
+                :key="item.id"
+                :label="item.codeType"
+                :value="item.id">
+              </el-option>
+            </el-select>
 
-                     <!-- <el-select v-model="newRow.codeType" placeholder="码类型" style="width:40%;">
-                    <el-option label="转账通码" value="TPASS"></el-option>
-                    <el-option label="转账固码" value="TSOLID"></el-option>
-                    <el-option label="收款通码离线码" value="RPASSOFF"></el-option>
-                    <el-option label="收款通码在线码" value="RPASSQR"></el-option>
-                    <el-option label="收款固码(二开)" value="RSOLID"></el-option>
-                     <el-option label="红包" value="RedEnvelope"></el-option>      -->
-                    </el-select>
-                </el-form-item>
-                 <el-form-item label="状态">
-                    <el-select v-model="newRow.status" placeholder="启用" style="width:20%;">
-                    <el-option label="启用" value="启用"></el-option>
-                    <el-option label="停用" value="停用"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="等级" >
-                    <el-select v-model="newRow.priority" placeholder="请选择" style="width:15%;">
-                        <el-option
-                        v-for="item in options"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                        ></el-option>
-                    </el-select>
-                </el-form-item>
-               
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="updateSupplier('form')">确 定</el-button>
-            </div>
+
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="newRow.status" placeholder="启用" style="width:20%;">
+            <el-option label="启用" value="启用"></el-option>
+            <el-option label="停用" value="停用"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="等级">
+          <el-select v-model="newRow.priority" placeholder="请选择" style="width:15%;">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="updateSupplier('form')">确 定</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-  import {suppliersGet, supplierUpdate} from "@/api/role";
-import { isvalidUsername,isvalidPassword } from '@/utils/validate'  
-import {getTime} from '@/utils/index'
+  import {suppliersGet, supplierUpdate,getSelect, getPayType} from "@/api/role";
+  import {isvalidUsername, isvalidPassword} from '@/utils/validate'
+  import {getTime} from '@/utils/index'
+
   export default {
     data() {
       const validateUsername = (rule, value, callback) => {
-                console.log(rule)
-                console.log(value)
-                console.log(callback)
-            if (!isvalidUsername(value)) {
-                callback(new Error('请输入正确的用户名（只能由英文字母组成）'))
-            } else {
-                callback()
-            }
-            }
-            const validatePass = (rule, value, callback) => {
-            if (!isvalidPassword(value)) {
-                callback(new Error('必须包含字母和数字且超过8位'))
-            } else {
-                callback()
-            }
+        if (!isvalidUsername(value)) {
+          callback(new Error('请输入正确的用户名（只能由英文字母组成）'))
+        } else {
+          callback()
         }
+      };
+      const validatePass = (rule, value, callback) => {
+        if (!isvalidPassword(value)) {
+          callback(new Error('必须包含字母和数字且超过8位'))
+        } else {
+          callback()
+        }
+      };
       return {
-      options1: [{
-                                                  value: '微信',
-                                                  label: '微信'
-                                                }, {
-                                                  value: '支付宝',
-                                                  label: '支付宝'
-                                                }],
-                                                  options2: [{
-                                                              value: 'vx',
-                                                              label: '微信1'
-                                                            }, {
-                                                              value: 'zfb',
-                                                              label: '支付宝1'
-                                                            }],
-                                                            value1: '',
-                                                                                                       value2: '',
-                                                                                                       secondState:true,
+        point: "",
+        options1: [],
+        options2: [],
+        value: '',
+        value1: '',
+        value2: '',
+        secondState: true,
+        thirdState: true,
+        selectState: true,
+        status: '',
         teams: [
           {
             priority: 0,
@@ -165,37 +150,37 @@ import {getTime} from '@/utils/index'
           status: "启用",
         },
         addRules: {
-                username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-                password: [{ required: true, trigger: 'blur', validator: validatePass }]
-                // post: [{ required: true, trigger: 'blur', validator: validateEmpty }]
-              },
+          username: [{required: true, trigger: 'blur', validator: validateUsername}],
+          password: [{required: true, trigger: 'blur', validator: validatePass}]
+          // post: [{ required: true, trigger: 'blur', validator: validateEmpty }]
+        },
         currentPage: 1,
         pagesize: 10,
         newRowIndex: 1,
         dialogFormVisible: false,
-        searchStr: "" ,// 新增
+        searchStr: "",// 新增
         options: [
-                {
-                value: "1",
-                label: "1"
-                },
-                {
-                value: "2",
-                label: "2"
-                },
-                {
-                value: "3",
-                label: "3"
-                },
-                {
-                value: "4",
-                label: "4"
-                },
-                {
-                value: "5",
-                label: "5"
-                }
-                ],
+          {
+            value: "1",
+            label: "1"
+          },
+          {
+            value: "2",
+            label: "2"
+          },
+          {
+            value: "3",
+            label: "3"
+          },
+          {
+            value: "4",
+            label: "4"
+          },
+          {
+            value: "5",
+            label: "5"
+          }
+        ],
       };
     },
     computed: {
@@ -206,7 +191,7 @@ import {getTime} from '@/utils/index'
           return !this.searchStr || reg.test(item.user.username);
         });
       },
-      total(){
+      total() {
         return this.teams.length
       }
     },
@@ -214,45 +199,73 @@ import {getTime} from '@/utils/index'
       this.getData();
     },
     methods: {
-      firstChange(){
-                      console.log(111);
-                      this.secondState = false;
-                      },
-      updateSupplier(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-        supplierUpdate(
-          this.newRow.codeType,
-          this.newRow.priority,
-          this.newRow.user.username,
-          this.newRow.user.password,
-          this.newRow.status,
-          this.newRow.user.id
-        ).then(response => {
-          if (response.code != 200) {
+      getPayType() {
+        getPayType(this.value).then(response => {
+          if (response.code !== 200) {
             this.$message({
               message: response.data.description,
               type: "warning"
             });
           } else {
-           // this.teams[this.newRowIndex].priority = this.newRow.level;
-            this.dialogFormVisible = false;
-            this.$message({
-              message: "修改成功",
-              type: "success"
-            });
+            this.options2 = response.data;
           }
         });
-        } else {
-              console.log('error submit!!');
-              return false;
-            }
-          });
+      },
+      getSelect() {
+        getSelect().then(response => {
+          if (response.code !== 200) {
+            this.$message({
+              message: response.data.description,
+              type: "warning"
+            });
+          } else {
+            this.options1 = response.data;
+          }
+        });
+      },
+      firstChange() {
+        this.value1 = "";
+      },
+      updateSupplier(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            supplierUpdate(
+              this.value1,
+              this.newRow.priority,
+              this.newRow.user.username,
+              this.newRow.user.password,
+              this.newRow.status,
+              this.newRow.user.id
+            ).then(response => {
+              if (response.code != 200) {
+                this.$message({
+                  message: response.data.description,
+                  type: "warning"
+                });
+              } else {
+                // this.teams[this.newRowIndex].priority = this.newRow.level;
+                this.dialogFormVisible = false;
+                this.$message({
+                  message: "修改成功",
+                  type: "success"
+                });
+                this.getData();
+              }
+            });
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
       },
       openDialog(index, row) {
         this.dialogFormVisible = true;
         // console.log(row)
         this.newRow = row;
+        this.value =   this.newRow.codeCategory;
+        this.value1 =   this.newRow.payTypeId;
+        this.getSelect();
+        this.getPayType();
         // if(row.codeType==None){
         //     this.newRow.codeType = 'TSOLID'
         // }else{
@@ -294,7 +307,7 @@ import {getTime} from '@/utils/index'
                 console.log(de.imei);
                 de.device_team = de.imei + " " + (de.online ? "在线" : "离线");
               });
-               el.timep = getTime(el.time)
+              el.timep = getTime(el.time)
             });
           }
         });

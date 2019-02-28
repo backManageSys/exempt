@@ -7,24 +7,27 @@
       placeholder="请输入搜索内容"
     ></el-input>
     <el-table
-      :data="filterData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
+      :data="teams"
       height="500"
       border
       style="width: 100%"
     >
+      <el-table-column prop="number" label="编号" align="center"></el-table-column>
+      <el-table-column prop="applicantUsername" label="申请人id" align="center"></el-table-column>
+      <el-table-column prop="applyTime" label="申请提现时间" align="center"></el-table-column>
+    <el-table-column prop="card_out_balance" label="转出卡余额" align="center"></el-table-column>
+    <el-table-column prop="money_out" label="发起提现金额" align="center"></el-table-column>
+    <el-table-column prop="money_in" label="实际到卡金额" align="center"></el-table-column>
+    <el-table-column prop="operateTime" label="提现处理时间" align="center"></el-table-column>
+    <el-table-column prop="operateUsername" label="提现处理人" align="center"></el-table-column>
+    <el-table-column prop="revokeTime" label="撤销时间" align="center"></el-table-column>
+    <!--<el-table-column prop="type" label="提现类型" align="center">-->
+      <!--<template scope="scope">-->
+          <!--<div v-if="scope.row.type =='merchant' ">商户提现</div>-->
+          <!--<div v-if="scope.row.type =='agent' ">代理提现</div>-->
+      <!--</template>-->
+    <!--</el-table-column>-->
 
-    <el-table-column prop="cardId" label="卡号" align="center"></el-table-column>
-    <el-table-column prop="money" label="金额" align="center"></el-table-column>
-    <el-table-column prop="type" label="提现类型" align="center">
-      <template scope="scope">
-          <div v-if="scope.row.type =='merchant' ">商户提现</div>
-          <div v-if="scope.row.type =='agent' ">代理提现</div>
-      </template>
-    </el-table-column>
-    <el-table-column prop="applicantId" label="申请人id" align="center"></el-table-column>
-    <el-table-column prop="operateId" label="处理人id" align="center"></el-table-column>
-    <el-table-column prop="applyTime" label="申请提现时间" align="center"></el-table-column>
-    <el-table-column prop="operateTime" label="申请提现时间" align="center"></el-table-column> 
     <el-table-column prop="state" label="提现状态" align="center">
       <template slot-scope="{row}">
         <el-button type="primary" size="small" v-if="row.state=='WAITING'">等待处理</el-button>
@@ -35,6 +38,11 @@
       </template>
     </el-table-column>
     <el-table-column prop="memo" label="备注" align="center"></el-table-column>
+      <el-table-column label="操作" align="center" min-width="100%" >
+        <template  scope="scope" >
+          <el-button size="small" type="success" align="center"  v-if="scope.row.state=='SUCCESS'" @click="getWithdrew(scope.row.id,scope.row.memo)">撤销</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <div class="block">
       <el-pagination
@@ -47,35 +55,39 @@
         :total=total
       ></el-pagination>
     </div>
+    <el-dialog title="添加备注信息" :visible.sync="dialogFormVisible">
+      <el-form :model="newRow" label-width="13%">
+        <el-form-item label="备注：">
+          <el-input v-model="newRow.memo" placeholder="备注" style="width:70%;"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="update">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-// import Chart from '@/components/Charts/lineMarker'
-import { withdrewHistory } from "@/api/role";
+import { withdrewHistory,withdrewRevoke } from "@/api/role";
 import { getTime } from "@/utils/index";
 import store from '../../../../store';
 export default {
-  // name: "index",
-  //   components: { Chart },
   data() {
     return {
-      // activeNames: ["1"],
-      // labelPosition: "right",
-      // postaddParameters: {
-      //   post: "post"
-      // },
+      dialogFormVisible: false,
       teams: [
         {
-          // cardId: "string",
-          // id: "string",
-          // money: 0,
-          // type: 0
         }
       ],
       currentPage: 1,
       pagesize: 10,
-      searchStr: ""
+      searchStr: "",
+      id:'',
+      newRow: {
+        memo: ""
+      },
     };
   },
   computed: {
@@ -99,40 +111,59 @@ export default {
   },
   methods: {
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
       this.pagesize = val;
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
       this.currentPage = val;
     },
     getData() {
       this.getTeams();
     },
+    getWithdrew(id, memo) {
+      this.dialogFormVisible = true;
+      this.id = id;
+      this.memo = memo;
+    },
+    update() {
+      if (this.newRow.memo === "") {
+        this.$message({
+          message: "请添加备注",
+          type: 'warning'
+        });
+        return false;
+      } else {
+        this.dialogFormVisible = false;
+        withdrewRevoke(this.id, this.newRow.memo).then(response => {
+          if (response.code !== 200) {
+            this.$message({
+              message: response.data.description,
+              type: 'warning'
+            });
+          } else {
+            this.$message({
+              message: response.data.description,
+              type: 'success'
+            });
+            this.getData();
+          }
+        })
+      }
+    },
    getTeams() {
-      withdrewHistory().then(response => {
-        console.log(response, "sdll");
-        if (response.code != 200) {
+      withdrewHistory(store.getters.uid).then(response => {
+        if (response.code !== 200) {
           this.$message({
             message: response.data.description,
             type: "warning"
           });
         } else {
-          if (response.data.length != 0) {
+          if (response.data.length !== 0) {
             this.teams = response.data;
             this.teams.forEach(el => {
               el.applyTime = getTime(el.applyTime);
-              el.operateTime = getTime(el.operateTime);    
+              el.operateTime = getTime(el.operateTime);
+              el.revokeTime = getTime(el.revokeTime);
             });
-            if(store.getters.role != 1){
-              var a = []
-              this.teams.forEach(el => {
-                if(el.applicantId == store.getters.uid) {
-                    a.push(el)
-                }
-              })
-              this.teams = a;
-            }
         }
         }
       });

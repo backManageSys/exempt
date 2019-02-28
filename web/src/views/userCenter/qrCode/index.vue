@@ -45,11 +45,17 @@
         <el-button type="primary" @click="getCode" :disabled="isdisabled">获取二维码</el-button>
         <!-- <el-button>取消</el-button> -->
       </el-form-item>
-      <el-form-item>
-        <img :src="img_src" height="200" width="200"/>
-      </el-form-item>
     </el-form>
     <el-form>
+
+      <el-dialog title="二维码" :visible.sync="dialogFormVisible">
+        <el-form-item style="text-align: center">
+          <img :src="img_src" height="200" width="200"/>
+        </el-form-item>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">关 闭</el-button>
+        </div>
+      </el-dialog>
 
     </el-form>
   </div>
@@ -72,6 +78,7 @@
         secondState: true,
         thirdState: true,
         selectState: true,
+        dialogFormVisible: false,
         status: '',
         qrCode: '',
         formparameters: {
@@ -158,7 +165,6 @@
         })
       },
       getCode() {
-
         this.isdisabled = true;
         this.formparameters.time = Date.parse(new Date()) / 1000;
         qrCodeGet(this.formparameters.id, this.formparameters.ip, this.formparameters.memo, this.formparameters.merchantName,
@@ -170,15 +176,17 @@
               type: 'warning'
             });
           } else {
-
+                         console.log(12312);
             // location.href = "../../a.htm";
             this.img_src = this.urlBase + this.BASE_API + res.data.url + "?orderId=" + res.data.orderId;
             var ispc = this.IsPC();
             if (ispc) {
               //window.open("static/test.htm?img_src="+this.img_src);
-              window.open = "static/test.htm?img_src=" + this.img_src;
+              console.log(111,this.img_src);
+              this.dialogFormVisible = true;
+              // window.open ("static/test.htm?img_src=" + this.img_src);
             } else {
-              window.open = "static/test_phone.htm?img_src=" + this.img_src;
+              // window.open ("static/test_phone.htm?img_src=" + this.img_src);
             }
 
             // console.log(this.img_src)

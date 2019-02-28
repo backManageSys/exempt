@@ -10,7 +10,7 @@
             </el-form-item>
             <el-form-item label="卡号">
                 <el-input type="number" v-model="cardAddParameters.number" placeholder="卡号" style="width: 30%;"></el-input>
-            </el-form-item>   
+            </el-form-item>
             <el-form-item label="余额">
                 <el-input type="number" v-model="cardAddParameters.balance" placeholder="余额" style="width: 30%;"></el-input>
             </el-form-item>
@@ -43,6 +43,7 @@
 <script>
 import { cardAdd } from '@/api/company'
 import {teamsGet} from '@/api/company'
+import store from '../../../../store'
     export default {
         data() {
             return {
@@ -69,7 +70,7 @@ import {teamsGet} from '@/api/company'
         methods: {
              handleCommandTeam(command) {
               // this.$message('click on item ' + command.id);
-             
+
               this.cardAddParameters.teamName = command.teamName;
               // console.log('click on item ' + command.teamName);
           },
@@ -103,7 +104,8 @@ import {teamsGet} from '@/api/company'
                 this.cardAddParameters.name,
                 this.cardAddParameters.number,
                 this.cardAddParameters.relation,
-                this.cardAddParameters.status
+                this.cardAddParameters.status,
+                  store.getters.uid
                 ).then(response=>{
                     if(response.code!=200){
                         this.$message({

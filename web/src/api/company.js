@@ -44,7 +44,7 @@ export function codeDelete(id,verifyCode) {
         }
     })
 }
-export function permissionAllocate(post,permissions) { 
+export function permissionAllocate(post,permissions) {
     return request({
         url: '/company/permission/allocate',
         method:'post',
@@ -68,7 +68,7 @@ export function checkAllPermission() {
     url: '/company/permissions',
     method: 'get',
     params: {
-      
+
     }
   })
 }
@@ -135,7 +135,7 @@ export function ApprovalSup(
     }
   })
 }
-export function cardAdd(attribution,balance,bank,name,number,relation,status) {
+export function cardAdd(attribution,balance,bank,name,number,relation,status,operateId) {
   return request({
     url: '/company/card/add',
     method: 'post',
@@ -146,7 +146,8 @@ export function cardAdd(attribution,balance,bank,name,number,relation,status) {
       name,
       number,
       relation,
-      status
+      status,
+      operateId
     }
   })
 }
@@ -181,8 +182,8 @@ export function personalCardsGet() {
   })
 }
 /**
- * 
- * @param {岗位} post 
+ *
+ * @param {岗位} post
  */
 export function addPost(post) {
   return request({
@@ -301,6 +302,34 @@ export function SetRiskcontrol(newtime){
     method: 'get',
     params: {
       newtime
+    }
+  })
+}
+
+export function getLoginId(uid){
+  return request({
+    url: '/app/supplier/getLoginId'+'?uid='+uid,
+    method: 'get',
+  })
+}
+
+export function getCompanyCard(uid){
+  return request({
+    url: '/app/supplier/getCompanyCard'+'?uid='+uid,
+    method: 'get',
+  })
+}
+
+export function internalaccountchangeAdd(cardNumber_in, cardNumber_out, money, operateId,type){
+  return request({
+    url: '/internalaccountchange/card/add',
+    method: 'post',
+    data: {
+      cardNumber_in,
+      cardNumber_out,
+      money,
+      operateId,
+      type
     }
   })
 }

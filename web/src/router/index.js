@@ -427,14 +427,14 @@ export const asyncRouterMap = [
         path: 'c2p',
         name: 'c2p',
         component: () => import('@/views/change/C2Pcard/index'),
-        meta: { title: '公司转个人', role: ['处理单子'] },
+        meta: { title: '添加内卡账变', role: ['处理订单'] },
       },
-      {
-        path: 'p2c',
-        name: 'p2c',
-        component: () => import('@/views/change/P2Ccard/index'),
-        meta: { title: '个人转公司', role: ['处理单子'] },
-      },
+      // {
+      //   path: 'p2c',
+      //   name: 'p2c',
+      //   component: () => import('@/views/change/P2Ccard/index'),
+      //   meta: { title: '个人转公司', role: ['处理订单'] },
+      // },
       // {
       //   path: 'qrcode',
       //   name: 'qrcode',
@@ -500,7 +500,7 @@ export const asyncRouterMap = [
         component: () => import('@/views/report/localTeamReport/index'),
         // component: () => import('@/views/report/merchantsReport/merchants/index'),
         name: 'localTeamReport',
-        meta: { title: '地方团队报表',role:['地方团队报表'] }
+        meta: { title: '供码用户报表',role:['供码用户报表'] }
       },
       {
         path: 'fundReport',
