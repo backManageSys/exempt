@@ -127,8 +127,8 @@ public class TransactionController {
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     @ResponseBody
-    public ResponseEntity<Response> WithdrewHistory() {
-        return new ResponseEntity<>(new JSONResponse(200, transactionBlService.getWithdrewOrder()), HttpStatus.OK);
+    public ResponseEntity<Response> WithdrewHistory(@RequestParam("uid") int uid) {
+        return new ResponseEntity<>(new JSONResponse(200, transactionBlService.getWithdrewOrder(uid)), HttpStatus.OK);
     }
 
     @ApiOperation(value = "查看未处理的提现订单", notes = "财务查看未处理的提现订单")
@@ -202,7 +202,7 @@ public class TransactionController {
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     @ResponseBody
-    public ResponseEntity<Response> revokeWithdrewOrder(@PathVariable("id") int id, @RequestBody String reason) {
+    public ResponseEntity<Response> revokeWithdrewOrder(@PathVariable("id") int id, @RequestParam("reason") String reason) {
         if (StringUtils.isBlank(reason))
             return new ResponseEntity<>(new JSONResponse(200, "撤销原因不能为空"), HttpStatus.OK);
         WithdrewOrder withdrewOrder = withdrewOrderDataService.findWithdrewOrderById(id);

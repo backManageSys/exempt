@@ -30,5 +30,5 @@ public interface TransactionBlService {
 
     List<WithdrewOrder> getMyWithdrewOrder(int id) throws WrongIdException;
 
-    List<WithdrewOrder> getWithdrewOrder();
+    List<WithdrewOrder> getWithdrewOrder(int uid);
 }

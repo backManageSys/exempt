@@ -11,13 +11,33 @@ public class SupplierReportResponse {
     private String supplierName;
     private double realReceipt;
     private double withdrew;
+    private double withdrewing;
+    private double fee;
 
-    public SupplierReportResponse(String number, String date, String supplierName, double realReceipt, double withdrew) {
+    public SupplierReportResponse(String number, String date, String supplierName, double realReceipt, double withdrew, double withdrewing, double fee) {
         this.number = number;
         this.date = date;
         this.supplierName = supplierName;
         this.realReceipt = realReceipt;
         this.withdrew = withdrew;
+        this.withdrewing = withdrewing;
+        this.fee = fee;
+    }
+
+    public double getWithdrewing() {
+        return withdrewing;
+    }
+
+    public void setWithdrewing(double withdrewing) {
+        this.withdrewing = withdrewing;
+    }
+
+    public double getFee() {
+        return fee;
+    }
+
+    public void setFee(double fee) {
+        this.fee = fee;
     }
 
     public String getNumber() {
