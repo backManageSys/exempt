@@ -253,7 +253,7 @@ public class TransactionBlServiceImpl implements TransactionBlService {
                             dLen--;
                             continue;
                         }
-                        if (StringUtils.isBlank(alipay.getCardNumber())){
+                        if (StringUtils.isBlank(alipay.getCardNumber())) {
                             dLen--;
                             continue;
                         }
@@ -496,7 +496,7 @@ public class TransactionBlServiceImpl implements TransactionBlService {
 
         Random random = new Random();
         String orderNumber = "W" + new Date().getTime() + String.format("%02d", random.nextInt(100)) + String.format("%04d", withdrewParameters.getId() % 10000);
-        return withdrewOrderDataService.saveWithdrewOrder(new WithdrewOrder(orderNumber, withdrewParameters.getId(), withdrewParameters.getType(),withdrewParameters.getCardId() ,withdrewParameters.getMoney(), balance,WithdrewState.WAITING, new Date()));
+        return withdrewOrderDataService.saveWithdrewOrder(new WithdrewOrder(orderNumber, withdrewParameters.getId(), withdrewParameters.getType(), withdrewParameters.getCardId(), withdrewParameters.getMoney(), balance, WithdrewState.WAITING, new Date()));
     }
 
     @Override
@@ -531,9 +531,9 @@ public class TransactionBlServiceImpl implements TransactionBlService {
             companyCard.setBalance(GetThreeBitsPoint(companyCard.getBalance() - withdrewOrder.getMoney_out() + 3));
             companyCardDataService.saveCompanyCard(companyCard);
             withdrewOrder.setCard_out_balance(GetThreeBitsPoint(companyCard.getBalance() - withdrewOrder.getMoney_out() + 3));
-            CardChangeOrder cardChangeOrder =new CardChangeOrder(withdrewOrder.getCard_out(),withdrewOrder.getCard_in(),
-                    withdrewOrder.getMoney_out(),withdrewOrder.getMoney_out()-3,companyCard.getBalance(),0,WithdrewState.SUCCESS,new Date(),
-                    null,user.getUsername(),"出款",null);
+            CardChangeOrder cardChangeOrder = new CardChangeOrder(withdrewOrder.getCard_out(), withdrewOrder.getCard_in(),
+                    withdrewOrder.getMoney_out(), withdrewOrder.getMoney_out() - 3, companyCard.getBalance(), 0, WithdrewState.SUCCESS, new Date(),
+                    null, user.getUsername(), "出款", null);
             cardChangeOrder = changeOrderDataService.saveCardChangeOrder(cardChangeOrder);
             withdrewOrder.setChangeId(cardChangeOrder.getId());
             if ("merchant".equals(withdrewOrder.getType())) {
@@ -574,8 +574,10 @@ public class TransactionBlServiceImpl implements TransactionBlService {
     @Override
     public List<WithdrewOrder> getMyWithdrewOrder(int id) throws WrongIdException {
         User user = userDataService.getUserById(id);
-        if (user == null || user.getRole() != 1) throw new WrongIdException();
-        return withdrewOrderDataService.findByOperatorId(id);
+        if (user.getRole() == 1 || user.getRole() == 4)
+            return withdrewOrderDataService.findByOperatorId(id);
+        else
+            throw new WrongIdException();
     }
 
     @Override

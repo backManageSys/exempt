@@ -50,6 +50,11 @@ public class AlipayDataServiceImpl implements AlipayDataService {
     }
 
     @Override
+    public Alipay findByCardNumber(String cardNumber) {
+        return alipayDao.findByCardNumber(cardNumber);
+    }
+
+    @Override
     public List<Alipay> findDevicesByImei(String imei) {
         return alipayDao.findByImei(imei);
     }

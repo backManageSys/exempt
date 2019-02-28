@@ -29,16 +29,15 @@ public class TeamBlServiceImpl implements TeamBlService {
     }
 
     /**
-     *
      * @param teamAddParameters params of the new team
      * @return
      */
     @Override
     public TeamAddResponse addTeam(TeamAddParameters teamAddParameters) throws IsExistentException, BlankInputException {
-        if(StringUtils.isBlank(teamAddParameters.getTeamName())) {
+        if (StringUtils.isBlank(teamAddParameters.getTeamName())) {
             throw new BlankInputException();
-        } else if(!teamDataService.isExistentTeamName(teamAddParameters.getTeamName())) {
-            Team team =  new Team(teamAddParameters.getSupervisor(), teamAddParameters.getArea(), teamAddParameters.getStatus(), teamAddParameters.getVerifyCode(), teamAddParameters.getOperator(), new Date(), teamAddParameters.getTeamName());
+        } else if (!teamDataService.isExistentTeamName(teamAddParameters.getTeamName())) {
+            Team team = new Team(teamAddParameters.getSupervisor(), teamAddParameters.getArea(), teamAddParameters.getStatus(), teamAddParameters.getVerifyCode(), teamAddParameters.getOperator(), new Date(), teamAddParameters.getTeamName());
             return new TeamAddResponse(teamDataService.saveTeam(team).getId());
         } else {
             throw new IsExistentException();
@@ -58,8 +57,8 @@ public class TeamBlServiceImpl implements TeamBlService {
     @Override
     public Response delTeamById(int id, String verifyCode) throws WrongIdException, TeamVerifyCodeWrongException {
         Team team = teamDataService.findTeamById(id);
-        if(team == null) throw new WrongIdException();
-        if(team.getVerifyCode().equals(verifyCode)) {
+        if (team == null) throw new WrongIdException();
+        if (team.getVerifyCode().equals(verifyCode)) {
             teamDataService.deleteTeamById(id);
             return new SuccessResponse("delete success.");
         } else {
@@ -69,12 +68,17 @@ public class TeamBlServiceImpl implements TeamBlService {
 
     @Override
     public TeamAddResponse updateTeam(TeamAddParameters teamAddParameters, int id) throws WrongIdException, IsExistentException {
-        if(teamDataService.isExistentTeamName(teamAddParameters.getTeamName())) {
-            throw new IsExistentException();
-        } else if(teamDataService.findTeamById(id) == null) {
+        Team team = teamDataService.findTeamById(id);
+        if (team == null) {
             throw new WrongIdException();
+        } else if (team.getTeamName().equals(teamAddParameters.getTeamName())) {
+            team = new Team(teamAddParameters.getSupervisor(), teamAddParameters.getArea(), teamAddParameters.getStatus(), teamAddParameters.getVerifyCode(), teamAddParameters.getOperator(), new Date(), team.getTeamName());
+            team.setId(id);
+            return new TeamAddResponse(teamDataService.saveTeam(team).getId());
         } else {
-            Team team =  new Team(teamAddParameters.getSupervisor(), teamAddParameters.getArea(), teamAddParameters.getStatus(), teamAddParameters.getVerifyCode(), teamAddParameters.getOperator(), new Date(), teamAddParameters.getTeamName());
+            if (teamDataService.findTamByTeamName(teamAddParameters.getTeamName()) != null)
+                throw new IsExistentException();
+            team = new Team(teamAddParameters.getSupervisor(), teamAddParameters.getArea(), teamAddParameters.getStatus(), teamAddParameters.getVerifyCode(), teamAddParameters.getOperator(), new Date(), teamAddParameters.getTeamName());
             team.setId(id);
             return new TeamAddResponse(teamDataService.saveTeam(team).getId());
         }
@@ -83,10 +87,10 @@ public class TeamBlServiceImpl implements TeamBlService {
     @Override
     public Response verifyTeamCode(int id, String verifyCode) throws WrongIdException, TeamVerifyCodeWrongException {
         Team team = teamDataService.findTeamById(id);
-        if(team == null) {
+        if (team == null) {
             throw new WrongIdException();
         } else {
-            if(team.getVerifyCode().equals(verifyCode)) {
+            if (team.getVerifyCode().equals(verifyCode)) {
                 return new TeamAddResponse(team.getId());
             } else {
                 throw new TeamVerifyCodeWrongException();
@@ -97,10 +101,10 @@ public class TeamBlServiceImpl implements TeamBlService {
     @Override
     public Response verifyTeamCodeByTeamName(String teamName, String verifyCode) throws WrongIdException, TeamVerifyCodeWrongException {
         Team team = teamDataService.findTamByTeamName(teamName);
-        if(team == null) {
+        if (team == null) {
             throw new WrongIdException();
         } else {
-            if(team.getVerifyCode().equals(verifyCode)) {
+            if (team.getVerifyCode().equals(verifyCode)) {
                 return new TeamAddResponse(team.getId());
             } else {
                 throw new TeamVerifyCodeWrongException();

@@ -138,9 +138,9 @@ public class ChangeController {
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     @ResponseBody
-    public ResponseEntity<Response> RevokeCardChangeOrder(@PathVariable("id") int id,@RequestBody String reason) {
+    public ResponseEntity<Response> RevokeCardChangeOrder(@PathVariable("id") int id,@RequestParam("reason") String reason) {
         CardChangeOrder cardChangeOrder = cardChangeOrderDao.findById(id);
-        if (cardChangeOrder.getState()!=WithdrewState.SUCCESS)
+        if (cardChangeOrder.getState()!=WithdrewState.WAITING)
             return new ResponseEntity<>(new JSONResponse(200, "不能撤销当前状态的订单"), HttpStatus.OK);
         if (StringUtils.isBlank(reason))
             return new ResponseEntity<>(new JSONResponse(200, "撤销原因不能为空"), HttpStatus.OK);
@@ -151,7 +151,7 @@ public class ChangeController {
         changeOrderDataService.saveCardChangeOrder(cardChangeOrder);
         //更新供码归集卡余额或供码个人卡余额
         if (cardChangeOrder.getType().equals("入款")){
-            Alipay alipay = alipayDataService.findByLoginId(cardChangeOrder.getCardNumber_out());
+            Alipay alipay = alipayDataService.findByCardNumber(cardChangeOrder.getCardNumber_out());
             alipay.setCardBalance(alipay.getCardBalance() + money);
             alipayDataService.saveAlipay(alipay);
         }else if (cardChangeOrder.getType().equals("储备")){
