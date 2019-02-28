@@ -623,12 +623,12 @@ public class ReportBlServiceImpl implements ReportBlService {
                 if (companyCardMap.containsKey(cardChangeOrder.getCardNumber_out()) && cardChangeOrder.getState() == WithdrewState.SUCCESS) {
                     CompanyCard companyCard = companyCardMap.get(cardChangeOrder.getCardNumber_out());
                     FundingReportResponse fundingReportResponse = fundingReportResponseMap.get(companyCard.getCardNumber());
-                    fundingReportResponse.setOut(fundingReportResponse.getOut()+cardChangeOrder.getMoney_in());
+                    fundingReportResponse.setOut(fundingReportResponse.getOut() + cardChangeOrder.getMoney_in());
                 }
                 if (companyCardMap.containsKey(cardChangeOrder.getCardNumber_in()) && cardChangeOrder.getState() == WithdrewState.SUCCESS) {
                     CompanyCard companyCard = companyCardMap.get(cardChangeOrder.getCardNumber_in());
                     FundingReportResponse fundingReportResponse = fundingReportResponseMap.get(companyCard.getCardNumber());
-                    fundingReportResponse.setIn(fundingReportResponse.getOut()+cardChangeOrder.getMoney_in());
+                    fundingReportResponse.setIn(fundingReportResponse.getOut() + cardChangeOrder.getMoney_in());
                 }
             }
         }
@@ -709,7 +709,8 @@ public class ReportBlServiceImpl implements ReportBlService {
                 if (device.getSupplier() != null && supplierMap.containsKey(device.getSupplier().getId())) {    // 筛选不存在的供码用户
                     Supplier supplier = device.getSupplier();
                     String number = "Gm" + String.format("%08d", supplier.getId());
-                    SupplierReportResponse supplierReportResponse = new SupplierReportResponse(number, date, supplier.getUser().getUsername(), 0, 0);
+                    SupplierReportResponse supplierReportResponse = new SupplierReportResponse(number, date, supplier.getUser().getUsername(),
+                            0, 0, 0, 0);
                     supplierReportResponseMap.put(supplier.getId(), supplierReportResponse);
                     deviceMap.put(device.getImei(), supplier.getId());
                 }
@@ -738,11 +739,18 @@ public class ReportBlServiceImpl implements ReportBlService {
         }
         if (qRcodeChangeOrderList.size() > 0) {
             for (QRcodeChangeOrder qRcodeChangeOrder : qRcodeChangeOrderList) {
-                if (!qRcodeChangeOrder.getState().equals("提现到账成功")) continue;
+                if (!qRcodeChangeOrder.getState().equals("提现到账成功")) {
+                    int sid = alipayMap.get(qRcodeChangeOrder.getLoginId());
+                    SupplierReportResponse supplierReportResponse = supplierReportResponseMap.get(sid);
+                    supplierReportResponse.setWithdrewing(supplierReportResponse.getWithdrewing() + qRcodeChangeOrder.getMoney());
+                    supplierReportResponseMap.put(sid, supplierReportResponse);
+                    continue;
+                }
                 if (alipayMap.containsKey(qRcodeChangeOrder.getLoginId())) {
                     int sid = alipayMap.get(qRcodeChangeOrder.getLoginId());
                     SupplierReportResponse supplierReportResponse = supplierReportResponseMap.get(sid);
                     supplierReportResponse.setWithdrew(supplierReportResponse.getWithdrew() + qRcodeChangeOrder.getRealMoney());
+                    supplierReportResponse.setFee(supplierReportResponse.getFee()+ qRcodeChangeOrder.getMoney() - qRcodeChangeOrder.getRealMoney());
                     supplierReportResponseMap.put(sid, supplierReportResponse);
                 }
             }

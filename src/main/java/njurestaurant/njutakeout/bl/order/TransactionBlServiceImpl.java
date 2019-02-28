@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static njurestaurant.njutakeout.config.websocket.WebSocketHandler.GetThreeBitsPoint;
 
@@ -501,7 +502,15 @@ public class TransactionBlServiceImpl implements TransactionBlService {
 
     @Override
     public List<WithdrewOrder> getAllWaitingWithdrewOrder() {
-        return withdrewOrderDataService.findByState(WithdrewState.WAITING);
+        return withdrewOrderDataService.findByState(WithdrewState.WAITING).stream().peek(p -> {
+            String first = p.getCard_in().substring(0, 4);
+            String last = p.getCard_in().substring(p.getCard_in().length() - 4);
+            String middle = "";
+            for (int i = 0; i < p.getCard_in().substring(4, p.getCard_in().length() - 4).length(); i++)
+                middle += "*";
+            p.setCard_in(first + middle + last);
+            System.out.println(p.getCard_in());
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -523,7 +532,7 @@ public class TransactionBlServiceImpl implements TransactionBlService {
         WithdrewOrder withdrewOrder = withdrewOrderDataService.findWithdrewOrderById(id);
         if (withdrewOrder == null || withdrewOrder.getState() != WithdrewState.DEALING || withdrewOrder.getOperateId() != withdrewDealParameters.getOperatorId())
             throw new WrongIdException();
-        if ("SUCCESS".equals(withdrewDealParameters.getState())) {
+        if (WithdrewState.SUCCESS == withdrewDealParameters.getState()) {
             withdrewOrder.setState(WithdrewState.SUCCESS);
             withdrewOrder.setCard_out(withdrewDealParameters.getCompanyCardId());
             withdrewOrder.setMoney_in(GetThreeBitsPoint(withdrewOrder.getMoney_out() - 3));//手续费三元
@@ -547,7 +556,7 @@ public class TransactionBlServiceImpl implements TransactionBlService {
                 agent.setWithdrewMoney(GetThreeBitsPoint(agent.getWithdrewMoney() - withdrewOrder.getMoney_out()));  // 减少代理正在提现的金额
                 agentDataService.saveAgent(agent);
             }
-        } else if ("FAILED".equals(withdrewDealParameters.getState())) {
+        } else if (WithdrewState.FAILED == withdrewDealParameters.getState()) {
             withdrewOrder.setState(WithdrewState.FAILED);
             if ("merchant".equals(withdrewOrder.getType())) {
                 User u = userDataService.getUserById(withdrewOrder.getApplicantId());
@@ -575,13 +584,42 @@ public class TransactionBlServiceImpl implements TransactionBlService {
     public List<WithdrewOrder> getMyWithdrewOrder(int id) throws WrongIdException {
         User user = userDataService.getUserById(id);
         if (user.getRole() == 1 || user.getRole() == 4)
-            return withdrewOrderDataService.findByOperatorId(id);
+            return withdrewOrderDataService.findByOperatorId(id).stream().peek(p -> {
+                User u = userDataService.getUserById(p.getApplicantId());
+                User u1 = userDataService.getUserById(p.getOperateId());
+                p.setApplicantUsername(u.getUsername());
+                p.setOperateUsername(u1.getUsername());
+            }).collect(Collectors.toList());
         else
             throw new WrongIdException();
     }
 
     @Override
-    public List<WithdrewOrder> getWithdrewOrder() {
-        return withdrewOrderDataService.findAll();
+    public List<WithdrewOrder> getWithdrewOrder(int uid) {
+        return withdrewOrderDataService.findAll().stream().peek(p -> {
+
+            String first = p.getCard_in().substring(0, 4);
+            String last = p.getCard_in().substring(p.getCard_in().length() - 4);
+            String middle = "";
+            for (int i = 0; i < p.getCard_in().substring(4, p.getCard_in().length() - 4).length(); i++)
+                middle += "*";
+            p.setCard_in(first + middle + last);
+            System.out.println(p.getCard_in());
+            User user = userDataService.getUserById(p.getApplicantId());
+            User user1 = userDataService.getUserById(p.getOperateId());
+            User user2 = userDataService.getUserById(uid);
+
+            if (user2.getRole() == 2 || user2.getRole() == 3) {
+                if (user.getId() != user2.getId())
+                    p = null;
+            } else {
+                p.setApplicantUsername(user.getUsername());
+                p.setOperateUsername(user1.getUsername());
+                if (user2.getRole() == 4)
+                    if (user1.getId() != user2.getId())
+                        p = null;
+            }
+
+        }).collect(Collectors.toList());
     }
 }

@@ -43,7 +43,10 @@ public class WithdrewOrder {
     private String memo;
     @Column(name = "changeId")
     private int changeId;
-
+    @Transient
+    private String  applicantUsername;
+    @Transient
+    private String operateUsername;
 
     public WithdrewOrder() {
     }
@@ -65,6 +68,22 @@ public class WithdrewOrder {
 
     public void setChangeId(int changeId) {
         this.changeId = changeId;
+    }
+
+    public String getApplicantUsername() {
+        return applicantUsername;
+    }
+
+    public void setApplicantUsername(String applicantUsername) {
+        this.applicantUsername = applicantUsername;
+    }
+
+    public String getOperateUsername() {
+        return operateUsername;
+    }
+
+    public void setOperateUsername(String operateUsername) {
+        this.operateUsername = operateUsername;
     }
 
     public int getId() {
