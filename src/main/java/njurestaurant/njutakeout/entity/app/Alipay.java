@@ -32,6 +32,10 @@ public class Alipay {
     private String name;
     @Column(name = "wealth")
     private double wealth;
+    @Column(name = "cardNumber")
+    private String cardNumber;
+    @Column(name = "cardBalance")
+    private double cardBalance;
 
     public Alipay() {
     }
@@ -127,5 +131,21 @@ public class Alipay {
 
     public void setWealth(double wealth) {
         this.wealth = wealth;
+    }
+
+    public String getCardNumber() {
+        return cardNumber;
+    }
+
+    public void setCardNumber(String cardNumber) {
+        this.cardNumber = cardNumber;
+    }
+
+    public double getCardBalance() {
+        return cardBalance;
+    }
+
+    public void setCardBalance(double cardBalance) {
+        this.cardBalance = cardBalance;
     }
 }

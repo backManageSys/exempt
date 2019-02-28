@@ -8,13 +8,15 @@ import njurestaurant.njutakeout.data.dao.account.AgentDao;
 import njurestaurant.njutakeout.data.dao.account.StaffDao;
 import njurestaurant.njutakeout.data.dao.account.UserDao;
 import njurestaurant.njutakeout.dataservice.account.AgentDataService;
+import njurestaurant.njutakeout.dataservice.account.PayRateListDataService;
 import njurestaurant.njutakeout.dataservice.account.StaffDataService;
 import njurestaurant.njutakeout.dataservice.account.UserDataService;
+import njurestaurant.njutakeout.dataservice.company.PayTypeDataService;
 import njurestaurant.njutakeout.entity.account.*;
+import njurestaurant.njutakeout.entity.company.PayType;
 import njurestaurant.njutakeout.exception.*;
 import njurestaurant.njutakeout.parameters.company.StaffAddParameters;
 import njurestaurant.njutakeout.parameters.user.*;
-import njurestaurant.njutakeout.publicdatas.app.CodeType;
 import njurestaurant.njutakeout.response.JSONResponse;
 import njurestaurant.njutakeout.response.Response;
 import njurestaurant.njutakeout.response.SuccessResponse;
@@ -42,13 +44,15 @@ public class UserController {
     private final UserDataService userDataService;
     private final AgentDataService agentDataService;
     private final StaffDataService staffDataService;
+    private final PayRateListDataService payRateListDataService;
+    private final PayTypeDataService payTypeDataService;
     private final AgentDao agentDao;
     private final StaffDao staffDao;
     private final UserDao userDao;
 
 
     @Autowired
-    public UserController(UserBlService userBlService, StaffBlService staffBlService, AgentBlService agentBlService, MerchantBlService merchantBlService, SupplierBlService supplierBlService, LogBlService logBlService, UserDataService userDataService, AgentDataService agentDataService, StaffDataService staffDataService, AgentDao agentDao, StaffDao staffDao, UserDao userDao) {
+    public UserController(UserBlService userBlService, StaffBlService staffBlService, AgentBlService agentBlService, MerchantBlService merchantBlService, SupplierBlService supplierBlService, LogBlService logBlService, UserDataService userDataService, AgentDataService agentDataService, StaffDataService staffDataService, PayRateListDataService payRateListDataService, PayTypeDataService payTypeDataService, AgentDao agentDao, StaffDao staffDao, UserDao userDao) {
         this.userBlService = userBlService;
         this.staffBlService = staffBlService;
         this.agentBlService = agentBlService;
@@ -58,6 +62,8 @@ public class UserController {
         this.userDataService = userDataService;
         this.agentDataService = agentDataService;
         this.staffDataService = staffDataService;
+        this.payRateListDataService = payRateListDataService;
+        this.payTypeDataService = payTypeDataService;
         this.agentDao = agentDao;
         this.staffDao = staffDao;
         this.userDao = userDao;
@@ -95,7 +101,32 @@ public class UserController {
         }
     }
 
-//    @ApiOperation(value = "用户注册", notes = "管理员注册用户")
+    //    @ApiOperation(value = "校验用户密码", notes = "校验用户密码")
+//    @RequestMapping(value = "account/login", method = RequestMethod.POST)
+//    @ApiResponses(value = {
+//            @ApiResponse(code = 200, message = "Success", response = UserLoginResponse.class),
+//            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
+//            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
+//    @ResponseBody
+//    public ResponseEntity<Response> login(@RequestBody UserLoginParameters userLoginParameters) throws RoleIdentityNotConformException {
+//        try {
+//            UserLoginResponse userLoginResponse = userBlService.login(userLoginParameters.getUsername(), userLoginParameters.getPassword());
+//            return new ResponseEntity<>(new JSONResponse(200, userLoginResponse), HttpStatus.OK);
+//        } catch (WrongUsernameOrPasswordException e) {
+//            e.printStackTrace();
+//            return new ResponseEntity<>(new JSONResponse(401, e.getResponse()), HttpStatus.UNAUTHORIZED);
+//        } catch (CannotRegisterException e) {
+//            e.printStackTrace();
+//            return new ResponseEntity<>(new JSONResponse(503, e.getResponse()), HttpStatus.SERVICE_UNAVAILABLE);
+//        } catch (BlockUpException e) {
+//            e.printStackTrace();
+//            return new ResponseEntity<>(new JSONResponse(1010, e.getResponse()), HttpStatus.OK);
+//        } catch (WaitingException e) {
+//            e.printStackTrace();
+//            return new ResponseEntity<>(new JSONResponse(1011, e.getResponse()), HttpStatus.OK);
+//        }
+//    }
+    //    @ApiOperation(value = "用户注册", notes = "管理员注册用户")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String"),
 //            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "String")
@@ -147,7 +178,7 @@ public class UserController {
 //            return new ResponseEntity<>(e.getResponse(), HttpStatus.NOT_FOUND);
 //        }
 //    }
-    @SystemControllerLog(descrption = "管理员新增管理员",actionType = "1")
+    @SystemControllerLog(descrption = "管理员新增管理员", actionType = "1")
     @ApiOperation(value = "新增管理员", notes = "管理员新增管理员")
     @RequestMapping(value = "admin/add", method = RequestMethod.POST)
     @ApiResponses(value = {
@@ -169,7 +200,8 @@ public class UserController {
             return new ResponseEntity<>(new JSONResponse(10100, new UsernameIsExistentException().getResponse()), HttpStatus.OK);
         }
     }
-    @SystemControllerLog(descrption = "新增代理商",actionType = "1")
+
+    @SystemControllerLog(descrption = "新增代理商", actionType = "1")
     @ApiOperation(value = "新增代理商", notes = "管理员新增代理")
     @RequestMapping(value = "agent/add", method = RequestMethod.POST)
     @ApiResponses(value = {
@@ -183,16 +215,19 @@ public class UserController {
         } else {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             User user = new User(agentAddParameters.getUsername(), encoder.encode(agentAddParameters.getPassword()), 2, new ArrayList<>());
-            Agent agent = new Agent(agentAddParameters.getUsername(), agentAddParameters.getStatus(), agentAddParameters.getAlipay(), agentAddParameters.getWechat(), 0, 0, user);
-            //    User user = new User(agentAddParameters.getUsername(), encoder.encode(agentAddParameters.getPassword()), RSAUtils.encryptedDataOnJava(agentAddParameters.getPassword(), publicKey), 2, new ArrayList<>());
-            //    Agent agent = new Agent(agentAddParameters.getUsername(), agentAddParameters.getStatus(), agentAddParameters.getAlipay(), agentAddParameters.getWechat(),0, 0,user);
+            Agent agent = new Agent(agentAddParameters.getUsername(), agentAddParameters.getStatus(), 0, 0, agentAddParameters.getApplyId(), user);
             AgentAddResponse agentAddResponse = agentBlService.addAgent(agent);
             user.setTableId(agentAddResponse.getAgentId());
             userBlService.updateUser(user);
+            for (PayRateAddParameters payRateAddParameters : agentAddParameters.getList()) {
+                PayRateList payRateList = new PayRateList(user.getId(), payRateAddParameters.getPayType_id(), payRateAddParameters.getRate(), payRateAddParameters.getStatus());
+                payRateListDataService.savePayRateList(payRateList);
+            }
             return new ResponseEntity<>(new JSONResponse(200, agentAddResponse), HttpStatus.OK);
         }
     }
-    @SystemControllerLog(descrption = "新增商家",actionType = "1")
+
+    @SystemControllerLog(descrption = "新增商家", actionType = "1")
     @ApiOperation(value = "新增商家", notes = "代理/管理员新增商家")
     @RequestMapping(value = "merchant/add", method = RequestMethod.POST)
     @ApiResponses(value = {
@@ -209,18 +244,28 @@ public class UserController {
         } else {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             User user = new User(merchantAddParameters.getUsername(), encoder.encode(merchantAddParameters.getPassword()), 3, new ArrayList<>());
-            Merchant merchant = new Merchant(merchantAddParameters.getAlipay_TPASS(),merchantAddParameters.getAlipay_TSOLID(),merchantAddParameters.getAlipay_RPASSOFF(),
-                    merchantAddParameters.getAlipay_RPASSQR(),merchantAddParameters.getAlipay_RSOLID(), merchantAddParameters.getAlipay_RedEnvelope(), merchantAddParameters.getWechat(), 0, merchantAddParameters.getStatus(),
-                    new Date(), merchantAddParameters.getUsername(), merchantAddParameters.getApplyId(), user, merchantAddParameters.getLevel());
-//            if (userDataService.getUserById(merchantAddParameters.getApplyId()).getRole() == 2)
-//                merchant.setStatus("申请启用");//代理商新增商户需要等待管理员审批，所以账号暂时不可用
+            Merchant merchant = new Merchant(0, merchantAddParameters.getStatus(),
+                    new Date(), merchantAddParameters.getUsername(), merchantAddParameters.getApplyId(), user, merchantAddParameters.getLevel(), 0);
+            User suser = userDataService.getUserById(merchantAddParameters.getApplyId());
+            if (suser.getRole() == 2) {
+                merchant.setStatus("申请启用");//代理商新增商户需要等待管理员审批，所以账号暂时不可用
+                for (PayRateAddParameters payRateAddParameters : merchantAddParameters.getList()) {
+                    if (payRateAddParameters.getRate() < payRateListDataService.findByUidAndPayTypeId(suser.getId(), payRateAddParameters.getPayType_id()).getRate())
+                        return new ResponseEntity<>(new JSONResponse(201, "对商户的费率设置不能低于公司对自己的费率"), HttpStatus.OK);
+                }
+            }
             MerchantAddResponse merchantAddResponse = merchantBlService.addMerchant(merchant);
             user.setTableId(merchant.getId());
             userBlService.updateUser(user);
+            for (PayRateAddParameters payRateAddParameters : merchantAddParameters.getList()) {
+                PayRateList payRateList = new PayRateList(user.getId(), payRateAddParameters.getPayType_id(), payRateAddParameters.getRate(), payRateAddParameters.getStatus());
+                payRateListDataService.savePayRateList(payRateList);
+            }
             return new ResponseEntity<>(new JSONResponse(200, merchantAddResponse), HttpStatus.OK);
         }
     }
-    @SystemControllerLog(descrption = "新增供码用户",actionType = "1")
+
+    @SystemControllerLog(descrption = "新增供码用户", actionType = "1")
     @ApiOperation(value = "新增供码用户", notes = "管理员新增供码用户")
     @RequestMapping(value = "supplier/add", method = RequestMethod.POST)
     @ApiResponses(value = {
@@ -236,8 +281,7 @@ public class UserController {
         } else {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             User user = new User(supplierAddParameters.getUsername(), encoder.encode(supplierAddParameters.getPassword()), 4, new ArrayList<>());
-            Supplier supplier = new Supplier(user, supplierAddParameters.getId(), new Date(), supplierAddParameters.getStatus(), new ArrayList<>(), supplierAddParameters.getLevel(), CodeType.TSOLID);
-
+            Supplier supplier = new Supplier(user, supplierAddParameters.getId(), new Date(), supplierAddParameters.getStatus(), new ArrayList<>(), supplierAddParameters.getLevel(), 1);
             try {
                 UserAddResponse userAddResponse = supplierBlService.addSupplier(supplier);
                 user.setTableId(userAddResponse.getTableId());
@@ -248,7 +292,8 @@ public class UserController {
             }
         }
     }
-    @SystemControllerLog(descrption = "更改管理员信息",actionType = "3")
+
+    @SystemControllerLog(descrption = "更改管理员信息", actionType = "3")
     @ApiOperation(value = "更改管理员信息", notes = "更改管理员信息")
     @RequestMapping(value = "staff/update/{uid}", method = RequestMethod.PUT)
     @ApiResponses(value = {
@@ -257,43 +302,24 @@ public class UserController {
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     @ResponseBody
     public ResponseEntity<Response> updateStaff(@PathVariable("uid") int id, @RequestBody AdminUpdateParameters adminUpdateParameters) {
-        if (StringUtils.isBlank(adminUpdateParameters.getPassword()) || StringUtils.isBlank(adminUpdateParameters.getName())   || StringUtils.isBlank(adminUpdateParameters.getStatus())) {
+        if (StringUtils.isBlank(adminUpdateParameters.getPassword()) || StringUtils.isBlank(adminUpdateParameters.getStatus())) {
             return new ResponseEntity<>(new JSONResponse(10120, new WrongResponse(10120, "输入不能为空.")), HttpStatus.OK);
         }
+        Staff staff = staffDao.findByUserId(id);
+        staff.setTeam(adminUpdateParameters.getTeam());
+        staff.setPost(adminUpdateParameters.getPost());
+        staff.setStatus(adminUpdateParameters.getStatus());
         User user = userDao.findUserById(id);
-        if (!user.getUsername().equals(adminUpdateParameters.getName())) {
-            if (userDao.findUserByUsername(adminUpdateParameters.getName()) != null)
-                return new ResponseEntity<>(new JSONResponse(10100, new UsernameIsExistentException()), HttpStatus.OK);
-            else {
-                Staff staff = staffDao.findByUserId(id);
-                staff.setTeam(adminUpdateParameters.getTeam());
-                staff.setPost(adminUpdateParameters.getPost());
-                staff.setStatus(adminUpdateParameters.getStatus());
-                staff.setStaffName(adminUpdateParameters.getName());
-                user.setUsername(adminUpdateParameters.getName());
-                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-                user.setPassword(encoder.encode(adminUpdateParameters.getPassword()));
-                staff.setUser(user);
-                userDataService.saveUser(user);
-                staffDataService.saveStaff(staff);
-                return new ResponseEntity<>(new JSONResponse(200, new SuccessResponse("更新成功")), HttpStatus.OK);
-            }
-        } else {
-            Staff staff = staffDao.findByUserId(id);
-            staff.setTeam(adminUpdateParameters.getTeam());
-            staff.setPost(adminUpdateParameters.getPost());
-            staff.setStatus(adminUpdateParameters.getStatus());
-            staff.setStaffName(adminUpdateParameters.getName());
-            user.setUsername(adminUpdateParameters.getName());
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (!adminUpdateParameters.getPassword().equals(user.getPassword()))
             user.setPassword(encoder.encode(adminUpdateParameters.getPassword()));
-            staff.setUser(user);
-            userDataService.saveUser(user);
-            staffDataService.saveStaff(staff);
-            return new ResponseEntity<>(new JSONResponse(200, new SuccessResponse("更新成功")), HttpStatus.OK);
-        }
+        staff.setUser(user);
+        userDataService.saveUser(user);
+        staffDataService.saveStaff(staff);
+        return new ResponseEntity<>(new JSONResponse(200, new SuccessResponse("更新成功")), HttpStatus.OK);
     }
-    @SystemControllerLog(descrption = "更改代理商信息",actionType = "3")
+
+    @SystemControllerLog(descrption = "更改代理商信息", actionType = "3")
     @ApiOperation(value = "更改代理商信息", notes = "更改代理商信息")
     @RequestMapping(value = "agent/update/{uid}", method = RequestMethod.PUT)
     @ApiResponses(value = {
@@ -302,43 +328,19 @@ public class UserController {
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     @ResponseBody
     public ResponseEntity<Response> updateAgent(@PathVariable("uid") int id, @RequestBody AgentUpdateParameters agentUpdateParameters) throws UsernameIsExistentException {
-        if (StringUtils.isBlank(agentUpdateParameters.getPassword()) || StringUtils.isBlank(agentUpdateParameters.getName()) || StringUtils.isBlank(String.valueOf(agentUpdateParameters.getAlipay())) || StringUtils.isBlank(String.valueOf(agentUpdateParameters.getWechat())) || StringUtils.isBlank(agentUpdateParameters.getStatus())) {
-            return new ResponseEntity<>(new JSONResponse(10120, new WrongResponse(10120, "输入不能为空.")), HttpStatus.OK);
-        }
+        Agent agent = agentDao.findByUserId(id);
+        agent.setStatus(agentUpdateParameters.getStatus());
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         User user = userDao.findUserById(id);
-        if (!user.getUsername().equals(agentUpdateParameters.getName())) {
-            if (userDao.findUserByUsername(agentUpdateParameters.getName()) != null)
-                return new ResponseEntity<>(new JSONResponse(10100, new UsernameIsExistentException()), HttpStatus.OK);
-            else {
-                Agent agent = agentDao.findByUserId(id);
-                agent.setAlipay(agentUpdateParameters.getAlipay());
-                agent.setWechat(agentUpdateParameters.getWechat());
-                agent.setStatus(agentUpdateParameters.getStatus());
-                agent.setAgentName(agentUpdateParameters.getName());
-                user.setUsername(agentUpdateParameters.getName());
-                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-                user.setPassword(encoder.encode(agentUpdateParameters.getPassword()));
-                agent.setUser(user);
-                userDataService.saveUser(user);
-                agentDataService.saveAgent(agent);
-                return new ResponseEntity<>(new JSONResponse(200, new SuccessResponse("更新成功")), HttpStatus.OK);
-            }
-        } else {
-            Agent agent = agentDao.findByUserId(id);
-            agent.setAlipay(agentUpdateParameters.getAlipay());
-            agent.setWechat(agentUpdateParameters.getWechat());
-            agent.setStatus(agentUpdateParameters.getStatus());
-            agent.setAgentName(agentUpdateParameters.getName());
-            user.setUsername(agentUpdateParameters.getName());
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (!agentUpdateParameters.getPassword().equals(user.getPassword()))
             user.setPassword(encoder.encode(agentUpdateParameters.getPassword()));
-            agent.setUser(user);
-            userDataService.saveUser(user);
-            agentDataService.saveAgent(agent);
-            return new ResponseEntity<>(new JSONResponse(200, new SuccessResponse("更新成功")), HttpStatus.OK);
-        }
+        agent.setUser(user);
+        userDataService.saveUser(user);
+        agentDataService.saveAgent(agent);
+        return new ResponseEntity<>(new JSONResponse(200, new SuccessResponse("更新成功")), HttpStatus.OK);
     }
-    @SystemControllerLog(descrption = "更改商户信息",actionType = "3")
+
+    @SystemControllerLog(descrption = "更改商户信息", actionType = "3")
     @ApiOperation(value = "更改商户信息", notes = "更改商户信息")
     @RequestMapping(value = "merchant/update/{uid}", method = RequestMethod.PUT)
     @ApiResponses(value = {
@@ -359,15 +361,16 @@ public class UserController {
             return new ResponseEntity<>(new JSONResponse(10100, e.getResponse()), HttpStatus.OK);
         }
     }
-    @SystemControllerLog(descrption = "更改供码用户信息",actionType = "3")
+
+    @SystemControllerLog(descrption = "更改供码用户信息", actionType = "3")
     @ApiOperation(value = "更改供码用户信息", notes = "更改供码用户信息")
-    @RequestMapping(value = "supplier/update/{uid}", method = RequestMethod.PUT)
+    @RequestMapping(value = "supplier/update/{id}", method = RequestMethod.PUT)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     @ResponseBody
-    public ResponseEntity<Response> updateSupplier(@PathVariable("uid") int id, @RequestBody SupplierUpdateParameters supplierUpdateParameters) {
+    public ResponseEntity<Response> updateSupplier(@PathVariable("id") int id, @RequestBody SupplierUpdateParameters supplierUpdateParameters) {
         try {
             supplierBlService.updateSupplier(id, supplierUpdateParameters);
             return new ResponseEntity<>(new JSONResponse(200, new SuccessResponse("更新成功")), HttpStatus.OK);
@@ -379,7 +382,8 @@ public class UserController {
             return new ResponseEntity<>(new JSONResponse(10100, e.getResponse()), HttpStatus.OK);
         }
     }
-    @SystemControllerLog(descrption = "删除用户",actionType = "2")
+
+    @SystemControllerLog(descrption = "删除用户", actionType = "2")
     @ApiOperation(value = "删除用户", notes = "删除某个用户")
     @RequestMapping(value = "account/delete/{id}", method = RequestMethod.GET)
     @ApiResponses(value = {
@@ -509,6 +513,7 @@ public class UserController {
             return new ResponseEntity<>(new JSONResponse(200, e.getResponse()), HttpStatus.OK);
         }
     }
+
     @ApiOperation(value = "查看某个商户", notes = "查看某个商户")
     @RequestMapping(value = "merchant/{merchantName}", method = RequestMethod.GET)
     @ApiResponses(value = {
@@ -516,7 +521,114 @@ public class UserController {
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     @ResponseBody
-    public ResponseEntity<Response> getMerchantRate(@PathVariable("merchantName")String merchantName) {
+    public ResponseEntity<Response> getMerchantRate(@PathVariable("merchantName") String merchantName) {
         return new ResponseEntity<>(new JSONResponse(200, merchantBlService.findMerchantByMerchantName(merchantName)), HttpStatus.OK);
     }
+
+    @ApiOperation(value = "修改某个商户或代理商的某条通道信息", notes = "修改某个商户或代理商的某条通道信息")
+    @RequestMapping(value = "payRateList/update/{uid}", method = RequestMethod.PUT)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
+            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
+    @ResponseBody
+    public ResponseEntity<Response> updatePayRateList(@PathVariable("uid") int uid, @RequestBody PayRateAddParameters payRateAddParameters) {
+        PayRateList payRateList = payRateListDataService.findByUidAndPayTypeId(uid, payRateAddParameters.getPayType_id());
+        payRateList.setRate(payRateAddParameters.getRate());
+        payRateList.setStatus(payRateAddParameters.getStatus());
+        payRateListDataService.savePayRateList(payRateList);
+        return new ResponseEntity<>(new JSONResponse(200, "修改成功"), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "查看某个商户或代理商的某条通道信息", notes = "查看某个商户或代理商的某条通道信息")
+    @RequestMapping(value = "payRateList/get/{uid}/{payTypeId}", method = RequestMethod.GET)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
+            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
+    @ResponseBody
+    public ResponseEntity<Response> getPayRateList(@PathVariable("uid") int uid, @PathVariable("payTypeId") int payTypeId) {
+        return new ResponseEntity<>(new JSONResponse(200, payRateListDataService.findByUidAndPayTypeId(uid, payTypeId)), HttpStatus.OK);
+    }
+
+//    @ApiOperation(value = "修改某个商户或代理商的通道信息", notes = "修改某个商户或代理商的通道信息")
+//    @RequestMapping(value = "payRateList/update/{uid}", method = RequestMethod.PUT)
+//    @ApiResponses(value = {
+//            @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
+//            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
+//            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
+//    @ResponseBody
+//    public ResponseEntity<Response> updatePayRateList(@PathVariable("uid") int uid, List<PayRateAddParameters> list) {
+//        for (PayRateAddParameters payRateAddParameters1 : list) {
+//            PayRateList payRateList = payRateListDataService.findByUidAndPayTypeId(uid, payRateAddParameters1.getPayType_id());
+//            payRateList.setRate(payRateAddParameters1.getRate());
+//            payRateList.setStatus(payRateAddParameters1.getStatus());
+//            payRateListDataService.savePayRateList(payRateList);
+//        }
+//        return new ResponseEntity<>(new JSONResponse(200, payRateListDataService.findByUid(uid)), HttpStatus.OK);
+//    }
+//
+//    @ApiOperation(value = "查看某个商户或代理商的通道信息", notes = "查看某个商户或代理商的通道信息")
+//    @RequestMapping(value = "payRateList/get/{uid}", method = RequestMethod.GET)
+//    @ApiResponses(value = {
+//            @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
+//            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
+//            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
+//    @ResponseBody
+//    public ResponseEntity<Response> getPayRateList(@PathVariable("uid") int uid) {
+//        User user = userDataService.getUserById(uid);
+//        List<PayRateListResponse> list = new ArrayList<>();
+//        switch (user.getRole()) {
+//            case 2:
+//                for (PayRateList payRateList : payRateListDataService.findByUid(uid)) {
+//                    PayType payType = payTypeDataService.findById(payRateList.getPayTypeId());
+//                    if (payRateList.getStatus().equals("启用") && payType.getStatus().equals("启用")) {
+//                        PayRateListResponse payRateListResponse = new PayRateListResponse(payRateList.getId(), payRateList.getUid(),
+//                                payType.getCodeCategory(), payType.getCodeType(), payRateList.getRate(), "启用");
+//                        list.add(payRateListResponse);
+//                    } else {
+//                        PayRateListResponse payRateListResponse = new PayRateListResponse(payRateList.getId(), payRateList.getUid(),
+//                                payType.getCodeCategory(), payType.getCodeType(), payRateList.getRate(), "停用");
+//                        list.add(payRateListResponse);
+//                    }
+//                }
+//                break;
+//            case 3:
+//                Merchant merchant = merchantBlService.selectMerchantById(user.getTableId());
+//                User suser = userDataService.getUserById(merchant.getApplyId());
+//                switch (suser.getRole()) {
+//                    case 1:
+//                        for (PayRateList payRateList : payRateListDataService.findByUid(uid)) {
+//                            PayType payType = payTypeDataService.findById(payRateList.getPayTypeId());
+//                            if (payRateList.getStatus().equals("启用") && payType.getStatus().equals("启用")) {
+//                                PayRateListResponse payRateListResponse = new PayRateListResponse(payRateList.getId(), payRateList.getUid(),
+//                                        payType.getCodeCategory(), payType.getCodeType(), payRateList.getRate(), "启用");
+//                                list.add(payRateListResponse);
+//                            } else {
+//                                PayRateListResponse payRateListResponse = new PayRateListResponse(payRateList.getId(), payRateList.getUid(),
+//                                        payType.getCodeCategory(), payType.getCodeType(), payRateList.getRate(), "停用");
+//                                list.add(payRateListResponse);
+//                            }
+//                        }
+//                        break;
+//                    case 2:
+//                        for (PayRateList payRateList : payRateListDataService.findByUid(uid)) {
+//                            PayRateList payRateList1 = payRateListDataService.findByUidAndPayTypeId(suser.getId(), payRateList.getPayTypeId());
+//                            PayType payType = payTypeDataService.findById(payRateList.getPayTypeId());
+//                            if (payRateList.getStatus().equals("启用") && payRateList1.getStatus().equals("启用") && payType.getStatus().equals("启用")) {
+//                                PayRateListResponse payRateListResponse = new PayRateListResponse(payRateList.getId(), payRateList.getUid(),
+//                                        payType.getCodeCategory(), payType.getCodeType(), payRateList.getRate(), "启用");
+//                                list.add(payRateListResponse);
+//                            } else {
+//                                PayRateListResponse payRateListResponse = new PayRateListResponse(payRateList.getId(), payRateList.getUid(),
+//                                        payType.getCodeCategory(), payType.getCodeType(), payRateList.getRate(), "停用");
+//                                list.add(payRateListResponse);
+//                            }
+//                        }
+//                        break;
+//                }
+//                break;
+//        }
+//        return new ResponseEntity<>(new JSONResponse(200, list), HttpStatus.OK);
+//    }
 }

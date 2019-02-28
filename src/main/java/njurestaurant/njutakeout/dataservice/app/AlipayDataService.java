@@ -16,5 +16,7 @@ public interface AlipayDataService {
 
     Alipay findByUserId(String userid);
 
+    Alipay findByCardNumber(String cardNumber);
 
+    List<Alipay>findDevicesByImei(String imei);
 }

@@ -1,9 +1,7 @@
 package njurestaurant.njutakeout.response.report;
 
 import njurestaurant.njutakeout.response.Response;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,23 +16,21 @@ public class AgentReportResponse extends Response {
     private String date;
     private String username;
     private String agentName;
-    private double alipay;
-    private double wechat;
     private List<PlatformAnalyse> depositList;
     private List<PlatformAnalyse>  profitList;
     private double withdrewed;
+    private double withdrewing;
     private double balance;
 
-    public AgentReportResponse(String number, String date, String username, String agentName, double alipay, double wechat, List<PlatformAnalyse> depositList, List<PlatformAnalyse> profitList, double withdrewed, double balance) {
+    public AgentReportResponse(String number, String date, String username, String agentName, List<PlatformAnalyse> depositList, List<PlatformAnalyse> profitList, double withdrewed, double withdrewing, double balance) {
         this.number = number;
         this.date = date;
         this.username = username;
         this.agentName = agentName;
-        this.alipay = alipay;
-        this.wechat = wechat;
         this.depositList = depositList;
         this.profitList = profitList;
         this.withdrewed = withdrewed;
+        this.withdrewing = withdrewing;
         this.balance = balance;
     }
 
@@ -54,21 +50,6 @@ public class AgentReportResponse extends Response {
         return date;
     }
 
-    public double getAlipay() {
-        return alipay;
-    }
-
-    public void setAlipay(double alipay) {
-        this.alipay = alipay;
-    }
-
-    public double getWechat() {
-        return wechat;
-    }
-
-    public void setWechat(double wechat) {
-        this.wechat = wechat;
-    }
 
     public List<PlatformAnalyse> getDepositList() {
         return depositList;
@@ -116,5 +97,13 @@ public class AgentReportResponse extends Response {
 
     public void setBalance(double balance) {
         this.balance = balance;
+    }
+
+    public double getWithdrewing() {
+        return withdrewing;
+    }
+
+    public void setWithdrewing(double withdrewing) {
+        this.withdrewing = withdrewing;
     }
 }

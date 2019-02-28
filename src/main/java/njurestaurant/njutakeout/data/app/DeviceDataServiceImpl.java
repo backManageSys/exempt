@@ -1,7 +1,9 @@
 package njurestaurant.njutakeout.data.app;
 
 import njurestaurant.njutakeout.data.dao.app.DeviceDao;
+import njurestaurant.njutakeout.dataservice.app.AlipayDataService;
 import njurestaurant.njutakeout.dataservice.app.DeviceDataService;
+import njurestaurant.njutakeout.entity.app.Alipay;
 import njurestaurant.njutakeout.entity.app.Device;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,10 +14,11 @@ import java.util.Optional;
 @Service
 public class DeviceDataServiceImpl implements DeviceDataService {
     private final DeviceDao deviceDao;
-
+    private final AlipayDataService alipayDataService;
     @Autowired
-    public DeviceDataServiceImpl(DeviceDao deviceDao) {
+    public DeviceDataServiceImpl(DeviceDao deviceDao, AlipayDataService alipayDataService) {
         this.deviceDao = deviceDao;
+        this.alipayDataService = alipayDataService;
     }
 
     @Override
@@ -62,6 +65,18 @@ public class DeviceDataServiceImpl implements DeviceDataService {
 
     @Override
     public List<Device> findDevicesBySupplierId(int id) {
-        return deviceDao.findDevicesBySupplierId(id);
+        return JSONFilter(deviceDao.findDevicesBySupplierId(id));
+    }
+    private List<Device> JSONFilter(List<Device> devices) {
+        if (devices.size() != 0) {
+            for (Device device : devices) {
+                device.setSupplier(null);
+                Alipay alipay = alipayDataService.findById(device.getAlipayId());
+                device.setLoginId(alipay.getLoginId());
+                device.setNickName(alipay.getName());
+                device.setAlipayBalance(alipay.getWealth());
+            }
+        }
+        return devices;
     }
 }

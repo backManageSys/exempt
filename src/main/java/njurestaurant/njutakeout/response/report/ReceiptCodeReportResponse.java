@@ -14,20 +14,19 @@ public class ReceiptCodeReportResponse extends Response {
     private String alipayLoginId;
     private double payMoney;
     private double withdrew;
+    private double withdrewing;
+    private double fee;
 
-    public ReceiptCodeReportResponse(String number, String date, String alipayLoginId) {
-        this.number = number;
-        this.date = date;
-        this.alipayLoginId = alipayLoginId;
-    }
 
-    public ReceiptCodeReportResponse(String number, String date, String supplierName, String alipayLoginId, double payMoney, double withdrew) {
+    public ReceiptCodeReportResponse(String number, String date, String supplierName, String alipayLoginId, double payMoney, double withdrew, double withdrewing, double fee) {
         this.number = number;
         this.date = date;
         this.supplierName = supplierName;
         this.alipayLoginId = alipayLoginId;
         this.payMoney = payMoney;
         this.withdrew = withdrew;
+        this.withdrewing = withdrewing;
+        this.fee = fee;
     }
 
     public String getNumber() {
@@ -76,5 +75,21 @@ public class ReceiptCodeReportResponse extends Response {
 
     public void setWithdrew(double withdrew) {
         this.withdrew = withdrew;
+    }
+
+    public double getWithdrewing() {
+        return withdrewing;
+    }
+
+    public void setWithdrewing(double withdrewing) {
+        this.withdrewing = withdrewing;
+    }
+
+    public double getFee() {
+        return fee;
+    }
+
+    public void setFee(double fee) {
+        this.fee = fee;
     }
 }

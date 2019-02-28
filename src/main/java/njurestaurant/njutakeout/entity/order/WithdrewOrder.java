@@ -17,8 +17,16 @@ public class WithdrewOrder {
     private int applicantId;
     @Column(name = "type")
     private String type;
-    @Column(name = "money")
-    private double money;
+    @Column(name = "card_out")
+    private String card_out;
+    @Column(name = "card_in")
+    private String  card_in;
+    @Column(name = "money_out")
+    private double money_out;
+    @Column(name = "money_in")
+    private double money_in;
+    @Column(name = "card_out_balance")
+    private double card_out_balance;
     @Column(name = "balance")
     private double balance;
     @Column(name = "state")
@@ -27,48 +35,36 @@ public class WithdrewOrder {
     private Date applyTime;
     @Column(name = "operateTime")
     private Date operateTime;
+    @Column(name = "revokeTime")
+    private Date revokeTime;
     @Column(name = "operateId")
     private int operateId;
     @Column(name = "memo")
     private String memo;
-    @Column(name = "cardId")
-    private int cardId;
+    @Column(name = "changeId")
+    private int changeId;
+
 
     public WithdrewOrder() {
     }
 
-    public WithdrewOrder(String number, int applicantId, String type, double money, double balance, WithdrewState state, Date applyTime, int cardId) {
+    public WithdrewOrder(String number, int applicantId, String type, String card_in, double money_out, double balance, WithdrewState state, Date applyTime) {
         this.number = number;
         this.applicantId = applicantId;
         this.type = type;
-        this.money = money;
+        this.card_in = card_in;
+        this.money_out = money_out;
         this.balance = balance;
         this.state = state;
         this.applyTime = applyTime;
-        this.cardId = cardId;
     }
 
-    public WithdrewOrder(WithdrewState state, Date operateTime, int operateId, String memo) {
-        this.state = state;
-        this.operateTime = operateTime;
-        this.operateId = operateId;
-        this.memo = memo;
+    public int getChangeId() {
+        return changeId;
     }
 
-    public int getCardId() {
-        return cardId;
-    }
-
-    public void setCardId(int cardId) {
-        this.cardId = cardId;
-    }
-
-    public String getMemo() {
-        return memo;
-    }
-
-    public void setMemo(String memo) {
-        this.memo = memo;
+    public void setChangeId(int changeId) {
+        this.changeId = changeId;
     }
 
     public int getId() {
@@ -103,12 +99,20 @@ public class WithdrewOrder {
         this.type = type;
     }
 
-    public double getMoney() {
-        return money;
+    public String getCard_out() {
+        return card_out;
     }
 
-    public void setMoney(double money) {
-        this.money = money;
+    public void setCard_out(String card_out) {
+        this.card_out = card_out;
+    }
+
+    public String getCard_in() {
+        return card_in;
+    }
+
+    public void setCard_in(String card_in) {
+        this.card_in = card_in;
     }
 
     public double getBalance() {
@@ -117,6 +121,30 @@ public class WithdrewOrder {
 
     public void setBalance(double balance) {
         this.balance = balance;
+    }
+
+    public double getMoney_out() {
+        return money_out;
+    }
+
+    public void setMoney_out(double money_out) {
+        this.money_out = money_out;
+    }
+
+    public double getMoney_in() {
+        return money_in;
+    }
+
+    public void setMoney_in(double money_in) {
+        this.money_in = money_in;
+    }
+
+    public double getCard_out_balance() {
+        return card_out_balance;
+    }
+
+    public void setCard_out_balance(double card_out_balance) {
+        this.card_out_balance = card_out_balance;
     }
 
     public WithdrewState getState() {
@@ -143,11 +171,27 @@ public class WithdrewOrder {
         this.operateTime = operateTime;
     }
 
+    public Date getRevokeTime() {
+        return revokeTime;
+    }
+
+    public void setRevokeTime(Date revokeTime) {
+        this.revokeTime = revokeTime;
+    }
+
     public int getOperateId() {
         return operateId;
     }
 
     public void setOperateId(int operateId) {
         this.operateId = operateId;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
     }
 }

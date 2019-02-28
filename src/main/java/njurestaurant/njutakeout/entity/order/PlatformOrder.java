@@ -1,7 +1,5 @@
 package njurestaurant.njutakeout.entity.order;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import njurestaurant.njutakeout.publicdatas.app.CodeType;
 import njurestaurant.njutakeout.publicdatas.order.OrderState;
 
 import javax.persistence.*;
@@ -49,24 +47,17 @@ public class PlatformOrder {
     /*支付宝/微信的订单*/
     @Column(name = "type")
     private String type;
-    @Column(name = "code_type")
-    private CodeType codetype;
+    @Column(name = "payTypeId")
+    private int payTypeId;
+    @Column(name = "agentRate")
+    private double agentRate;
+    @Column(name = "merchantRate")
+    private double merchantRate;
 
     public PlatformOrder() {
     }
 
-    public PlatformOrder(String number, OrderState state, Date time, String ip, String rechargeId, double money, int uid, CodeType codetype) {
-        this.number = number;
-        this.state = state;
-        this.time = time;
-        this.ip = ip;
-        this.rechargeId = rechargeId;
-        this.money = money;
-        this.uid = uid;
-        this.codetype = codetype;
-    }
-
-    public PlatformOrder(String number, OrderState state, Date time, String payCode, String ip, String rechargeId, double money, int uid, int supplierid, String imei, CodeType codetype) {
+    public PlatformOrder(String number, OrderState state, Date time, String payCode, String ip, String rechargeId, double money, int uid, int supplierid, String imei, int payTypeId, double agentRate, double merchantRate) {
         this.number = number;
         this.state = state;
         this.time = time;
@@ -77,79 +68,9 @@ public class PlatformOrder {
         this.uid = uid;
         this.supplierid = supplierid;
         this.imei = imei;
-        this.codetype = codetype;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public int getTableId() {
-        return tableId;
-    }
-
-    public void setTableId(int tableId) {
-        this.tableId = tableId;
-    }
-
-    public Date getPayTime() {
-        return payTime;
-    }
-
-    public void setPayTime(Date payTime) {
-        this.payTime = payTime;
-    }
-
-    public double getPayMoney() {
-        return payMoney;
-    }
-
-    public void setPayMoney(double payMoney) {
-        this.payMoney = payMoney;
-    }
-
-    public String getImei() {
-        return imei;
-    }
-
-    public void setImei(String imei) {
-        this.imei = imei;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-
-    public String getRechargeId() {
-        return rechargeId;
-    }
-
-    public void setRechargeId(String rechargeId) {
-        this.rechargeId = rechargeId;
-    }
-
-    public double getMoney() {
-        return money;
-    }
-
-    public void setMoney(double money) {
-        this.money = money;
-    }
-
-    public int getUid() {
-        return uid;
-    }
-
-    public void setUid(int uid) {
-        this.uid = uid;
+        this.payTypeId = payTypeId;
+        this.agentRate = agentRate;
+        this.merchantRate = merchantRate;
     }
 
     public int getId() {
@@ -192,12 +113,52 @@ public class PlatformOrder {
         this.payCode = payCode;
     }
 
-    public CodeType getCodetype() {
-        return codetype;
+    public String getIp() {
+        return ip;
     }
 
-    public void setCodetype(CodeType codetype) {
-        this.codetype = codetype;
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public String getRechargeId() {
+        return rechargeId;
+    }
+
+    public void setRechargeId(String rechargeId) {
+        this.rechargeId = rechargeId;
+    }
+
+    public double getMoney() {
+        return money;
+    }
+
+    public void setMoney(double money) {
+        this.money = money;
+    }
+
+    public double getPayMoney() {
+        return payMoney;
+    }
+
+    public void setPayMoney(double payMoney) {
+        this.payMoney = payMoney;
+    }
+
+    public Date getPayTime() {
+        return payTime;
+    }
+
+    public void setPayTime(Date payTime) {
+        this.payTime = payTime;
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
     }
 
     public int getSupplierid() {
@@ -206,5 +167,53 @@ public class PlatformOrder {
 
     public void setSupplierid(int supplierid) {
         this.supplierid = supplierid;
+    }
+
+    public String getImei() {
+        return imei;
+    }
+
+    public void setImei(String imei) {
+        this.imei = imei;
+    }
+
+    public int getTableId() {
+        return tableId;
+    }
+
+    public void setTableId(int tableId) {
+        this.tableId = tableId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public int getPayTypeId() {
+        return payTypeId;
+    }
+
+    public void setPayTypeId(int payTypeId) {
+        this.payTypeId = payTypeId;
+    }
+
+    public double getAgentRate() {
+        return agentRate;
+    }
+
+    public void setAgentRate(double agentRate) {
+        this.agentRate = agentRate;
+    }
+
+    public double getMerchantRate() {
+        return merchantRate;
+    }
+
+    public void setMerchantRate(double merchantRate) {
+        this.merchantRate = merchantRate;
     }
 }

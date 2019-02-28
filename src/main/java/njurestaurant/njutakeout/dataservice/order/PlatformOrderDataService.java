@@ -30,9 +30,9 @@ public interface PlatformOrderDataService {
 
     List<PlatformOrder> findPlatformByDate(Date startDate, Date endDate);
 
-    List<PlatformOrder> findByImeiAndCodeType(String imei , CodeType codeType);
+    List<PlatformOrder> findByImeiAndPayTypeId(String imei , int payTypeId);
 
-    List<PlatformOrder>  findByImeiAndStateAndCodeType(String imei, OrderState orderState,CodeType codeType);
+    List<PlatformOrder>  findByImeiAndStateAndPayTypeId(String imei, OrderState orderState,int payTypeId);
 
-    PlatformOrder findByImeiAndStateAndCodeTypeAndMoney(String imei, OrderState orderState,CodeType codeType,double money);
+    PlatformOrder findByImeiAndStateAndPayTypeIdAndMoney(String imei, OrderState orderState,int payTypeId,double money);
 }

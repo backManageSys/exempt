@@ -10,16 +10,24 @@ import njurestaurant.njutakeout.response.Response;
 public class FundingReportResponse extends Response {
     private String number;
     private String date;
-    private double supplierToCom;
-    private double comToAgent;
-    private double comToMerchant;
+    private String cardNumber;
+    private String bank;
+    private String name;
+    private String status;
+    private double in;
+    private double out;
+    private double balance;
 
-    public FundingReportResponse(String number, String date, double supplierToCom, double comToAgent, double comToMerchant) {
+    public FundingReportResponse(String number, String date, String cardNumber, String bank, String name, String status, double in, double out, double balance) {
         this.number = number;
         this.date = date;
-        this.supplierToCom = supplierToCom;
-        this.comToAgent = comToAgent;
-        this.comToMerchant = comToMerchant;
+        this.cardNumber = cardNumber;
+        this.bank = bank;
+        this.name = name;
+        this.status = status;
+        this.in = in;
+        this.out = out;
+        this.balance = balance;
     }
 
     public String getNumber() {
@@ -38,27 +46,59 @@ public class FundingReportResponse extends Response {
         this.date = date;
     }
 
-    public double getSupplierToCom() {
-        return supplierToCom;
+    public String getCardNumber() {
+        return cardNumber;
     }
 
-    public void setSupplierToCom(double supplierToCom) {
-        this.supplierToCom = supplierToCom;
+    public void setCardNumber(String cardNumber) {
+        this.cardNumber = cardNumber;
     }
 
-    public double getComToAgent() {
-        return comToAgent;
+    public String getBank() {
+        return bank;
     }
 
-    public void setComToAgent(double comToAgent) {
-        this.comToAgent = comToAgent;
+    public void setBank(String bank) {
+        this.bank = bank;
     }
 
-    public double getComToMerchant() {
-        return comToMerchant;
+    public String getName() {
+        return name;
     }
 
-    public void setComToMerchant(double comToMerchant) {
-        this.comToMerchant = comToMerchant;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public double getIn() {
+        return in;
+    }
+
+    public void setIn(double in) {
+        this.in = in;
+    }
+
+    public double getOut() {
+        return out;
+    }
+
+    public void setOut(double out) {
+        this.out = out;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
     }
 }

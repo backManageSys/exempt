@@ -24,31 +24,47 @@ public class CardChangeOrder {
     //到卡金额
     @Column(name = "money_in")
     private double money_in;
-    //到账后转入卡卡上余额
-    @Column(name = "card_balance")
-    private double cardBalance;
-    //审核状态(未审核、已审核)
+    //转出卡卡上余额
+    @Column(name = "card_balance_out")
+    private double cardBalanceOut;
+    //转入卡卡上余额
+    @Column(name = "card_balance_in")
+    private double cardBalanceIn;
+    //订单状态
     @Column(name = "state")
     private WithdrewState state;
     //操作时间
     @Column(name = "operateTime")
     private Date operateTime;
+    //最终操作时间
+    @Column(name = "finalOperateTime")
+    private Date finalOperateTime;
     //操作人
     @Column(name = "operateUsername")
     private String operateUsername;
+    //账变类型
+    @Column(name = "type")
+    private String type;
+    //原因
+    @Column(name = "reason")
+    private String reason;
 
     public CardChangeOrder() {
     }
 
-    public CardChangeOrder(String cardNumber_out, String cardNumber_in, double money_out, double money_in, double cardBalance, WithdrewState state, Date operateTime, String operateUsername) {
+    public CardChangeOrder(String cardNumber_out, String cardNumber_in, double money_out, double money_in, double cardBalanceOut, double cardBalanceIn, WithdrewState state, Date operateTime, Date finalOperateTime, String operateUsername, String type, String reason) {
         this.cardNumber_out = cardNumber_out;
         this.cardNumber_in = cardNumber_in;
         this.money_out = money_out;
         this.money_in = money_in;
-        this.cardBalance = cardBalance;
+        this.cardBalanceOut = cardBalanceOut;
+        this.cardBalanceIn = cardBalanceIn;
         this.state = state;
         this.operateTime = operateTime;
+        this.finalOperateTime = finalOperateTime;
         this.operateUsername = operateUsername;
+        this.type = type;
+        this.reason = reason;
     }
 
     public int getId() {
@@ -91,12 +107,20 @@ public class CardChangeOrder {
         this.money_in = money_in;
     }
 
-    public double getCardBalance() {
-        return cardBalance;
+    public double getCardBalanceOut() {
+        return cardBalanceOut;
     }
 
-    public void setCardBalance(double cardBalance) {
-        this.cardBalance = cardBalance;
+    public void setCardBalanceOut(double cardBalanceOut) {
+        this.cardBalanceOut = cardBalanceOut;
+    }
+
+    public double getCardBalanceIn() {
+        return cardBalanceIn;
+    }
+
+    public void setCardBalanceIn(double cardBalanceIn) {
+        this.cardBalanceIn = cardBalanceIn;
     }
 
     public WithdrewState getState() {
@@ -115,11 +139,35 @@ public class CardChangeOrder {
         this.operateTime = operateTime;
     }
 
+    public Date getFinalOperateTime() {
+        return finalOperateTime;
+    }
+
+    public void setFinalOperateTime(Date finalOperateTime) {
+        this.finalOperateTime = finalOperateTime;
+    }
+
     public String getOperateUsername() {
         return operateUsername;
     }
 
     public void setOperateUsername(String operateUsername) {
         this.operateUsername = operateUsername;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }

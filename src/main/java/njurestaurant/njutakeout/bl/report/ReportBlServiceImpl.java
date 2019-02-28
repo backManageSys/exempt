@@ -6,6 +6,7 @@ import njurestaurant.njutakeout.dataservice.account.*;
 import njurestaurant.njutakeout.dataservice.app.AlipayDataService;
 import njurestaurant.njutakeout.dataservice.app.DeviceDataService;
 import njurestaurant.njutakeout.dataservice.company.CompanyCardDataService;
+import njurestaurant.njutakeout.dataservice.company.PayPlatformDataService;
 import njurestaurant.njutakeout.dataservice.order.ChangeOrderDataService;
 import njurestaurant.njutakeout.dataservice.order.PlatformOrderDataService;
 import njurestaurant.njutakeout.dataservice.order.WithdrewOrderDataService;
@@ -13,6 +14,7 @@ import njurestaurant.njutakeout.entity.account.*;
 import njurestaurant.njutakeout.entity.app.Alipay;
 import njurestaurant.njutakeout.entity.app.Device;
 import njurestaurant.njutakeout.entity.company.CompanyCard;
+import njurestaurant.njutakeout.entity.company.PayPlatform;
 import njurestaurant.njutakeout.entity.order.*;
 import njurestaurant.njutakeout.exception.WrongInputException;
 import njurestaurant.njutakeout.publicdatas.order.OrderState;
@@ -25,7 +27,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static njurestaurant.njutakeout.bl.order.PlatformOrderBlServiceImpl.getRate;
+import static njurestaurant.njutakeout.config.websocket.WebSocketHandler.GetThreeBitsPoint;
+
 
 @Service
 public class ReportBlServiceImpl implements ReportBlService {
@@ -40,9 +43,12 @@ public class ReportBlServiceImpl implements ReportBlService {
     private final DeviceDataService deviceDataService;
     private final PersonalCardDataService personalCardDataService;
     private final CompanyCardDataService companyCardDataService;
-    private final UserDao userDao ;
+    private final PayRateListDataService payRateListDataService;
+    private final PayPlatformDataService payPlatformDataService;
+    private final UserDao userDao;
+
     @Autowired
-    public ReportBlServiceImpl(PlatformOrderDataService platformOrderDataService, WithdrewOrderDataService withdrewOrderDataService, UserDataService userDataService, SupplierDataService supplierDataService, MerchantDataService merchantDataService, AgentDataService agentDataService, DeviceDataService deviceDataService, AlipayDataService alipayDataService, ChangeOrderDataService changeOrderDataService, PersonalCardDataService personalCardDataService, CompanyCardDataService companyCardDataService, UserDao userDao) {
+    public ReportBlServiceImpl(PlatformOrderDataService platformOrderDataService, WithdrewOrderDataService withdrewOrderDataService, UserDataService userDataService, SupplierDataService supplierDataService, MerchantDataService merchantDataService, AgentDataService agentDataService, DeviceDataService deviceDataService, AlipayDataService alipayDataService, ChangeOrderDataService changeOrderDataService, PersonalCardDataService personalCardDataService, CompanyCardDataService companyCardDataService, PayRateListDataService payRateListDataService, PayPlatformDataService payPlatformDataService, UserDao userDao) {
         this.platformOrderDataService = platformOrderDataService;
         this.withdrewOrderDataService = withdrewOrderDataService;
         this.userDataService = userDataService;
@@ -54,6 +60,8 @@ public class ReportBlServiceImpl implements ReportBlService {
         this.changeOrderDataService = changeOrderDataService;
         this.companyCardDataService = companyCardDataService;
         this.personalCardDataService = personalCardDataService;
+        this.payRateListDataService = payRateListDataService;
+        this.payPlatformDataService = payPlatformDataService;
         this.userDao = userDao;
     }
 
@@ -122,18 +130,26 @@ public class ReportBlServiceImpl implements ReportBlService {
             for (Merchant merchant : merchantList) {
                 String number = "Sh" + String.format("%08d", merchant.getUser().getId());
                 List<PlatformAnalyse> list = new ArrayList<>();
-                list.add(new PlatformAnalyse("支付宝", 0));
-                list.add(new PlatformAnalyse("微信", 0));
-                list.add(new PlatformAnalyse("云闪付", 0));
+                List<SuccessOrdersRate> list1 = new ArrayList<>();
+                List<SuccessOrder> list2 = new ArrayList<>();
+                List<TotalOrder> list3 = new ArrayList<>();
+                for (PayPlatform payPlatform : payPlatformDataService.findAllPayPlatform())
+                    list.add(new PlatformAnalyse(payPlatform.getCodeCategory(), 0));
+                for (PayPlatform payPlatform : payPlatformDataService.findAllPayPlatform())
+                    list1.add(new SuccessOrdersRate(payPlatform.getCodeCategory(), 0));
+                for (PayPlatform payPlatform : payPlatformDataService.findAllPayPlatform())
+                    list2.add(new SuccessOrder(payPlatform.getCodeCategory(), 0));
+                for (PayPlatform payPlatform : payPlatformDataService.findAllPayPlatform())
+                    list3.add(new TotalOrder(payPlatform.getCodeCategory(), 0));
                 MerchantReportResponse merchantReportResponse = null;
                 if (userDao.findUserById(merchant.getApplyId()).getRole() == 1)
-                merchantReportResponse = new MerchantReportResponse(number, date, merchant.getUser().getUsername(),
-                        merchant.getName(), 0.0, 0.0, 0.0, merchant.getWithdrewMoney(),
-                        merchant.getBalance(), 0.0, 0.0, list, 0, 0, 0);
+                    merchantReportResponse = new MerchantReportResponse(number, date, merchant.getUser().getUsername(),
+                            merchant.getName(), 0.0, 0.0, 0.0, merchant.getWithdrewMoney(),
+                            merchant.getBalance(), 0.0, 0.0, list, list1, list2, list3, 0);
                 if (userDao.findUserById(merchant.getApplyId()).getRole() == 2)
-                merchantReportResponse = new MerchantReportResponse(number, date, merchant.getUser().getUsername(),
-                        merchant.getName(), 0.0, 0.0, 0.0, merchant.getWithdrewMoney(),
-                        merchant.getBalance(), 0.0, 0.0, list, 0, 0, merchant.getApplyId());
+                    merchantReportResponse = new MerchantReportResponse(number, date, merchant.getUser().getUsername(),
+                            merchant.getName(), 0.0, 0.0, 0.0, merchant.getWithdrewMoney(),
+                            merchant.getBalance(), 0.0, 0.0, list, list1, list2, list3, merchant.getApplyId());
                 merchantReportResponseMap.put(merchant.getUser().getId(), merchantReportResponse);
                 merchantMap.put(merchant.getUser().getId(), merchant);
             }
@@ -147,51 +163,40 @@ public class ReportBlServiceImpl implements ReportBlService {
                 for (PlatformOrder platformOrder : platformOrders) {
                     if (merchantReportResponseMap.containsKey(platformOrder.getUid())) {
                         MerchantReportResponse merchantReportResponse = merchantReportResponseMap.get(platformOrder.getUid());
-                        merchantReportResponse.setTotalOrders(merchantReportResponse.getTotalOrders() + 1);
+                        // SuccessOrdersRateAnalyse(merchantReportResponse.getSuccessOrdersRateList(),platformOrder.getType(),)
+                        System.out.println("qqqqqqqqqq");
+                        merchantReportResponse.setTotalOrderList(TotalOrdersAnalyse(merchantReportResponse.getTotalOrderList(), platformOrder.getType(), 1));
+                        System.out.println(merchantReportResponse.getTotalOrderList().get(0).getTotalOrders() + merchantReportResponse.getTotalOrderList().get(1).getTotalOrders());
                         if (platformOrder.getState() == OrderState.PAID) { // 成功的订单
-                            merchantReportResponse.setSuccessOrder(merchantReportResponse.getSuccessOrder() + 1);
-                            merchantReportResponse.setDeposit(platformOrder.getPayMoney() + merchantReportResponse.getDeposit());   // 存款
+                            System.out.println("eeeeeeeeee");
+                            merchantReportResponse.setSuccessOrderList(SuccessOrdersAnalyse(merchantReportResponse.getSuccessOrderList(), platformOrder.getType(), 1));
+                            System.out.println("rrrrrrrrr");
+                            merchantReportResponse.setDeposit(GetThreeBitsPoint(platformOrder.getPayMoney() + merchantReportResponse.getDeposit()));
                             Merchant merchant = merchantMap.get(platformOrder.getUid());
-                            switch (platformOrder.getType()) {
-                                case "alipay":
-                                    merchantReportResponse.setAvailiableDeposit(merchantReportResponse.getAvailiableDeposit() + platformOrder.getPayMoney() * (1 - getRate(platformOrder.getCodetype(),merchant)  / 100)); //
-                                    break;
-                                case "wechat":
-                                    merchantReportResponse.setAvailiableDeposit(merchantReportResponse.getAvailiableDeposit() + platformOrder.getPayMoney() * (1 - merchant.getWechat() / 100));
-                                    break;
-                            }
-                        //    if (platformOrder.getTime() != null && DateUtils.isSameDay(date, platformOrder.getTime())) { // 和查询日期同一天
-                                if (agentMap.containsKey(merchant.getApplyId())) {
-                                    Agent agent = agentMap.get(merchant.getApplyId());
-                                    List<PlatformAnalyse> platformAnalyses = null;
-                                    PlatformAnalyse temp = null;
-                                    switch (platformOrder.getType()) {
-                                        case "alipay":  // 支付宝
-                                            if (agent != null)
-                                                merchantReportResponse.setAgentProfit(merchantReportResponse.getAgentProfit() + platformOrder.getPayMoney() * agent.getAlipay() / 100);    // 代理分润
-                                            platformAnalyses = dailyAnalyse(merchantReportResponse.getPlatformAnalyseList(), "支付宝", platformOrder.getPayMoney());
-                                            merchantReportResponse.setPlatformAnalyseList(platformAnalyses);    // 每日量分析
-                                            merchantReportResponse.setCompanyProfit(getRate(platformOrder.getCodetype(),merchant) / 100 * platformOrder.getPayMoney() + merchantReportResponse.getCompanyProfit());    // 公司分润
-                                            break;
-                                        case "wechat":  // 微信
-                                            if (agent != null)
-                                                merchantReportResponse.setAgentProfit(merchantReportResponse.getAgentProfit() + platformOrder.getPayMoney() * agent.getWechat() / 100);    // 代理分润
-                                            platformAnalyses = dailyAnalyse(merchantReportResponse.getPlatformAnalyseList(), "微信", platformOrder.getPayMoney());
-                                            merchantReportResponse.setPlatformAnalyseList(platformAnalyses);
-                                            merchantReportResponse.setCompanyProfit((merchant.getWechat()) / 100 * platformOrder.getPayMoney() + merchantReportResponse.getCompanyProfit());
-                                            break;
-                                        case "cloudpay":    // 云闪付
-//                                        platformAnalyses = dailyAnalyse(merchantReportResponse.getPlatformAnalyseList(), "云闪付", platformOrder.getMoney());
-//                                        merchantReportResponse.setPlatformAnalyseList(platformAnalyses);
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                               // }
-                            }
+                            merchantReportResponse.setAvailiableDeposit(GetThreeBitsPoint(merchantReportResponse.getAvailiableDeposit() +
+                                    platformOrder.getPayMoney() * (1 - platformOrder.getMerchantRate() / 100)));
+                            //    if (platformOrder.getTime() != null && DateUtils.isSameDay(date, platformOrder.getTime())) { // 和查询日期同一天
+                            if (agentMap.containsKey(merchant.getApplyId())) {
+                                Agent agent = agentMap.get(merchant.getApplyId());
+                                if (agent != null)
+                                    merchantReportResponse.setAgentProfit(GetThreeBitsPoint(merchantReportResponse.getAgentProfit() + platformOrder.getPayMoney() *
+                                            (platformOrder.getMerchantRate() - platformOrder.getAgentRate()) / 100));    // 代理分润
+                            } else
+                                merchantReportResponse.setAgentProfit(0);
+                            List<PlatformAnalyse> platformAnalyses = null;
+                            platformAnalyses = dailyAnalyse(merchantReportResponse.getPlatformAnalyseList(), platformOrder.getType(), platformOrder.getPayMoney());
+                            merchantReportResponse.setPlatformAnalyseList(platformAnalyses);    // 每日量分析
+                            merchantReportResponse.setCompanyProfit(GetThreeBitsPoint(platformOrder.getAgentRate() / 100
+                                    * platformOrder.getPayMoney() + merchantReportResponse.getCompanyProfit()));    // 公司分润
 
                         }
+                        List<SuccessOrdersRate> successOrdersRates = null;
+                        System.out.println("ttttttttttttt");
+                        successOrdersRates = SuccessOrdersRateAnalyse(merchantReportResponse.getSuccessOrdersRateList(), merchantReportResponse.getSuccessOrderList(), merchantReportResponse.getTotalOrderList());
+                        System.out.println("yyyyyyyyyyyy");
+                        merchantReportResponse.setSuccessOrdersRateList(successOrdersRates);
                         merchantReportResponseMap.put(platformOrder.getUid(), merchantReportResponse);
+
                     }
                 }
             }
@@ -201,7 +206,7 @@ public class ReportBlServiceImpl implements ReportBlService {
                     if (withdrewOrder.getState() != WithdrewState.SUCCESS) continue;
                     if (merchantReportResponseMap.containsKey(withdrewOrder.getApplicantId())) {
                         MerchantReportResponse merchantReportResponse = merchantReportResponseMap.get(withdrewOrder.getApplicantId());
-                        merchantReportResponse.setWithdrewed(withdrewOrder.getMoney() + merchantReportResponse.getWithdrewed());//提款
+                        merchantReportResponse.setWithdrewed(GetThreeBitsPoint(withdrewOrder.getMoney_in() + merchantReportResponse.getWithdrewed()));//提款//每单要扣除3元手续费
                         merchantReportResponseMap.put(withdrewOrder.getApplicantId(), merchantReportResponse);
                     }
                 }
@@ -211,6 +216,16 @@ public class ReportBlServiceImpl implements ReportBlService {
                 result.add(entry.getValue());
             }
         }
+        Collections.sort(result, (o1, o2) -> {
+            //按照抽成前存款大小进行降序排列
+            if (o1.getDeposit() < o2.getDeposit()) {
+                return 1;
+            }
+            if (o1.getDeposit() == o2.getDeposit()) {
+                return 0;
+            }
+            return -1;
+        });
         return result;
     }
 
@@ -270,26 +285,24 @@ public class ReportBlServiceImpl implements ReportBlService {
                 String number = "Dl" + String.format("%08d", agent.getUser().getId());
                 agentMap.put(agent.getUser().getId(), agent);
                 List<PlatformAnalyse> dlist = new ArrayList<>();
-                dlist.add(new PlatformAnalyse("支付宝", 0));
-                dlist.add(new PlatformAnalyse("微信", 0));
-                dlist.add(new PlatformAnalyse("云闪付", 0));
                 List<PlatformAnalyse> plist = new ArrayList<>();
-                plist.add(new PlatformAnalyse("支付宝", 0));
-                plist.add(new PlatformAnalyse("微信", 0));
-                plist.add(new PlatformAnalyse("云闪付", 0));
-                agentReportResponseMap.put(agent.getUser().getId(), new AgentReportResponse(number, date, agent.getUser().getUsername(), agent.getAgentName(), agent.getAlipay(), agent.getWechat(), dlist, plist, 0.0, 0.0));
+                for (PayPlatform payPlatform : payPlatformDataService.findAllPayPlatform())
+                    dlist.add(new PlatformAnalyse(payPlatform.getCodeCategory(), 0));
+                for (PayPlatform payPlatform : payPlatformDataService.findAllPayPlatform())
+                    plist.add(new PlatformAnalyse(payPlatform.getCodeCategory(), 0));
+                agentReportResponseMap.put(agent.getUser().getId(), new AgentReportResponse(number, date, agent.getUser().getUsername(), agent.getAgentName(), dlist, plist, 0.0, agent.getWithdrewMoney(), agent.getBalance()));
             }
         }
-        if (merchantList.size() > 0) {
-            for (Merchant merchant : merchantList) {
-                if (agentReportResponseMap.containsKey(merchant.getApplyId())) { // 该用户上级是代理商
-                    merchantMap.put(merchant.getUser().getId(), merchant);
-                    AgentReportResponse agentReportResponse = agentReportResponseMap.get(merchant.getApplyId());
-                    agentReportResponse.setBalance(merchant.getBalance() + agentReportResponse.getBalance());
-                    agentReportResponseMap.put(merchant.getApplyId(), agentReportResponse);
-                }
-            }
-        }
+//        if (merchantList.size() > 0) {
+//            for (Merchant merchant : merchantList) {
+//                if (agentReportResponseMap.containsKey(merchant.getApplyId())) { // 该用户上级是代理商
+//                    merchantMap.put(merchant.getUser().getId(), merchant);
+//                    AgentReportResponse agentReportResponse = agentReportResponseMap.get(merchant.getApplyId());
+//                    agentReportResponse.setBalance(merchant.getBalance() + agentReportResponse.getBalance());//名下所有商戶的余额
+//                    agentReportResponseMap.put(merchant.getApplyId(), agentReportResponse);
+//                }
+//            }
+//        }
 
         // 报表生成
         if (platformOrders.size() > 0) {
@@ -301,28 +314,13 @@ public class ReportBlServiceImpl implements ReportBlService {
                     if (agent == null) continue;  // 该条记录的商户不属于某个代理
                     AgentReportResponse agentReportResponse = agentReportResponseMap.get(agent.getUser().getId());
                     List<PlatformAnalyse> dlist, plist;
-                    switch (platformOrder.getType()) {
-                        case "alipay":
-                            dlist = dailyAnalyse(agentReportResponse.getDepositList(), "支付宝", platformOrder.getPayMoney());
-                            plist = dailyAnalyse(agentReportResponse.getProfitList(), "支付宝", platformOrder.getPayMoney() * agentReportResponse.getAlipay() / 100);
-                            agentReportResponse.setDepositList(dlist);
-                            agentReportResponse.setProfitList(plist);
-                            agentReportResponseMap.put(merchant.getApplyId(), agentReportResponse);
-                            break;
-                        case "wechat":
-                            dlist = dailyAnalyse(agentReportResponse.getDepositList(), "微信", platformOrder.getPayMoney());
-                            plist = dailyAnalyse(agentReportResponse.getProfitList(), "微信", platformOrder.getPayMoney() * agentReportResponse.getWechat() / 100);
-                            agentReportResponse.setDepositList(dlist);
-                            agentReportResponse.setProfitList(plist);
-                            agentReportResponseMap.put(merchant.getApplyId(), agentReportResponse);
-                            break;
-                        case "cloudpay":
-//                            dlist = dailyAnalyse(agentReportResponse.getDepositList(), "云闪付", platformOrder.getPayMoney());
-//                            plist = dailyAnalyse(agentReportResponse.getProfitList(), "云闪付", platformOrder.getPayMoney() * agentReportResponse.getAlipay());
-//                            agentReportResponse.setDepositList(dlist);
-//                            agentReportResponse.setProfitList(plist);
-                            break;
-                    }
+
+                    dlist = dailyAnalyse(agentReportResponse.getDepositList(), platformOrder.getType(), platformOrder.getPayMoney());//名下所有商户的平台流量
+                    plist = dailyAnalyse(agentReportResponse.getProfitList(), platformOrder.getType(), GetThreeBitsPoint(platformOrder.getPayMoney() *
+                            (platformOrder.getMerchantRate() - platformOrder.getAgentRate()) / 100));//代理商的各平台利润
+                    agentReportResponse.setDepositList(dlist);
+                    agentReportResponse.setProfitList(plist);
+                    agentReportResponseMap.put(merchant.getApplyId(), agentReportResponse);
                 }
             }
         }
@@ -333,7 +331,7 @@ public class ReportBlServiceImpl implements ReportBlService {
                 if (agent != null) {
                     AgentReportResponse agentReportResponse = agentReportResponseMap.get(agent.getUser().getId());
                     if (agentReportResponse != null) {
-                        agentReportResponse.setWithdrewed(withdrewOrder.getMoney() + agentReportResponse.getWithdrewed());
+                        agentReportResponse.setWithdrewed(GetThreeBitsPoint(withdrewOrder.getMoney_in() + agentReportResponse.getWithdrewed()));
                         agentReportResponseMap.put(agent.getUser().getId(), agentReportResponse);
                     }
                 }
@@ -347,7 +345,7 @@ public class ReportBlServiceImpl implements ReportBlService {
     }
 
     /**
-     * 量分析，当天的支付宝/微信/云闪付成功订单多少
+     * 量分析，支付宝/微信/云闪付成功订单多少
      *
      * @param platformAnalyses 量分析数组
      * @param type             订单类型
@@ -365,13 +363,86 @@ public class ReportBlServiceImpl implements ReportBlService {
                 }
             }
         }
-        if (temp == null) {
-            temp = new PlatformAnalyse("支付宝", money);
-        } else {
-            temp.setMoney(temp.getMoney() + money);
-        }
+        temp.setMoney(temp.getMoney() + money);
         platformAnalyses.add(temp);
         return platformAnalyses;
+    }
+
+    private List<SuccessOrdersRate> SuccessOrdersRateAnalyse(List<SuccessOrdersRate> SuccessOrdersRates, List<SuccessOrder> successOrders, List<TotalOrder> totalOrders) {
+        if (SuccessOrdersRates.size() > 0) {
+            for (SuccessOrdersRate p : SuccessOrdersRates) {
+                System.out.println("1zzzzz");
+                if (GetTotalOrdersAnalyse(totalOrders, p.getType()) == 0)
+                    p.setSuccessOrdersRate(0);
+                else {
+                    String a = new java.text.DecimalFormat("#.00000").format(GetSuccessOrders(successOrders, p.getType()) / GetTotalOrdersAnalyse(totalOrders, p.getType()));
+                    p.setSuccessOrdersRate(Double.parseDouble(a));
+                }
+            }
+        }
+        for (SuccessOrdersRate p : SuccessOrdersRates) {
+            System.out.println("1111111sdadad");
+            System.out.println(p.getType() + p.getSuccessOrdersRate());
+        }
+        return SuccessOrdersRates;
+    }
+
+    private List<SuccessOrder> SuccessOrdersAnalyse(List<SuccessOrder> successOrders, String type, int SuccessOrders) {
+        SuccessOrder temp = null;
+        if (successOrders.size() > 0) {
+            for (SuccessOrder p : successOrders) {
+                if (type.equals(p.getType())) {
+                    temp = p;
+                    successOrders.remove(p);
+                    break;
+                }
+            }
+        }
+        temp.setSuccessOrders(temp.getSuccessOrders() + SuccessOrders);
+        successOrders.add(temp);
+        return successOrders;
+    }
+
+    private List<TotalOrder> TotalOrdersAnalyse(List<TotalOrder> totalOrders, String type, int TotalOrders) {
+        TotalOrder temp = null;
+        if (totalOrders.size() > 0) {
+            for (TotalOrder p : totalOrders) {
+                if (type.equals(p.getType())) {
+                    temp = p;
+                    totalOrders.remove(p);
+                    break;
+                }
+            }
+        }
+        temp.setTotalOrders(temp.getTotalOrders() + TotalOrders);
+        totalOrders.add(temp);
+        return totalOrders;
+    }
+
+    private int GetSuccessOrders(List<SuccessOrder> successOrders, String type) {
+        SuccessOrder temp = null;
+        if (successOrders.size() > 0) {
+            for (SuccessOrder p : successOrders) {
+                if (type.equals(p.getType())) {
+                    temp = p;
+                    return temp.getSuccessOrders();
+                }
+            }
+        }
+        return 0;
+    }
+
+    private int GetTotalOrdersAnalyse(List<TotalOrder> totalOrders, String type) {
+        TotalOrder temp = null;
+        if (totalOrders.size() > 0) {
+            for (TotalOrder p : totalOrders) {
+                if (type.equals(p.getType())) {
+                    temp = p;
+                    return temp.getTotalOrders();
+                }
+            }
+        }
+        return 0;
     }
 
     /**
@@ -442,7 +513,7 @@ public class ReportBlServiceImpl implements ReportBlService {
                 if (alipay.getLoginId() == null) continue;
                 alipayMap.put(alipay.getId(), alipay);
                 String number = "A" + String.format("%08d", alipay.getId());
-                receiptCodeReportResponseMap.put(alipay.getLoginId(), new ReceiptCodeReportResponse(number, date, name, alipay.getLoginId(), 0, 0));
+                receiptCodeReportResponseMap.put(alipay.getLoginId(), new ReceiptCodeReportResponse(number, date, name, alipay.getLoginId(), 0, 0, 0, 0));
             }
         }
 
@@ -462,10 +533,16 @@ public class ReportBlServiceImpl implements ReportBlService {
         // 根据内部码帐变订单计算该支付宝提现到个人卡的金额
         if (qRcodeChangeOrderList.size() > 0) {
             for (QRcodeChangeOrder qRcodeChangeOrder : qRcodeChangeOrderList) {
-                if (!qRcodeChangeOrder.getState().equals("提现到账成功")) continue; // 没有提现成功的订单
+                if (!qRcodeChangeOrder.getState().equals("提现到账成功")) {
+                    ReceiptCodeReportResponse receiptCodeReportResponse = receiptCodeReportResponseMap.get(qRcodeChangeOrder.getLoginId());
+                    receiptCodeReportResponse.setWithdrewing(receiptCodeReportResponse.getWithdrewing() + qRcodeChangeOrder.getMoney());
+                    receiptCodeReportResponseMap.put(qRcodeChangeOrder.getLoginId(), receiptCodeReportResponse);
+                    continue; // 没有提现成功的订单
+                }
                 if (receiptCodeReportResponseMap.containsKey(qRcodeChangeOrder.getLoginId())) {
                     ReceiptCodeReportResponse receiptCodeReportResponse = receiptCodeReportResponseMap.get(qRcodeChangeOrder.getLoginId());
                     receiptCodeReportResponse.setWithdrew(receiptCodeReportResponse.getWithdrew() + qRcodeChangeOrder.getRealMoney());
+                    receiptCodeReportResponse.setFee(receiptCodeReportResponse.getFee() + qRcodeChangeOrder.getMoney() - qRcodeChangeOrder.getRealMoney());
                     receiptCodeReportResponseMap.put(qRcodeChangeOrder.getLoginId(), receiptCodeReportResponse);
                 }
             }
@@ -520,43 +597,50 @@ public class ReportBlServiceImpl implements ReportBlService {
         }
 
         List<CardChangeOrder> cardChangeOrderList = changeOrderDataService.findAllCardChangeOrderByDate(startDate, endDate);
-        List<PersonalCard> personalCardList = personalCardDataService.findAllCards();
+        // List<PersonalCard> personalCardList = personalCardDataService.findAllCards();
         List<CompanyCard> companyCardList = companyCardDataService.findAllCompanyCards();
-        Map<String, PersonalCard> personalCardMap = new HashMap<>();
+        //  Map<String, PersonalCard> personalCardMap = new HashMap<>();
         Map<String, CompanyCard> companyCardMap = new HashMap<>();
+        Map<String, FundingReportResponse> fundingReportResponseMap = new HashMap<>();
 
-        if (personalCardList.size() > 0) {
-            for (PersonalCard personalCard : personalCardList) {
-                personalCardMap.put(personalCard.getCardNumber(), personalCard);
-            }
-        }
+//        if (personalCardList.size() > 0) {
+//            for (PersonalCard personalCard : personalCardList) {
+//                personalCardMap.put(personalCard.getCardNumber(), personalCard);
+//            }
+//        }
         if (companyCardList.size() > 0) {
             for (CompanyCard companyCard : companyCardList) {
                 companyCardMap.put(companyCard.getCardNumber(), companyCard);
+                String number = "A" + String.format("%08d", companyCard.getId());
+                fundingReportResponseMap.put(companyCard.getCardNumber(), new FundingReportResponse(
+                        number, date, companyCard.getCardNumber(), companyCard.getBank(), companyCard.getName(), companyCard.getStatus(), 0, 0, companyCard.getBalance()));
             }
         }
 
         double supplierToCom = 0, comToAgent = 0, comToMerchant = 0;
         if (cardChangeOrderList.size() > 0) {
             for (CardChangeOrder cardChangeOrder : cardChangeOrderList) {
-                if (personalCardMap.containsKey(cardChangeOrder.getCardNumber_out())) {  // 供码用户的个人银行卡转入到公司银行卡的记录
-                    if (companyCardMap.containsKey(cardChangeOrder.getCardNumber_in())) {
-                        User user = personalCardMap.get(cardChangeOrder.getCardNumber_out()).getUser();
-                        if (user == null || user.getRole() != 4) continue; // 该卡号没有所属用户,或者该卡不是供码用户的卡
-                        supplierToCom += cardChangeOrder.getMoney_in();
-                    }
-                } else if (companyCardMap.containsKey(cardChangeOrder.getCardNumber_out())) {
-                    User user = personalCardMap.get(cardChangeOrder.getCardNumber_in()).getUser();
-                    if (user != null && user.getRole() == 2)
-                        comToAgent += cardChangeOrder.getMoney_out();   // 公司银行卡转出到代理商个人银行卡的记录
-                    else if (user != null && user.getRole() == 3)
-                        comToMerchant += cardChangeOrder.getMoney_out();  //公司银行卡转出到商户个人银行卡的记录
+                if (companyCardMap.containsKey(cardChangeOrder.getCardNumber_out()) && cardChangeOrder.getState() == WithdrewState.SUCCESS) {
+                    CompanyCard companyCard = companyCardMap.get(cardChangeOrder.getCardNumber_out());
+                    FundingReportResponse fundingReportResponse = fundingReportResponseMap.get(companyCard.getCardNumber());
+                    fundingReportResponse.setOut(fundingReportResponse.getOut()+cardChangeOrder.getMoney_in());
+                }
+                if (companyCardMap.containsKey(cardChangeOrder.getCardNumber_in()) && cardChangeOrder.getState() == WithdrewState.SUCCESS) {
+                    CompanyCard companyCard = companyCardMap.get(cardChangeOrder.getCardNumber_in());
+                    FundingReportResponse fundingReportResponse = fundingReportResponseMap.get(companyCard.getCardNumber());
+                    fundingReportResponse.setIn(fundingReportResponse.getOut()+cardChangeOrder.getMoney_in());
                 }
             }
         }
+//        for (Map.Entry<String, ReceiptCodeReportResponse> entry : receiptCodeReportResponseMap.entrySet()) {
+//            result.add(entry.getValue());
+//        }
+
+        // 生成报表
         List<FundingReportResponse> result = new ArrayList<>();
-        String number = "F" + String.format("%08d", 1);
-        result.add(new FundingReportResponse(number, date, supplierToCom, comToAgent, comToMerchant));
+        for (Map.Entry<String, FundingReportResponse> entry : fundingReportResponseMap.entrySet()) {
+            result.add(entry.getValue());
+        }
 
         return result;
     }
@@ -615,9 +699,9 @@ public class ReportBlServiceImpl implements ReportBlService {
         Map<String, Integer> alipayMap = new HashMap<>();
         if (supplierList.size() > 0) {
             for (Supplier supplier : supplierList) {
-               // if(supplier.getStatus().equals("启用")) {
-                    supplierMap.put(supplier.getId(), supplier);
-               // }
+                // if(supplier.getStatus().equals("启用")) {
+                supplierMap.put(supplier.getId(), supplier);
+                // }
             }
         }
         if (deviceList.size() > 0) {
@@ -643,14 +727,13 @@ public class ReportBlServiceImpl implements ReportBlService {
         if (platformOrderList.size() > 0) {
             for (PlatformOrder platformOrder : platformOrderList) {
                 if (platformOrder.getState() != OrderState.PAID) continue; // 过滤没有成功的订单
-                if (deviceMap.containsKey(platformOrder.getImei())) {
-                    int sid = deviceMap.get(platformOrder.getImei());
-                    if (supplierReportResponseMap.containsKey(sid)) {
-                        SupplierReportResponse supplierReportResponse = supplierReportResponseMap.get(deviceMap.get(platformOrder.getImei()));
-                        supplierReportResponse.setRealReceipt(platformOrder.getPayMoney() + supplierReportResponse.getRealReceipt());
-                        supplierReportResponseMap.put(sid, supplierReportResponse);
-                    }
+                int sid = userDataService.getUserById(platformOrder.getSupplierid()).getTableId();
+                if (supplierReportResponseMap.containsKey(sid)) {
+                    SupplierReportResponse supplierReportResponse = supplierReportResponseMap.get(deviceMap.get(platformOrder.getImei()));
+                    supplierReportResponse.setRealReceipt(platformOrder.getPayMoney() + supplierReportResponse.getRealReceipt());
+                    supplierReportResponseMap.put(sid, supplierReportResponse);
                 }
+
             }
         }
         if (qRcodeChangeOrderList.size() > 0) {
@@ -667,7 +750,7 @@ public class ReportBlServiceImpl implements ReportBlService {
 
         // 生成报表
         List<SupplierReportResponse> supplierReportResponses = new ArrayList<>();
-        for(Map.Entry<Integer, SupplierReportResponse> entry : supplierReportResponseMap.entrySet()) {
+        for (Map.Entry<Integer, SupplierReportResponse> entry : supplierReportResponseMap.entrySet()) {
             supplierReportResponses.add(entry.getValue());
         }
 

@@ -18,6 +18,8 @@ public interface ChangeOrderDataService {
 
     List<QRcodeChangeOrder> findAllQrCodeChangeOrderByDate(Date startDate, Date endDate);
 
+    List<QRcodeChangeOrder> findAllQrCodeChangeOrderByLessThanDateAndisNotQueried(Date endDate);
+
     List<CardChangeOrder> findAllCardChangeOrderByDate(Date startDate, Date endDate);
 
     List<CardChangeOrder> findAllCardChangeOrder();

@@ -34,4 +34,6 @@ public interface CompanyCardDataService {
     CompanyCard findCompanyById(int id);
 
     CompanyCard findCompanyCardByCardNumber(String cardNumber);
+
+    List<CompanyCard> findCompanyCardByOperateId(int uid);
 }

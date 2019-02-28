@@ -101,12 +101,7 @@ public class UserDataServiceImpl implements UserDataService {
 
     @Override
     public User getUserById(int id) {
-        Optional<User> userOptional = userDao.findById(id);
-        if(userOptional.isPresent()) {
-            return userOptional.get();
-        } else {
-            return null;
-        }
+       return userDao.findUserById(id);
     }
 
     @Override

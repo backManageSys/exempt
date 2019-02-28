@@ -48,4 +48,14 @@ public class AlipayDataServiceImpl implements AlipayDataService {
     public Alipay findByUserId(String userId) {
         return alipayDao.findByUserId(userId);
     }
+
+    @Override
+    public Alipay findByCardNumber(String cardNumber) {
+        return alipayDao.findByCardNumber(cardNumber);
+    }
+
+    @Override
+    public List<Alipay> findDevicesByImei(String imei) {
+        return alipayDao.findByImei(imei);
+    }
 }

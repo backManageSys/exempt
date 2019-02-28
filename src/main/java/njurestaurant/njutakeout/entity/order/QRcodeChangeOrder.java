@@ -37,11 +37,13 @@ public class QRcodeChangeOrder {
     //操作人
     @Column(name = "operateUsername")
     private String operateUsername;
-
+    //是否已查询
+    @Column(name = "isQuery")
+    private Boolean isQuery;
     public QRcodeChangeOrder() {
     }
 
-    public QRcodeChangeOrder(String loginId, double money, double realMoney, double balance, String cardNumber, double cardBalance, String state, Date operateTime, String operateUsername) {
+    public QRcodeChangeOrder(String loginId, double money, double realMoney, double balance, String cardNumber, double cardBalance, String state, Date operateTime, String operateUsername, Boolean isQuery) {
         this.loginId = loginId;
         this.money = money;
         this.realMoney = realMoney;
@@ -51,6 +53,7 @@ public class QRcodeChangeOrder {
         this.state = state;
         this.operateTime = operateTime;
         this.operateUsername = operateUsername;
+        this.isQuery = isQuery;
     }
 
     public int getId() {
@@ -131,5 +134,13 @@ public class QRcodeChangeOrder {
 
     public void setOperateUsername(String operateUsername) {
         this.operateUsername = operateUsername;
+    }
+
+    public Boolean getQuery() {
+        return isQuery;
+    }
+
+    public void setQuery(Boolean query) {
+        isQuery = query;
     }
 }

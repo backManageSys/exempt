@@ -24,6 +24,12 @@ public class Device {
     private int alipayId;
     @Column(name = "status")
     private String status;
+    @Transient
+    private String loginId;
+    @Transient
+    private String nickName;
+    @Transient
+    private double alipayBalance;
 
     public Device() {
     }
@@ -36,6 +42,30 @@ public class Device {
         this.imei = imei;
         this.supplier = supplier;
         this.status = status;
+    }
+
+    public String getLoginId() {
+        return loginId;
+    }
+
+    public void setLoginId(String loginId) {
+        this.loginId = loginId;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public double getAlipayBalance() {
+        return alipayBalance;
+    }
+
+    public void setAlipayBalance(double alipayBalance) {
+        this.alipayBalance = alipayBalance;
     }
 
     public Device(Supplier supplier) {
