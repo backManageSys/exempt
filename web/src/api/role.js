@@ -361,9 +361,23 @@ export function ShowCardOrder(uid) {
   })
 }
 
-export function getCompanyCard(uid) {
+export function getCompanyCard1(uid) {
   return request({
     url: '/app/supplier/getCompanyCard'+'?uid='+uid,
+    method: 'get',
+  })
+}
+
+export function getCompanyCard2(uid) {
+  return request({
+    url: '/app/supplier/getCollectingCard'+'?uid='+uid,
+    method: 'get',
+  })
+}
+
+export function companyCards() {
+  return request({
+    url: '/app/supplier/getCompanyCard',
     method: 'get',
   })
 }

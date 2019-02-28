@@ -27,9 +27,9 @@
         <el-select style="width: 200px" v-model="formaddParameters.cardNumber_out" placeholder="入款账号">
           <el-option
             v-for="item in cardNumber_outs"
-            :key="item.id"
-            :label="item.cardNumber"
-            :value="item.cardNumber">
+            :key="item"
+            :label="item"
+            :value="item">
           </el-option>
         </el-select>
       </el-form-item>
@@ -47,6 +47,7 @@
 
 <script>
   import {permissionAllocate, cardsGet,getLoginId,getCompanyCard,internalaccountchangeAdd} from '@/api/company'
+  import {getCompanyCard1,companyCards,getCompanyCard2} from '@/api/role'
   import {getTreePermissions} from '@/api/permissions'
   import {getIds} from '@/utils/treeids'
   import store from '../../../store'
@@ -91,8 +92,7 @@
       accountChange1(){
         this.formaddParameters.cardNumber_in = "";
         this.formaddParameters.cardNumber_out = "";
-        console.log(this.accountChangeValue,store.getters.uid);
-        // if(this.accountChangeValue === "入款"){
+        if(this.accountChangeValue === "入款"){
           getLoginId(store.getters.uid).then(response => {
             if (response.code !== 200) {
               this.$message({
@@ -103,7 +103,7 @@
               this.cardNumber_ins = response.data;
             }
           });
-        getCompanyCard(store.getters.uid).then(response => {
+        getCompanyCard1(store.getters.uid).then(response => {
             if (response.code !== 200) {
               this.$message({
                 message: response.data.description,
@@ -113,7 +113,31 @@
               this.cardNumber_outs = response.data;
             }
           })
-        // }
+        }else{
+
+
+          getCompanyCard2(store.getters.uid).then(response => {
+            if (response.code !== 200) {
+              this.$message({
+                message: response.data.description,
+                type: 'warning'
+              });
+            } else {
+              this.cardNumber_ins = response.data;
+            }
+          });
+          companyCards().then(response => {
+            if (response.code !== 200) {
+              this.$message({
+                message: response.data.description,
+                type: 'warning'
+              });
+            } else {
+              this.cardNumber_outs = response.data;
+            }
+          })
+
+        }
       },
       getPerCards() {
         cardsGetOne(store.getters.uid).then(response => {
