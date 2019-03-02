@@ -35,4 +35,6 @@ public interface PlatformOrderDataService {
     List<PlatformOrder>  findByImeiAndStateAndPayTypeId(String imei, OrderState orderState,int payTypeId);
 
     PlatformOrder findByImeiAndStateAndPayTypeIdAndMoney(String imei, OrderState orderState,int payTypeId,double money);
+
+    List<PlatformOrder> findByConditions(String imei, OrderState orderState,int payTypeId,Date startDate,Date endDate);
 }

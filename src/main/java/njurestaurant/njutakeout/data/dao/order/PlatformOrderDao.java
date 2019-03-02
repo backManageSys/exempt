@@ -26,4 +26,6 @@ public interface PlatformOrderDao extends JpaRepository<PlatformOrder, Integer> 
     PlatformOrder findPlatformOrderByImeiAndStateAndPayTypeIdAndMoney(String imei, OrderState state,int payTypeId,double money);
 
     List<PlatformOrder>  findPlatformOrderByImeiAndStateAndPayTypeId(String imei, OrderState state,int payTypeId);
+
+    List<PlatformOrder>  findByImeiAndPayTypeIdAndStateAndType(String imei,int payTypeId,OrderState state,String type);
 }
