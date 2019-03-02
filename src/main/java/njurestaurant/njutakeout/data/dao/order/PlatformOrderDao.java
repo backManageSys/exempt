@@ -5,10 +5,11 @@ import njurestaurant.njutakeout.publicdatas.app.CodeType;
 import njurestaurant.njutakeout.publicdatas.order.OrderState;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;
 
-public interface PlatformOrderDao extends JpaRepository<PlatformOrder, Integer> {
+public interface PlatformOrderDao extends PagingAndSortingRepository<PlatformOrder, Integer> {
     PlatformOrder findPlatformOrderByNumber(String number);
 
     List<PlatformOrder> findPlatformOrderByUid(int uid);

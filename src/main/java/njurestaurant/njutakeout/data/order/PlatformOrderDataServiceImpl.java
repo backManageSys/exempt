@@ -6,6 +6,8 @@ import njurestaurant.njutakeout.entity.order.PlatformOrder;
 import njurestaurant.njutakeout.publicdatas.app.CodeType;
 import njurestaurant.njutakeout.publicdatas.order.OrderState;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -55,8 +57,8 @@ public class PlatformOrderDataServiceImpl implements PlatformOrderDataService {
     }
 
     @Override
-    public List<PlatformOrder> findAll() {
-        return platformOrderDao.findAll();
+    public Page<PlatformOrder> findAll(Pageable pageable) {
+        return platformOrderDao.findAll(pageable);
     }
 
     @Override

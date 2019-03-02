@@ -29,6 +29,7 @@ import njurestaurant.njutakeout.util.FormatDateTime;
 import njurestaurant.njutakeout.util.StringParseUtil;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -89,7 +90,7 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
      * @return the order information
      */
     @Override
-    public List<OrderListResponse> findAllPlatformOrders() {
+    public List<OrderListResponse> findAllPlatformOrders(Pageable pageable) {
         // 找出全部商家的信息
         List<User> merchantUser = userDataService.getUserByRole(3);
         Map<Integer, String> usernameMap = new HashMap<>();
@@ -98,7 +99,7 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
         }
 
         // 将错误的商家id信息过滤
-        List<OrderListResponse> result= platformOrderDataService.findAll().stream().map(p -> {
+        List<OrderListResponse> result= platformOrderDataService.findAll(pageable).stream().map(p -> {
             if (usernameMap.containsKey(p.getUid())) {
                 User user = userDao.findUserById(p.getUid());
                 Merchant merchant = merchantDataService.findMerchantById(user.getTableId());
@@ -242,22 +243,22 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
 //        }).filter(pf -> pf != null).collect(Collectors.toList());
 //    }
 
-    @Override
-    public List<MerchantReportResponse> merchantsOrderReport() {
-        List<PlatformOrder> platformOrders = platformOrderDataService.findAll();
-        List<User> merchantUser = userDataService.getUserByRole(3);
-        Map<Integer, String> usernameMap = new HashMap<>();
-        for (User user : merchantUser) {
-            usernameMap.put(user.getId(), user.getUsername());
-        }
-        return null;
-//        return platformOrders.stream().map(p -> {
-//            if (usernameMap.containsKey(p.getUid())) {
-//                MerchantReportResponse merchantReportResponse = new MerchantReportResponse(usernameMap.get(p.getUid()), p.getMoney(), p.getPayMoney(), p.getTime(), p.getState());
-//                return merchantReportResponse;
-//            } else {
-//                return null;
-//            }
-//        }).filter(p -> p != null).collect(Collectors.toList());
-    }
+//    @Override
+//    public List<MerchantReportResponse> merchantsOrderReport() {
+//        List<PlatformOrder> platformOrders = platformOrderDataService.findAll();
+//        List<User> merchantUser = userDataService.getUserByRole(3);
+//        Map<Integer, String> usernameMap = new HashMap<>();
+//        for (User user : merchantUser) {
+//            usernameMap.put(user.getId(), user.getUsername());
+//        }
+//        return null;
+////        return platformOrders.stream().map(p -> {
+////            if (usernameMap.containsKey(p.getUid())) {
+////                MerchantReportResponse merchantReportResponse = new MerchantReportResponse(usernameMap.get(p.getUid()), p.getMoney(), p.getPayMoney(), p.getTime(), p.getState());
+////                return merchantReportResponse;
+////            } else {
+////                return null;
+////            }
+////        }).filter(p -> p != null).collect(Collectors.toList());
+//    }
 }

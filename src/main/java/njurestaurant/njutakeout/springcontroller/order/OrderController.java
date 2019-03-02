@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import njurestaurant.njutakeout.Log.SystemControllerLog;
 import njurestaurant.njutakeout.blservice.order.PlatformOrderBlService;
+import njurestaurant.njutakeout.entity.order.Order;
 import njurestaurant.njutakeout.entity.order.PlatformOrder;
 import njurestaurant.njutakeout.exception.BlankInputException;
 import njurestaurant.njutakeout.exception.OrderWrongInputException;
@@ -19,6 +20,10 @@ import njurestaurant.njutakeout.response.WrongResponse;
 import njurestaurant.njutakeout.response.order.OneOrderResponse;
 import njurestaurant.njutakeout.response.order.OrderListResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,8 +48,8 @@ public class OrderController {
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     @ResponseBody
-    public ResponseEntity<Response> getOrders() {
-        return new ResponseEntity<>(new JSONResponse(200,  platformOrderBlService.findAllPlatformOrders()), HttpStatus.OK);
+    public ResponseEntity<Response> getOrders(@PageableDefault(value = 2) Pageable pageable) {
+        return new ResponseEntity<>(new JSONResponse(200,  platformOrderBlService.findAllPlatformOrders(pageable)), HttpStatus.OK);
     }
     @SystemControllerLog(descrption = "修改订单",actionType = "3")
     @ApiOperation(value = "修改订单", notes = "修改订单")
