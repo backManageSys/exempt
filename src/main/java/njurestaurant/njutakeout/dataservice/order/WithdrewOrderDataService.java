@@ -17,7 +17,7 @@ public interface WithdrewOrderDataService {
 
     List<WithdrewOrder> findAll();
 
-    Page<WithdrewOrder> findByState(WithdrewState withdrewState, Pageable pageable, WithdrewOrder withdrewOrder);
+    Page<WithdrewOrder> findByState(int id,WithdrewState withdrewState, Pageable pageable, WithdrewOrder withdrewOrder);
 
     List<WithdrewOrder> findByOperatorId(int id);
 

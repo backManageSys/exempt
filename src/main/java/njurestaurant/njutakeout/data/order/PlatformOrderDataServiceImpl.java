@@ -131,8 +131,11 @@ public class PlatformOrderDataServiceImpl implements PlatformOrderDataService {
                 if (!StringUtils.isEmpty(platformOrder.getNumber())) {
                     list.add(cb.equal(root.get("number").as(String.class), platformOrder.getNumber()));
                 }
-                if (!StringUtils.isEmpty(platformOrder.getNumber())) {
-                    list.add(cb.equal(root.get("number").as(String.class), platformOrder.getNumber()));
+                if (!StringUtils.isEmpty(platformOrder.getMerchantName())) {
+                    list.add(cb.equal(root.get("merchantName").as(String.class), platformOrder.getMerchantName()));
+                }
+                if (!StringUtils.isEmpty(platformOrder.getType())) {
+                    list.add(cb.equal(root.get("type").as(String.class), platformOrder.getType()));
                 }
                 if (platformOrder.getStartDate() != null) {
                     list.add(cb.greaterThan(root.get("time").as(Date.class), platformOrder.getStartDate()));

@@ -5,6 +5,7 @@ import njurestaurant.njutakeout.dataservice.account.UserDataService;
 import njurestaurant.njutakeout.dataservice.order.WithdrewOrderDataService;
 import njurestaurant.njutakeout.entity.account.User;
 import njurestaurant.njutakeout.entity.order.WithdrewOrder;
+import njurestaurant.njutakeout.exception.WrongIdException;
 import njurestaurant.njutakeout.publicdatas.order.WithdrewState;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class WithdrewOrderDataServiceImpl implements WithdrewOrderDataService {
@@ -55,8 +57,8 @@ public class WithdrewOrderDataServiceImpl implements WithdrewOrderDataService {
     }
 
     @Override
-    public Page<WithdrewOrder> findByState(WithdrewState withdrewState, Pageable pageable, WithdrewOrder withdrewOrder) {
-        return condition(withdrewState, pageable, withdrewOrder);
+    public Page<WithdrewOrder> findByState(int id,WithdrewState withdrewState, Pageable pageable, WithdrewOrder withdrewOrder) {
+        return condition(id,withdrewState, pageable, withdrewOrder);
     }
 
     @Override
@@ -78,7 +80,7 @@ public class WithdrewOrderDataServiceImpl implements WithdrewOrderDataService {
         };
     }
 
-    public Page<WithdrewOrder> condition(WithdrewState withdrewState , Pageable pageable, WithdrewOrder withdrewOrder) {
+    public Page<WithdrewOrder> condition(int id , WithdrewState withdrewState , Pageable pageable, WithdrewOrder withdrewOrder) {
         return withdrewOrderDao.findAll(new Specification<WithdrewOrder>() {
             @Override
             public Predicate toPredicate(Root<WithdrewOrder> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
@@ -111,6 +113,9 @@ public class WithdrewOrderDataServiceImpl implements WithdrewOrderDataService {
                 if (withdrewState!=null){
                     System.out.println(withdrewState);
                     list.add(cb.equal(root.get("state").as(WithdrewState.class),  withdrewState));
+                }
+                if (id != 0){
+                    list.add(cb.equal(root.get("operateId").as(WithdrewState.class), id));
                 }
                 query.where(cb.and(list.toArray(new Predicate[list.size()])));
                 return query.getRestriction();

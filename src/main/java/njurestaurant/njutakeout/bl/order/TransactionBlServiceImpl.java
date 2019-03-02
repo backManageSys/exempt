@@ -505,7 +505,7 @@ public class TransactionBlServiceImpl implements TransactionBlService {
 
     @Override
     public Page<WithdrewOrder> getAllWaitingWithdrewOrder(Pageable pageable, WithdrewOrder withdrewOrder) {
-        Page<WithdrewOrder> page = withdrewOrderDataService.findByState(WithdrewState.WAITING, pageable, withdrewOrder);
+        Page<WithdrewOrder> page = withdrewOrderDataService.findByState(0,WithdrewState.WAITING, pageable, withdrewOrder);
         List<WithdrewOrder> list = page.getContent().stream().peek(p -> {
             String first = p.getCard_in().substring(0, 4);
             String last = p.getCard_in().substring(p.getCard_in().length() - 4);
@@ -587,23 +587,24 @@ public class TransactionBlServiceImpl implements TransactionBlService {
 
     @Override
     public Page<WithdrewOrder> getMyWithdrewOrder(int id, Pageable pageable, WithdrewOrder withdrewOrder) throws WrongIdException {
-        Page<WithdrewOrder> page = withdrewOrderDataService.findByState(null, pageable, withdrewOrder);
+
         User user = userDataService.getUserById(id);
         if (user.getRole() == 1 || user.getRole() == 4) {
-
-            return withdrewOrderDataService.findByOperatorId(id).stream().peek(p -> {
+            Page<WithdrewOrder> page = withdrewOrderDataService.findByState(id,WithdrewState.DEALING, pageable, withdrewOrder);
+            List list = page.getContent().stream().peek(p -> {
                 User u = userDataService.getUserById(p.getApplicantId());
                 User u1 = userDataService.getUserById(p.getOperateId());
                 p.setApplicantUsername(u.getUsername());
                 p.setOperateUsername(u1.getUsername());
             }).collect(Collectors.toList());
+            return new PageImpl<>(list, page.getPageable(), page.getTotalElements());
         } else
             throw new WrongIdException();
     }
 
     @Override
     public Page<WithdrewOrder> getWithdrewOrder(int uid, Pageable pageable, WithdrewOrder withdrewOrder) {
-        Page<WithdrewOrder> page = withdrewOrderDataService.findByState(null, pageable, withdrewOrder);
+        Page<WithdrewOrder> page = withdrewOrderDataService.findByState(0,null, pageable, withdrewOrder);
         List list = page.getContent().stream().peek(p -> {
             String first = p.getCard_in().substring(0, 4);
             String last = p.getCard_in().substring(p.getCard_in().length() - 4);

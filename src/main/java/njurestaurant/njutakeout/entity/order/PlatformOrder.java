@@ -54,6 +54,8 @@ public class PlatformOrder {
     @Column(name = "merchantRate")
     private double merchantRate;
     @Transient
+    private String merchantName;
+    @Transient
     private Date startDate;
     @Transient
     private Date endDate;
@@ -75,6 +77,14 @@ public class PlatformOrder {
         this.payTypeId = payTypeId;
         this.agentRate = agentRate;
         this.merchantRate = merchantRate;
+    }
+
+    public String getMerchantName() {
+        return merchantName;
+    }
+
+    public void setMerchantName(String merchantName) {
+        this.merchantName = merchantName;
     }
 
     public Date getStartDate() {

@@ -124,7 +124,7 @@ public class TransactionController {
     }
 
     @ApiOperation(value = "查看提现记录", notes = "查看提现记录")
-    @RequestMapping(value = "withdrew/history", method = RequestMethod.GET)
+    @RequestMapping(value = "withdrew/history", method = RequestMethod.POST)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
@@ -238,8 +238,8 @@ public class TransactionController {
         return new ResponseEntity<>(new JSONResponse(200, changeOrderDataService.saveCardChangeOrder(cardChangeOrder)), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "财务订单", notes = "显示财务个人的全部提现订单")
-    @RequestMapping(value = "withdrew/list/{uid}", method = RequestMethod.GET)
+    @ApiOperation(value = "财务订单", notes = "显示财务个人的提现中订单")
+    @RequestMapping(value = "withdrew/list/{uid}", method = RequestMethod.POST)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = WithdrewOrder.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
