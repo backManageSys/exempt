@@ -5,14 +5,14 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import njurestaurant.njutakeout.Log.SystemControllerLog;
 import njurestaurant.njutakeout.blservice.order.PlatformOrderBlService;
-import njurestaurant.njutakeout.entity.order.Order;
+
+import njurestaurant.njutakeout.data.dao.order.PlatformOrderDao;
+import njurestaurant.njutakeout.dataservice.order.PlatformOrderDataService;
 import njurestaurant.njutakeout.entity.order.PlatformOrder;
 import njurestaurant.njutakeout.exception.BlankInputException;
 import njurestaurant.njutakeout.exception.OrderWrongInputException;
-import njurestaurant.njutakeout.exception.WrongIdException;
-import njurestaurant.njutakeout.exception.WrongInputException;
-import njurestaurant.njutakeout.parameters.app.GetQrCodeParameters;
 import njurestaurant.njutakeout.parameters.order.PlatformUpdateParameters;
+import njurestaurant.njutakeout.parameters.order.TestParameters;
 import njurestaurant.njutakeout.response.JSONResponse;
 import njurestaurant.njutakeout.response.Response;
 import njurestaurant.njutakeout.response.SuccessResponse;
@@ -20,36 +20,36 @@ import njurestaurant.njutakeout.response.WrongResponse;
 import njurestaurant.njutakeout.response.order.OneOrderResponse;
 import njurestaurant.njutakeout.response.order.OrderListResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.format.annotation.DateTimeFormat;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Date;
 
 @RestController
 public class OrderController {
 
     private final PlatformOrderBlService platformOrderBlService;
+    private final PlatformOrderDataService platformOrderDataService;
 
     @Autowired
-    public OrderController(PlatformOrderBlService platformOrderBlService) {
+    public OrderController(PlatformOrderBlService platformOrderBlService, PlatformOrderDao platformOrderDao, PlatformOrderDataService platformOrderDataService) {
         this.platformOrderBlService = platformOrderBlService;
+        this.platformOrderDataService = platformOrderDataService;
     }
 
     @ApiOperation(value = "订单明细", notes = "查看全部订单明细")
-    @RequestMapping(value = "order/list", method = RequestMethod.GET)
+    @RequestMapping(value = "order/list", method = RequestMethod.POST)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = OrderListResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     @ResponseBody
-    public ResponseEntity<Response> getOrders(@PageableDefault(value = 2) Pageable pageable) {
-        return new ResponseEntity<>(new JSONResponse(200,  platformOrderBlService.findAllPlatformOrders(pageable)), HttpStatus.OK);
+    public ResponseEntity<Response> getOrders(@PageableDefault(value = 3000 ,sort = { "time" }, direction = Sort.Direction.DESC )  Pageable pageable ,@RequestBody PlatformOrder platformOrder ) {
+        return new ResponseEntity<>(new JSONResponse(200,  platformOrderBlService.findAllPlatformOrders(pageable , platformOrder)), HttpStatus.OK);
     }
     @SystemControllerLog(descrption = "修改订单",actionType = "3")
     @ApiOperation(value = "修改订单", notes = "修改订单")
@@ -82,4 +82,5 @@ public class OrderController {
         PlatformOrder platformOrder = platformOrderBlService.findPlatformOrderByNumber(number);
         return new ResponseEntity<>(new JSONResponse(200, new OneOrderResponse(String.valueOf(platformOrder.getTime().getTime()),platformOrder.getState())), HttpStatus.OK);
     }
+
 }

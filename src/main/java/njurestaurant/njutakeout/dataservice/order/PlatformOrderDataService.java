@@ -20,7 +20,7 @@ public interface PlatformOrderDataService {
 
     List<PlatformOrder> findByState(OrderState orderState);
 
-    Page<PlatformOrder> findAll(Pageable pageable);
+    Page<PlatformOrder> findAll(Pageable pageable,PlatformOrder platformOrder);
 
     List<PlatformOrder> findByUidAndState(int uid, OrderState orderState);
 
@@ -37,4 +37,5 @@ public interface PlatformOrderDataService {
     List<PlatformOrder>  findByImeiAndStateAndPayTypeId(String imei, OrderState orderState,int payTypeId);
 
     PlatformOrder findByImeiAndStateAndPayTypeIdAndMoney(String imei, OrderState orderState,int payTypeId,double money);
+
 }

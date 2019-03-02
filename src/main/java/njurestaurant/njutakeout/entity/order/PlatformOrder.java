@@ -53,6 +53,10 @@ public class PlatformOrder {
     private double agentRate;
     @Column(name = "merchantRate")
     private double merchantRate;
+    @Transient
+    private Date startDate;
+    @Transient
+    private Date endDate;
 
     public PlatformOrder() {
     }
@@ -71,6 +75,22 @@ public class PlatformOrder {
         this.payTypeId = payTypeId;
         this.agentRate = agentRate;
         this.merchantRate = merchantRate;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
     public int getId() {

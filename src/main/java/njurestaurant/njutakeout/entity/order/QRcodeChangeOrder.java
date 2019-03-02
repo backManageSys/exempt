@@ -40,6 +40,11 @@ public class QRcodeChangeOrder {
     //是否已查询
     @Column(name = "isQuery")
     private Boolean isQuery;
+    @Transient
+    private Date startDate;
+    @Transient
+    private Date endDate;
+
     public QRcodeChangeOrder() {
     }
 
@@ -54,6 +59,22 @@ public class QRcodeChangeOrder {
         this.operateTime = operateTime;
         this.operateUsername = operateUsername;
         this.isQuery = isQuery;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
     public int getId() {

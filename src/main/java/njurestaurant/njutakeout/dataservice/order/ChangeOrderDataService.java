@@ -2,6 +2,7 @@ package njurestaurant.njutakeout.dataservice.order;
 
 import njurestaurant.njutakeout.entity.order.CardChangeOrder;
 import njurestaurant.njutakeout.entity.order.QRcodeChangeOrder;
+import org.springframework.data.domain.Pageable;
 
 
 import java.util.Date;
@@ -14,7 +15,8 @@ public interface ChangeOrderDataService {
 
     QRcodeChangeOrder findByLoginId(String loginId);
 
-    List<QRcodeChangeOrder> findAllQrCodeChangeOrder();
+    List<QRcodeChangeOrder> findAllQrCodeChangeOrder(Pageable pageable , QRcodeChangeOrder qRcodeChangeOrder);
+    List<CardChangeOrder> findAllCardChangeOrder(String username,Pageable pageable , CardChangeOrder cardChangeOrder);
 
     List<QRcodeChangeOrder> findAllQrCodeChangeOrderByDate(Date startDate, Date endDate);
 
@@ -22,8 +24,7 @@ public interface ChangeOrderDataService {
 
     List<CardChangeOrder> findAllCardChangeOrderByDate(Date startDate, Date endDate);
 
-    List<CardChangeOrder> findAllCardChangeOrder();
+
 
     List<QRcodeChangeOrder> findQrCodeChangeOrderByOperateUsername(String username);
-
 }

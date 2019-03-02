@@ -34,6 +34,9 @@ import njurestaurant.njutakeout.util.FormatDateTime;
 import njurestaurant.njutakeout.util.StringParseUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 
@@ -501,8 +504,9 @@ public class TransactionBlServiceImpl implements TransactionBlService {
     }
 
     @Override
-    public List<WithdrewOrder> getAllWaitingWithdrewOrder() {
-        return withdrewOrderDataService.findByState(WithdrewState.WAITING).stream().peek(p -> {
+    public Page<WithdrewOrder> getAllWaitingWithdrewOrder(Pageable pageable, WithdrewOrder withdrewOrder) {
+        Page<WithdrewOrder> page = withdrewOrderDataService.findByState(WithdrewState.WAITING, pageable, withdrewOrder);
+        List<WithdrewOrder> list = page.getContent().stream().peek(p -> {
             String first = p.getCard_in().substring(0, 4);
             String last = p.getCard_in().substring(p.getCard_in().length() - 4);
             String middle = "";
@@ -511,6 +515,7 @@ public class TransactionBlServiceImpl implements TransactionBlService {
             p.setCard_in(first + middle + last);
             System.out.println(p.getCard_in());
         }).collect(Collectors.toList());
+        return new PageImpl<>(list, page.getPageable(), page.getTotalElements());
     }
 
     @Override
@@ -581,23 +586,25 @@ public class TransactionBlServiceImpl implements TransactionBlService {
     }
 
     @Override
-    public List<WithdrewOrder> getMyWithdrewOrder(int id) throws WrongIdException {
+    public Page<WithdrewOrder> getMyWithdrewOrder(int id, Pageable pageable, WithdrewOrder withdrewOrder) throws WrongIdException {
+        Page<WithdrewOrder> page = withdrewOrderDataService.findByState(null, pageable, withdrewOrder);
         User user = userDataService.getUserById(id);
-        if (user.getRole() == 1 || user.getRole() == 4)
+        if (user.getRole() == 1 || user.getRole() == 4) {
+
             return withdrewOrderDataService.findByOperatorId(id).stream().peek(p -> {
                 User u = userDataService.getUserById(p.getApplicantId());
                 User u1 = userDataService.getUserById(p.getOperateId());
                 p.setApplicantUsername(u.getUsername());
                 p.setOperateUsername(u1.getUsername());
             }).collect(Collectors.toList());
-        else
+        } else
             throw new WrongIdException();
     }
 
     @Override
-    public List<WithdrewOrder> getWithdrewOrder(int uid) {
-        return withdrewOrderDataService.findAll().stream().peek(p -> {
-
+    public Page<WithdrewOrder> getWithdrewOrder(int uid, Pageable pageable, WithdrewOrder withdrewOrder) {
+        Page<WithdrewOrder> page = withdrewOrderDataService.findByState(null, pageable, withdrewOrder);
+        List list = page.getContent().stream().peek(p -> {
             String first = p.getCard_in().substring(0, 4);
             String last = p.getCard_in().substring(p.getCard_in().length() - 4);
             String middle = "";
@@ -621,5 +628,6 @@ public class TransactionBlServiceImpl implements TransactionBlService {
             }
 
         }).collect(Collectors.toList());
+        return new PageImpl<>(list, page.getPageable(), page.getTotalElements());
     }
 }

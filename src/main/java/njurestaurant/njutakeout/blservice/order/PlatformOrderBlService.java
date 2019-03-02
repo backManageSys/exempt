@@ -21,7 +21,7 @@ public interface PlatformOrderBlService {
      *
      * @return the order information
      */
-    List<OrderListResponse> findAllPlatformOrders(Pageable pageable);
+    Page<OrderListResponse> findAllPlatformOrders(Pageable pageable,PlatformOrder platformOrder);
 
     PlatformOrder updatePlatformOrder(int id, PlatformUpdateParameters platformUpdateParameters) throws BlankInputException, OrderWrongInputException;
 

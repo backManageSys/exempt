@@ -3,6 +3,8 @@ package njurestaurant.njutakeout.data.dao.order;
 import njurestaurant.njutakeout.entity.order.PlatformOrder;
 import njurestaurant.njutakeout.publicdatas.app.CodeType;
 import njurestaurant.njutakeout.publicdatas.order.OrderState;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -20,6 +22,7 @@ public interface PlatformOrderDao extends PagingAndSortingRepository<PlatformOrd
 
     PlatformOrder findPlatformOrdersByImeiAndState(String imei, OrderState state);
 
+    Page<PlatformOrder> findAll(Specification<PlatformOrder> dateBetween, Pageable pageable);
     List<PlatformOrder> findAll(Specification<PlatformOrder> dateBetween);
 
     List<PlatformOrder> findPlatformOrderByImeiAndPayTypeId(String imei, int payTypeId);
@@ -27,4 +30,6 @@ public interface PlatformOrderDao extends PagingAndSortingRepository<PlatformOrd
     PlatformOrder findPlatformOrderByImeiAndStateAndPayTypeIdAndMoney(String imei, OrderState state,int payTypeId,double money);
 
     List<PlatformOrder>  findPlatformOrderByImeiAndStateAndPayTypeId(String imei, OrderState state,int payTypeId);
+
+    List<PlatformOrder>  findByImeiAndPayTypeIdAndStateAndType(String imei,int payTypeId,OrderState state,String type);
 }

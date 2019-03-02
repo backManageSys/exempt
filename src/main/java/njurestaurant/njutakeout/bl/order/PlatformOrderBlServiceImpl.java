@@ -29,6 +29,8 @@ import njurestaurant.njutakeout.util.FormatDateTime;
 import njurestaurant.njutakeout.util.StringParseUtil;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -90,16 +92,18 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
      * @return the order information
      */
     @Override
-    public List<OrderListResponse> findAllPlatformOrders(Pageable pageable) {
+    public Page<OrderListResponse> findAllPlatformOrders(Pageable pageable,PlatformOrder platformOrder) {
         // 找出全部商家的信息
         List<User> merchantUser = userDataService.getUserByRole(3);
         Map<Integer, String> usernameMap = new HashMap<>();
         for (User user : merchantUser) {
             usernameMap.put(user.getId(), user.getUsername());
         }
-
+        Page<PlatformOrder> page= platformOrderDataService.findAll(pageable,platformOrder);
+        System.out.println("111111111111111");
+        System.out.println(page.getContent());
         // 将错误的商家id信息过滤
-        List<OrderListResponse> result= platformOrderDataService.findAll(pageable).stream().map(p -> {
+        List<OrderListResponse> result= page.getContent().stream().map(p -> {
             if (usernameMap.containsKey(p.getUid())) {
                 User user = userDao.findUserById(p.getUid());
                 Merchant merchant = merchantDataService.findMerchantById(user.getTableId());
@@ -118,12 +122,12 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
             } else return null;
             return null;
         }).filter(pf -> pf != null).collect(Collectors.toList());
-
-        Collections.sort(result, (o1, o2) -> {
-            //按照抽成前存款大小进行降序排列
-            return Integer.compare(0, o1.getTime().compareTo(o2.getTime()));
-        });
-        return  result;
+        Page page1 =new PageImpl(result,page.getPageable(),page.getTotalElements());
+//        Collections.sort(result, (o1, o2) -> {
+//            //按照抽成前存款大小进行降序排列
+//            return Integer.compare(0, o1.getTime().compareTo(o2.getTime()));
+//        });
+        return  page1;
     }
 
     /**

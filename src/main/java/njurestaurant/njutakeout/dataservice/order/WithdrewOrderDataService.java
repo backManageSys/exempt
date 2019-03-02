@@ -2,6 +2,8 @@ package njurestaurant.njutakeout.dataservice.order;
 
 import njurestaurant.njutakeout.entity.order.WithdrewOrder;
 import njurestaurant.njutakeout.publicdatas.order.WithdrewState;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Date;
 import java.util.List;
@@ -15,7 +17,7 @@ public interface WithdrewOrderDataService {
 
     List<WithdrewOrder> findAll();
 
-    List<WithdrewOrder> findByState(WithdrewState withdrewState);
+    Page<WithdrewOrder> findByState(WithdrewState withdrewState, Pageable pageable, WithdrewOrder withdrewOrder);
 
     List<WithdrewOrder> findByOperatorId(int id);
 
