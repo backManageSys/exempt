@@ -74,7 +74,6 @@ import { cardsGet,cardDelete,teamVerifyCodeCheckByTeamName } from '@/api/company
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                     }).then(({ value }) => {
-                        console.log("asdadsadAfAfasfafafaf");
                         verifyCode = value;
                         this.operation(index,row,verifyCode);
                     }).catch(() => {
@@ -85,7 +84,6 @@ import { cardsGet,cardDelete,teamVerifyCodeCheckByTeamName } from '@/api/company
                 });
             },
             operation(index, row,verifyCode) {
-                console.log(row);
                 var flag = false;
                 teamVerifyCodeCheckByTeamName(row.attribution,verifyCode).then(response=> {
                     if(response.code!=200){
@@ -98,7 +96,6 @@ import { cardsGet,cardDelete,teamVerifyCodeCheckByTeamName } from '@/api/company
                         // this.newRow = JSON.parse(JSON.stringify(row));;
                         // this.newRowIndex = index;
                         // this.dialogFormVisible = true;
-                        console.log(row);
                         cardDelete(row.id).then(response=> {
                             if(response.code!=200){
                                 this.$message({
@@ -117,18 +114,15 @@ import { cardsGet,cardDelete,teamVerifyCodeCheckByTeamName } from '@/api/company
                 });
             },
             handleSizeChange(val) {
-                console.log(`每页 ${val} 条`);
               
             },
             handleCurrentChange(val) {
-                console.log(`当前页: ${val}`);
             },
             getData(){
                 this.getcards();
             },
             getcards(){
                 cardsGet().then(response=>{
-                    console.log(response,'sdll')
                      if(response.data.infoCod){
                         this.$message({
                             message: response.data.description,
@@ -140,7 +134,6 @@ import { cardsGet,cardDelete,teamVerifyCodeCheckByTeamName } from '@/api/company
                 })
             },
             handleChange(val) {
-                console.log(val);
                   if(val==2)
                 {
                     this.getcards();

@@ -72,11 +72,9 @@ import store from '../../../../store'
               // this.$message('click on item ' + command.id);
 
               this.cardAddParameters.teamName = command.teamName;
-              // console.log('click on item ' + command.teamName);
           },
           getTeams(){
                 teamsGet().then(response=>{
-                    console.log(response,'11111111111111')
                      if(response.code !=200){
                         this.$message({
                             message: response.data.description,
@@ -88,10 +86,8 @@ import store from '../../../../store'
                 })
             },
             handleSizeChange(val) {
-                console.log(`每页 ${val} 条`);
             },
             handleCurrentChange(val) {
-                console.log(`当前页: ${val}`);
             },
             getData(){
                 this.getcards();
@@ -122,7 +118,6 @@ import store from '../../../../store'
 
             },
             handleChange(val) {
-                console.log(val);
                   if(val==2)
                 {
                     this.getcards();

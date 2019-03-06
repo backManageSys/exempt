@@ -62,7 +62,6 @@ export default {
       this.dialogFormVisible = true;
     //   this.newRow.type = this.userInfo.role == 2 ? "agent" : "merchant";
     //   this.newRow.id = store.getters.uid;
-      // console.log("opendialog");
       //this.newRow = JSON.parse(JSON.stringify(row));
     },
     fetchData() {
@@ -71,7 +70,6 @@ export default {
       });
     },
     confirm() {
-      // console.log("get money", this.newRow);
       SetRiskcontrol(
         this.newRow.newtime
       ).then(res => {

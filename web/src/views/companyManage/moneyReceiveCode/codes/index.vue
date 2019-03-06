@@ -85,7 +85,6 @@ import { codesGet,codeDelete } from '@/api/company'
             },
             operation(index,row,verifyCode){
                 codeDelete(row.id,verifyCode).then(response=>{
-                    console.log(response,'sdll')
                      if(response.code!=200){
                         this.$message({
                             message: response.data.description,
@@ -98,18 +97,15 @@ import { codesGet,codeDelete } from '@/api/company'
                 })
             },
             handleSizeChange(val) {
-                console.log(`每页 ${val} 条`);
               
             },
             handleCurrentChange(val) {
-                console.log(`当前页: ${val}`);
             },
             getData(){
                 this.getcodes();
             },
             getcodes(){
                 codesGet().then(response=>{
-                    console.log(response,'sdll')
                      if(response.code!=200){
                         this.$message({
                             message: response.data.description,
@@ -121,7 +117,6 @@ import { codesGet,codeDelete } from '@/api/company'
                 })
             },
             handleChange(val) {
-                console.log(val);
                   if(val==2)
                 {
                     this.getcodes();

@@ -95,8 +95,6 @@ public class SystemLogAspect {
         } else {
             systemLog.setType("异常");
             systemLog.setDescription(getControllerMethodDescription(joinPoint) + ":" + "失败");
-            System.out.println("8888888888888888888888888888888888888888888");
-            System.out.println(jsonResponse.getData().getClass().getName());
             if (jsonResponse.getData().getClass().getName().equals("njurestaurant.njutakeout.response.transaction.FailedToLoadCodeResponse")){
                 failedToLoadCodeResponse =(FailedToLoadCodeResponse) jsonResponse.getData();
                 systemLog.setExceptioncode(jsonResponse.getCode());
@@ -121,21 +119,14 @@ public class SystemLogAspect {
 
     public static String getParamValue(JoinPoint joinPoint) {
         Signature signature = joinPoint.getSignature();
-        System.out.println(signature);
         MethodSignature methodSignature = (MethodSignature) signature;
-        System.out.println(methodSignature);
         String[] strings = methodSignature.getParameterNames();
-        System.out.println(strings);
-        System.out.println(Arrays.asList(strings));
         StringBuilder sb = new StringBuilder();
         int i = 0;
         //获取所有的参数
         Object[] args = joinPoint.getArgs();
-        System.out.println("111");
-        System.out.println(args);
         for (int k = 0; k < args.length; k++) {
             Object arg = args[k];
-            System.out.println(arg);
             // 获取对象类型
             String typeName = arg.getClass().getTypeName();
             for (String t : types) {
@@ -146,9 +137,6 @@ public class SystemLogAspect {
                     i++;
                 }
             }
-            System.out.println("dfsfmdskfdsf");
-            System.out.println(i);
-            System.out.println(types.length);
             if (i == types.length)
                 //2 通过反射获取实体类属性
                 sb.append(getFieldsValue(arg));

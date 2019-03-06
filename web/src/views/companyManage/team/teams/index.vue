@@ -141,7 +141,6 @@ import { getTime,getTimeFormat } from "@/utils/index";
             },
             operation(index,row,verifyCode){
                 teamDelete(row.id,verifyCode).then(response=>{
-                    console.log(response,'sdll')
                      if(response.code!=200){
                         this.$message({
                             message: response.data.description,
@@ -170,7 +169,6 @@ import { getTime,getTimeFormat } from "@/utils/index";
                 });
             },
             checkVerify(index, row,verifyCode) {
-                console.log(row);
                 var flag = false;
                 teamVerifyCodeCheck(row.id,verifyCode).then(response=> {
                     if(response.code!=200){
@@ -205,18 +203,15 @@ import { getTime,getTimeFormat } from "@/utils/index";
                 });
             },
             handleSizeChange(val) {
-                console.log(`每页 ${val} 条`);
                 this.pagesize = val;
             },
             handleCurrentChange(val) {
-                console.log(`当前页: ${val}`);
             },
             getData(){
                 this.getTeams();
             },
             getTeams(){
                 teamsGet().then(response=>{
-                    console.log(response,'sdll')
                      if(response.code != 200){
                         this.$message({
                             message: response.data.description,
@@ -231,7 +226,6 @@ import { getTime,getTimeFormat } from "@/utils/index";
                 });
             },
             handleChange(val) {
-                console.log(val);
                   if(val==2)
                 {
                     this.getTeams();

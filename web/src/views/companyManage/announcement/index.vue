@@ -53,7 +53,6 @@ export default {
 //   },
   methods: {
     confirm() {
-      // console.log("get money", this.newRow);
       SetAnnouncement(
         this.announcement
       ).then(res => {

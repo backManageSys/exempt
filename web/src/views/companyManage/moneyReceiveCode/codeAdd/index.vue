@@ -80,13 +80,10 @@ import { codeAdd,codesGet,teamsGet } from '@/api/company'
                 // this.$message('click on item ' + command.id);
                 this.codeAddParameters.team = command.id;
                 this.codeAddParameters.teamName = command.teamName;
-                // console.log('click on item ' + command.teamName);
             },
             handleSizeChange(val) {
-                console.log(`每页 ${val} 条`);
             },
             handleCurrentChange(val) {
-                console.log(`当前页: ${val}`);
             },
             getData(){
                 // this.getcodes();
@@ -94,7 +91,6 @@ import { codeAdd,codesGet,teamsGet } from '@/api/company'
             },
             getTeams(){
                 teamsGet().then(response=>{
-                    console.log(response,'sdll')
                      if(response.data.infoCod){
                         this.$message({
                             message: response.data.description,
@@ -107,7 +103,6 @@ import { codeAdd,codesGet,teamsGet } from '@/api/company'
             },
             getcodes(){
                 codesGet().then(response=>{
-                    console.log(response,'sdll')
                      if(response.data.infoCod){
                         this.$message({
                             message: response.data.description,
@@ -142,7 +137,6 @@ import { codeAdd,codesGet,teamsGet } from '@/api/company'
 
             },
             handleChange(val) {
-                console.log(val);
                   if(val==2)
                 {
                     this.getcodes();

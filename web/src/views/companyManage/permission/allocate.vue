@@ -103,9 +103,7 @@ import {getIds} from '@/utils/treeids'
                          a.push(el1.title)
                      }
                  });
-            console.log(a)
             this.heads = a
-            console.log(this.heads)
             this.getPost();
         },
         methods: {
@@ -114,7 +112,6 @@ import {getIds} from '@/utils/treeids'
                 return [...new Set([...set1].filter( x => set2.has(x)))];
             },
             setCheckedNodes(nodes) {
-                 console.log(nodes)
                  this.expanded = nodes;
                  var a = []
                  var no = this.intersect(nodes,this.heads)
@@ -123,12 +120,10 @@ import {getIds} from '@/utils/treeids'
                     c.title = element;
                     a.push(c)
                 });
-                 console.log(a)
                 this.$refs.tree.setCheckedNodes(a);
             },
             getTeams(){
                     checkSinglePermission(this.permissionaddParameters.post).then(response => {
-                            // console.log(response.data.infoCode)
                             if(response.code!=200){
                                 this.$message({
                                     message: response.data.description,
@@ -148,7 +143,6 @@ import {getIds} from '@/utils/treeids'
                                 a.post = response.data.post;
                                 this.teams = [a]
                                 this.setCheckedNodes(response.data.permission);
-                                console.log(this.teams,'ppp;')
                             }
                             resolve()
                         }).catch(error => {
@@ -157,7 +151,6 @@ import {getIds} from '@/utils/treeids'
                 },
             getPost(){
                  postGet().then(response=>{
-                        console.log(response,'response')
                          if(response.code!=200){
                             this.$message({
                                 message: response.data.description,
@@ -190,10 +183,8 @@ import {getIds} from '@/utils/treeids'
             getCheckedKeys(){
                 this.permissionaddParameters.permission = this.$refs.tree.getCheckedKeys();
                 this.permissionaddParameters.permission = this.permissionaddParameters.permission.concat(this.$refs.tree.getHalfCheckedKeys());
-                // console.log(this.permissionaddParameters.permission,this.permissionaddParameters.permission1 )
             },
             handleChange(val) {
-                console.log(val);
                   if(val==2)
                 {
                     this.getpermissions();

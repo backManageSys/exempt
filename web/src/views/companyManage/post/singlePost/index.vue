@@ -66,18 +66,15 @@
             
             methods: {
                 handleSizeChange(val) {
-                    console.log(`每页 ${val} 条`);
                   
                 },
                 handleCurrentChange(val) {
-                    console.log(`当前页: ${val}`);
                 },
                 getData(){
                     this.getTeams();
                 },
                 getTeams(){
                     checkSinglePermission(this.form.post).then(response=>{
-                        console.log(response,'sdll')
                          if(response.data.infoCod){
                             this.$message({
                                 message: response.data.description,
@@ -89,7 +86,6 @@
                     })
                 },
                 handleChange(val) {
-                    console.log(val);
                       if(val==2)
                     {
                         this.getTeams();
@@ -99,9 +95,7 @@
                     //this.$refs[formName].validate((valid) => {
                         var valid =1
                         if (valid) {
-                        // alert('submit!');
                         checkSinglePermission(this.formItem.sendValue).then(response => {
-                            // console.log(response.data.infoCode)
                             if(response.data.infoCode){
                                 this.$message({
                                     message: response.data.description,
@@ -120,7 +114,6 @@
                                 a.permission = response.data.permission.join(',');
                                 a.post = response.data.post;
                                 this.teams = [a]
-                                console.log(this.teams,'ppp;')
                             }
                             resolve()
                         }).catch(error => {
@@ -139,4 +132,3 @@
     <style scoped>
     
     </style>
-    

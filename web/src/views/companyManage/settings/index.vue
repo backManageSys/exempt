@@ -33,7 +33,6 @@
             },
             getTitle() {
                 titleList().then(response=>{
-                    console.log(response,'sdll')
                      if(response.code!=200){
                         this.$message({
                             message: "获取失败",

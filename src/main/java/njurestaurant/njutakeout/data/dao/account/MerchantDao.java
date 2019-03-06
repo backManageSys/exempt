@@ -13,4 +13,5 @@ public interface MerchantDao extends JpaRepository<Merchant, Integer> {
     List<Merchant> findMerchantsByApplyId(int id);
 
     Merchant findByName(String name);
+
 }
