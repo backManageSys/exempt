@@ -194,6 +194,8 @@ public class TransactionController {
             return new ResponseEntity<>(new JSONResponse(10160, new WrongResponse(10160, "该财务无法处理该订单/该订单已被处理。")), HttpStatus.OK);
         } catch (BlankInputException e) {
             return new ResponseEntity<>(new JSONResponse(10120, new WrongResponse(10120, "审批状态错误。")), HttpStatus.OK);
+        } catch (WrongInputException e) {
+            return new ResponseEntity<>(new JSONResponse(10120, new WrongResponse(10121, "银行卡余额不足")), HttpStatus.OK);
         }
     }
 
@@ -229,6 +231,7 @@ public class TransactionController {
         withdrewOrder.setState(WithdrewState.FAILED);
         Date date = new Date();
         withdrewOrder.setRevokeTime(date);
+        withdrewOrderDataService.saveWithdrewOrder(withdrewOrder);
         CardChangeOrder cardChangeOrder = cardChangeOrderDao.findById(withdrewOrder.getChangeId());
         cardChangeOrder.setFinalOperateTime(date);
         cardChangeOrder.setReason(reason);

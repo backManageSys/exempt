@@ -119,8 +119,22 @@ public class PlatformOrderDataServiceImpl implements PlatformOrderDataService {
                 if (!StringUtils.isEmpty(platformOrder.getImei())) {
                     list.add(cb.equal(root.get("imei").as(String.class), platformOrder.getImei()));
                 }
-                if (platformOrder.getState() != null) {
-                    list.add(cb.equal(root.get("state").as(OrderState.class), platformOrder.getState()));
+                if (platformOrder.getOrderState() != null) {
+                    int i=0;
+                    for(OrderState orderState: OrderState.values())
+                        if (String.valueOf(orderState).equals(platformOrder.getOrderState())) {
+                            i=1;
+                            break;
+                        }
+                    if (i == 1) {
+                        OrderState orderState = OrderState.valueOf(platformOrder.getOrderState());
+                        list.add(cb.equal(root.get("state").as(OrderState.class), orderState));
+                    }else {
+                        //查一个不存在的值，目的是返回空查询
+                        list.add(cb.equal(root.get("state").as(OrderState.class), OrderState.ARRIVED));
+                        query.where(cb.and(list.toArray(new Predicate[list.size()])));
+                        return query.getRestriction();
+                    }
                 }
                 if (platformOrder.getPayTypeId() != 0) {
                     list.add(cb.equal(root.get("payTypeId").as(Integer.class), platformOrder.getPayTypeId()));

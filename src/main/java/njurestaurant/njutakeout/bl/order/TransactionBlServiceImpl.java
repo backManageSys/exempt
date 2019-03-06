@@ -531,20 +531,25 @@ public class TransactionBlServiceImpl implements TransactionBlService {
     }
 
     @Override
-    public void dealWithdrewOrder(int id, WithdrewDealParameters withdrewDealParameters) throws WrongIdException, BlankInputException {
+    public void dealWithdrewOrder(int id, WithdrewDealParameters withdrewDealParameters) throws WrongIdException, BlankInputException, WrongInputException {
         User user = userDataService.getUserById(withdrewDealParameters.getOperatorId());
         if (user == null) throw new WrongIdException();
         WithdrewOrder withdrewOrder = withdrewOrderDataService.findWithdrewOrderById(id);
         if (withdrewOrder == null || withdrewOrder.getState() != WithdrewState.DEALING || withdrewOrder.getOperateId() != withdrewDealParameters.getOperatorId())
             throw new WrongIdException();
         if (WithdrewState.SUCCESS == withdrewDealParameters.getState()) {
+
             withdrewOrder.setState(WithdrewState.SUCCESS);
             withdrewOrder.setCard_out(withdrewDealParameters.getCompanyCardId());
             withdrewOrder.setMoney_in(GetThreeBitsPoint(withdrewOrder.getMoney_out() - 3));//手续费三元
             CompanyCard companyCard = companyCardDataService.findCompanyCardByCardNumber(withdrewDealParameters.getCompanyCardId());
-            companyCard.setBalance(GetThreeBitsPoint(companyCard.getBalance() - withdrewOrder.getMoney_out() + 3));
+            double money = companyCard.getBalance() - withdrewOrder.getMoney_out() + 3;
+            if (money<0){
+                throw new WrongInputException();
+            }
+            companyCard.setBalance(GetThreeBitsPoint(money));
             companyCardDataService.saveCompanyCard(companyCard);
-            withdrewOrder.setCard_out_balance(GetThreeBitsPoint(companyCard.getBalance() - withdrewOrder.getMoney_out() + 3));
+            withdrewOrder.setCard_out_balance(GetThreeBitsPoint(companyCard.getBalance()));
             CardChangeOrder cardChangeOrder = new CardChangeOrder(withdrewOrder.getCard_out(), withdrewOrder.getCard_in(),
                     withdrewOrder.getMoney_out(), withdrewOrder.getMoney_out() - 3, companyCard.getBalance(), 0, WithdrewState.SUCCESS, new Date(),
                     null, user.getUsername(), "出款", null);

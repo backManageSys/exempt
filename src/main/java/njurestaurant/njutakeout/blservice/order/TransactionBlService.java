@@ -28,7 +28,7 @@ public interface TransactionBlService {
 
     void grabWithdrewOrderById(int oid, int uid) throws WrongIdException, WrongInputException;
 
-    void dealWithdrewOrder(int id, WithdrewDealParameters withdrewDealParameters) throws WrongIdException, BlankInputException;
+    void dealWithdrewOrder(int id, WithdrewDealParameters withdrewDealParameters) throws WrongIdException, BlankInputException, WrongInputException;
 
     Page<WithdrewOrder> getMyWithdrewOrder(int id,Pageable pageable , WithdrewOrder withdrewOrder) throws WrongIdException;
 

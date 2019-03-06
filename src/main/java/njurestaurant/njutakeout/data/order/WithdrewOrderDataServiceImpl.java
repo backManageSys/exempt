@@ -88,6 +88,7 @@ public class WithdrewOrderDataServiceImpl implements WithdrewOrderDataService {
                 if (!StringUtils.isEmpty(withdrewOrder.getNumber())) {
                     list.add(cb.equal(root.get("number").as(String.class), withdrewOrder.getNumber()));
                 }
+
                 if (!StringUtils.isEmpty(withdrewOrder.getType())) {
                     list.add(cb.equal(root.get("type").as(String.class), withdrewOrder.getType()));
                 }
@@ -113,6 +114,23 @@ public class WithdrewOrderDataServiceImpl implements WithdrewOrderDataService {
                 if (withdrewState!=null){
                     System.out.println(withdrewState);
                     list.add(cb.equal(root.get("state").as(WithdrewState.class),  withdrewState));
+                }
+                if (withdrewOrder.getWithdrewStateSql()!= null) {
+                    int i=0;
+                    for(WithdrewState withdrewState1: WithdrewState.values())
+                        if (String.valueOf(withdrewState1).equals(withdrewOrder.getWithdrewStateSql())) {
+                            i=1;
+                            break;
+                        }
+                    if (i == 1) {
+                        WithdrewState withdrewState1 = WithdrewState.valueOf(withdrewOrder.getWithdrewStateSql());
+                        list.add(cb.equal(root.get("state").as(WithdrewState.class), withdrewState1));
+                    }else {
+                        //查一个不存在的值，目的是返回空查询
+                        list.add(cb.equal(root.get("state").as(WithdrewState.class), 5));
+                        query.where(cb.and(list.toArray(new Predicate[list.size()])));
+                        return query.getRestriction();
+                    }
                 }
                 if (id != 0){
                     list.add(cb.equal(root.get("operateId").as(WithdrewState.class), id));

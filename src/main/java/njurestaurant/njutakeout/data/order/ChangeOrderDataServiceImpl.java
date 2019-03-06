@@ -150,6 +150,23 @@ public class ChangeOrderDataServiceImpl implements ChangeOrderDataService {
                 if (cardChangeOrder.getState() != null) {
                     list.add(cb.equal(root.get("state").as(WithdrewState.class), cardChangeOrder.getState()));
                 }
+                if (cardChangeOrder.getWithdrewStateSql()!= null) {
+                    int i=0;
+                    for(WithdrewState withdrewState: WithdrewState.values())
+                        if (String.valueOf(withdrewState).equals(cardChangeOrder.getWithdrewStateSql())) {
+                            i=1;
+                            break;
+                        }
+                    if (i == 1) {
+                        WithdrewState withdrewState = WithdrewState.valueOf(cardChangeOrder.getWithdrewStateSql());
+                        list.add(cb.equal(root.get("state").as(WithdrewState.class), withdrewState));
+                    }else {
+                        //查一个不存在的值，目的是返回空查询
+                        list.add(cb.equal(root.get("state").as(WithdrewState.class), 5));
+                        query.where(cb.and(list.toArray(new Predicate[list.size()])));
+                        return query.getRestriction();
+                    }
+                }
                 if (cardChangeOrder.getStartDate() != null) {
                     list.add(cb.greaterThan(root.get("operateTime").as(Date.class), cardChangeOrder.getStartDate()));
                 }

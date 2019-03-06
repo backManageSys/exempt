@@ -52,6 +52,8 @@ public class CardChangeOrder {
     private Date startDate;
     @Transient
     private Date endDate;
+    @Transient
+    private String withdrewStateSql;
 
     public CardChangeOrder() {
     }
@@ -189,5 +191,13 @@ public class CardChangeOrder {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public String getWithdrewStateSql() {
+        return withdrewStateSql;
+    }
+
+    public void setWithdrewStateSql(String withdrewStateSql) {
+        this.withdrewStateSql = withdrewStateSql;
     }
 }

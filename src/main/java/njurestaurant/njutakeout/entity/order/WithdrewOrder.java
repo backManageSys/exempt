@@ -51,6 +51,8 @@ public class WithdrewOrder {
     private Date startDate;
     @Transient
     private Date endDate;
+    @Transient
+    private String withdrewStateSql;
 
     public WithdrewOrder() {
     }
@@ -232,5 +234,13 @@ public class WithdrewOrder {
 
     public void setMemo(String memo) {
         this.memo = memo;
+    }
+
+    public String getWithdrewStateSql() {
+        return withdrewStateSql;
+    }
+
+    public void setWithdrewStateSql(String withdrewStateSql) {
+        this.withdrewStateSql = withdrewStateSql;
     }
 }

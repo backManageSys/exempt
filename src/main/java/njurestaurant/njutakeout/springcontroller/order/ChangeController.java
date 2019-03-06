@@ -86,7 +86,7 @@ public class ChangeController {
         } catch (WrongIdException e) {
             return new ResponseEntity<>(new JSONResponse(10160, new WrongResponse(10160, "该用户无法进行该转账操作。")), HttpStatus.OK);
         } catch (WrongInputException e) {
-            return new ResponseEntity<>(new JSONResponse(10410, new WrongResponse(10410, "转入金额大于该用户现有的余额。")), HttpStatus.OK);
+            return new ResponseEntity<>(new JSONResponse(10410, new WrongResponse(10410, "银行卡余额不足")), HttpStatus.OK);
         } catch (PersonalCardDoesNotExistException e) {
             return new ResponseEntity<>(new JSONResponse(10411, new WrongResponse(10411, "个人银行卡不存在。")), HttpStatus.OK);
         } catch (CompanyCardDoesNotExistException e) {

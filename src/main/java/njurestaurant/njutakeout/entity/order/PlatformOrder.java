@@ -59,6 +59,8 @@ public class PlatformOrder {
     private Date startDate;
     @Transient
     private Date endDate;
+    @Transient
+    private String orderState;
 
     public PlatformOrder() {
     }
@@ -245,5 +247,13 @@ public class PlatformOrder {
 
     public void setMerchantRate(double merchantRate) {
         this.merchantRate = merchantRate;
+    }
+
+    public String getOrderState() {
+        return orderState;
+    }
+
+    public void setOrderState(String orderState) {
+        this.orderState = orderState;
     }
 }
