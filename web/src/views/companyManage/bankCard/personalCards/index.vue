@@ -78,18 +78,16 @@ import { getTime,getTimeFormat } from "@/utils/index";
         },
         methods: {
             handleSizeChange(val) {
-                console.log(`每页 ${val} 条`);
               
             },
             handleCurrentChange(val) {
-                console.log(`当前页: ${val}`);
             },
             getData(){
                 this.getcards();
             },
             getcards(){
                  personalCardsGet().then(response=>{
-                    console.log(response,'sdll')
+
                      if(response.data.infoCod){
                         this.$message({
                             message: response.data.description,
@@ -104,7 +102,6 @@ import { getTime,getTimeFormat } from "@/utils/index";
                 })
             }
             // handleChange(val) {
-            //     console.log(val);
             //       if(val==2)
             //     {
             //         this.getcards();

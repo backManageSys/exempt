@@ -90,7 +90,6 @@
       },
       methods:{
       firstChange(){
-                            console.log(111);
                             this.secondState = false;
                             },
        addStair(){
@@ -114,7 +113,6 @@
 
                   },
                    addSecond(){
-                     console.log(this.form.secondPlatformName,this.value);
                       addPayType(this.value,this.form.secondPlatformName,this.status).then(response => {
                                                                             if (response.code != 200) {
                                                                               this.$message({
@@ -138,7 +136,6 @@
                                                            type: "warning"
                                                          });
                                                        } else {
-                                                       console.log(11111,response)
                                                        this.options =  response.data;
                                                        }
                                                      });

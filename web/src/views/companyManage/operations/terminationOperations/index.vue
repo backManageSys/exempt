@@ -128,7 +128,6 @@
                                                                         type: "warning"
                                                                       });
                                                                     } else {
-                                                                    console.log(response);
                                                                       this.$message({
                                                                         message: response.data,
                                                                         type: "success"
@@ -193,7 +192,6 @@
 
                   },
                    addSecond(){
-                     console.log(this.form.secondPlatformName,this.value);
                       addPayType(this.value,this.form.secondPlatformName,this.status).then(response => {
                                                                             if (response.code != 200) {
                                                                               this.$message({

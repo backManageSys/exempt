@@ -33,7 +33,6 @@ import { permissionAllocate } from '@/api/company'
             },
             getTeams(){
                 teamsGet().then(response=>{
-                    console.log(response,'sdll')
                      if(response.data.infoCod){
                         this.$message({
                             message: response.data.description,
@@ -64,7 +63,6 @@ import { permissionAllocate } from '@/api/company'
 
             },
             handleChange(val) {
-                console.log(val);
                   if(val==2)
                 {
                     this.getTeams();
