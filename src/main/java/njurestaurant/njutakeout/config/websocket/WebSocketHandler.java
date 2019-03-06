@@ -84,10 +84,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
      */
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-//		System.out.println("123");
         //session.sendMessage(new TextMessage(message.getPayload()));
         String string = message.getPayload();
-        System.out.println(string);
         JSONObject jsonObject = new JSONObject(string);
         String cmd = jsonObject.getString("cmd");
         String type = jsonObject.getString("type");
@@ -95,7 +93,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
         //回复客户端的心跳检测
         if (cmd.equals("HeartBeat") && type.equals("HeartBeat")) {
             session.sendMessage(new TextMessage(jsonObject.toString()));
-            System.out.println(new TextMessage(jsonObject.toString()));
         }
         // 收到设备更新信息
         // 客户端消息:{"cmd":"validation","type":"alipay","userid":"支付宝userid","loginid":"支付宝loginid","imei":"设备唯一标识","name":"支付宝账号昵称/姓名(暂时未定)"}
@@ -139,37 +136,25 @@ public class WebSocketHandler extends TextWebSocketHandler {
         if (cmd.equals("wealth") && type.equals("alipay")) {
             String userId = (String) jsonObject.get("userid");
             Alipay alipay = alipayDataService.findByUserId(userId);
-            if (alipay == null)
-                System.out.println("kkkkkkkkkkkkkkkkkkkkkkk");
-            else
-                System.out.println("qqqqqqqqqqqqqqqqqqqqqqqq");
             String wealth = (String) jsonObject.get("wealth");
-            System.out.println(wealth);
             if (!StringUtils.isBlank(wealth)) {
-                System.out.println(Double.parseDouble(wealth));
                 alipay.setWealth(Double.parseDouble(wealth));
-                System.out.println("33333333333");
             } else {
                 alipay.setWealth(alipay.getWealth());
-                System.out.println("222222222222222");
             }
             alipayDataService.saveAlipay(alipay);
         }
         // 收到订单信息
         // 客户端消息(订单信息):{"cmd":"order","type":"alipay","imei":"设备唯一标识","orderId":"订单号","money":"订单金额","memo":"备注","time":"订单时间"}
         if (cmd.equals("order") && type.equals("alipay")) {
-            System.out.println("ooo:" + jsonObject);
             String orderId = jsonObject.getString("orderId");
             Double money = Double.parseDouble(jsonObject.getString("money"));
             String memo = jsonObject.getString("memo");
             String time = jsonObject.getString("time");
-
             Device device = deviceDataService.findByImei(imei);
             Supplier supplier = device.getSupplier();
-            System.out.println(jsonObject.toString());
             if ((platformOrderDataService.findByImeiAndPayTypeId(imei, 2) != null && platformOrderDataService.findByImeiAndPayTypeId(imei, 2).size() > 0)
                     || (platformOrderDataService.findByImeiAndPayTypeId(imei, 1) != null && platformOrderDataService.findByImeiAndPayTypeId(imei, 1).size() > 0)) { // 供码用户提供收款码
-                System.out.println("1:" + supplier.getPayTypeId() + supplier.getId() + " " + imei);
                 // 提取imei，根据imei查询未付款的订单号，根据订单号把订单状态更新成已成功付款，保留订单金额，新插入实收金额。
                 PlatformOrder platformOrders = platformOrderDataService.findByImeiAndStateAndPayTypeIdAndMoney(imei, OrderState.WAITING_FOR_PAYING, 2, Double.parseDouble(jsonObject.getString("money")));
                 PlatformOrder platformOrders1 = platformOrderDataService.findByImeiAndStateAndPayTypeIdAndMoney(imei, OrderState.WAITING_FOR_PAYING, 1, Double.parseDouble(jsonObject.getString("money")));
@@ -226,8 +211,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
             } else if ((platformOrderDataService.findByImeiAndPayTypeId(imei, 4) != null && platformOrderDataService.findByImeiAndPayTypeId(imei, 4).size() > 0)
                     || (platformOrderDataService.findByImeiAndPayTypeId(imei, 3) != null && platformOrderDataService.findByImeiAndPayTypeId(imei, 3).size() > 0)) { // 供码用户提供转账码
                 // 提取memo备注里的值（99.9%是订单号）。查询订单表中是否存在一个与memo的值匹配的订单号，如果存在，则把订单状态更新成已成功付款，保留订单金额，新插入实收金额。
-                System.out.println("2:" + supplier.getPayTypeId());
-                System.out.println(memo);
                 PlatformOrder platformOrder = platformOrderDataService.findByNumber(memo);
                 if (platformOrder != null) {
                     if (new BigDecimal(platformOrder.getMoney()).compareTo(new BigDecimal(money)) == 0) {
@@ -277,7 +260,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     }
                 }
             } else {
-                System.out.println("77:");
             }
 
         }
@@ -292,7 +274,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
             Device device = deviceDataService.findByImei(imei);
             // 提取memo备注里的值（99.9%是订单号）。查询订单表中是否存在一个与memo的值匹配的订单号，如果存在，则把订单状态更新成已成功付款，保留订单金额，新插入实收金额。
-            System.out.println(memo);
             PlatformOrder platformOrder = platformOrderDataService.findByNumber(memo);
             if (platformOrder != null) {
                 if (new BigDecimal(platformOrder.getMoney()).compareTo(new BigDecimal(money)) == 0) {
@@ -361,46 +342,29 @@ public class WebSocketHandler extends TextWebSocketHandler {
         //客户端消息:{"cmd":"tx","type":"alipay","imei":"设备唯一标识","status":"提现状态","userid":"支付宝userid","money":"提现金额","txdao":"提现到银行卡信息"}
         if (cmd.equals("tx") && type.equals("alipay")) {
             Alipay alipay = alipayDataService.findByUserId((String) jsonObject.get("userid"));
-            System.out.println("**************************************************1");
-            System.out.println(alipay);
-            System.out.println("**************************************************1.2");
-            System.out.println(alipay.getLoginId());
-
             if (alipay != null) {
-                System.out.println("**************************************************2");
                 QRcodeChangeOrder qRcodeChangeOrder = null;
                 if (jsonObject.getString("status").equals("提现到账成功")) {
-                    System.out.println("**************************************************3");
                     qRcodeChangeOrder = changeOrderDataService.findByLoginId(alipay.getLoginId());
-                    System.out.println("**************************************************4");
                     if (qRcodeChangeOrder != null) {
                         qRcodeChangeOrder.setRealMoney(Double.parseDouble(jsonObject.getString("money")));
-                        System.out.println("**************************************************5");
                         qRcodeChangeOrder.setCardBalance(qRcodeChangeOrder.getCardBalance() + qRcodeChangeOrder.getRealMoney());
-                        System.out.println("**************************************************6");
                         qRcodeChangeOrder.setState(jsonObject.getString("status"));
-                        System.out.println("**************************************************7");
                         changeOrderDataService.saveQRcodeChangeOrder(qRcodeChangeOrder);
-                        System.out.println("**************************************************8");
                     }
                 } else if (jsonObject.getString("status").equals("提现申请提交")) {
                     double pre_balance = alipay.getWealth();
 //				if (alipay.getWealth() - Double.parseDouble((String) jsonObject.get("money")) < 0)
 //					throw new WrongInputException();
                     alipay.setWealth(alipay.getWealth() - Double.parseDouble((String) jsonObject.get("money"))); //先把钱给它扣掉，如果后面审批不成功，再给他加回来。
-                    System.out.println("**************************************************9");
                     alipayDataService.saveAlipay(alipay);
-                    System.out.println("**************************************************10");
-                    System.out.println(jsonObject.get("txdao") + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~11");
                     String cardNumber = (String) jsonObject.get("txdao");
-                    System.out.println("**************************************************12");
                     // PersonalCard personalCard = personalCardDataService.findPersonalCardByCardNumber(cardNumber);
 //            if (personalCard == null)
 //                throw new PersonalCardDoesNotExistException();
                     changeOrderDataService.saveQRcodeChangeOrder(new QRcodeChangeOrder(
                             alipay.getLoginId(), Double.parseDouble((String) jsonObject.get("money")), 0, pre_balance, cardNumber,
                             0, jsonObject.getString("status"), new Date(), deviceDataService.findByAlipayId(alipay.getId()).getSupplier().getUser().getUsername(), false));
-                    System.out.println("**************************************************13");
                     //到卡金额会在银行发短信后监控到更新，先写成0
                     //安卓会发支付宝余额，在websocket
                 }
@@ -420,14 +384,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
         // socketSessionMap.put(session.getAttributes().get("imei").toString(),
         // session);
         String imei = (String) session.getAttributes().get("imei");
-        System.out.println(imei);
         Device device = deviceDataService.findByImei(imei);
         if (device != null) {
             device.setOnline(1);
             deviceDataService.saveDevice(device);
         }
         socketSessionMap.put(imei, session);
-        System.out.println("用户 " + imei + " 已建立连接");
         // session.sendMessage(new TextMessage("@"+Settings.SUCCESS_CODE + ""));
     }
 
@@ -453,7 +415,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
             device.setOnline(0);
             deviceDataService.saveDevice(device);
         }
-        System.out.println("用户 " + imei + " 已关闭连接。 当前状态：" + status);
 
     }
 
@@ -471,7 +432,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
             session.close();
             socketSessionMap.remove(imei, session);
         }
-        System.out.println("用户 " + session.getAttributes().get("imei") + " 已关闭连接");
 
     }
 
@@ -503,9 +463,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
     public static Boolean sendMessageToUser(String token, TextMessage message) {
 
         Set<String> keySet = socketSessionMap.keySet();
-        for (String key : keySet) {
-            System.out.println("sendMessageToUser:" + key);
-        }
         WebSocketSession socketSession = socketSessionMap.get(token);
         try {
             if (socketSession != null)

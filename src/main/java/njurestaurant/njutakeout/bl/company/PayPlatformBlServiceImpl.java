@@ -22,8 +22,6 @@ public class PayPlatformBlServiceImpl implements PayPlatformBlService {
 
     @Override
     public void addCodeCategory(String codeCategory) {
-        System.out.println("1111111111");
-        System.out.println(codeCategory);
         payPlatformDataService.savePayPlatform(new PayPlatform(codeCategory));
     }
 

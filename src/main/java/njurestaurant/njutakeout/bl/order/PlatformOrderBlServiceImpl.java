@@ -100,8 +100,6 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
             usernameMap.put(user.getId(), user.getUsername());
         }
         Page<PlatformOrder> page= platformOrderDataService.findAll(pageable,platformOrder);
-        System.out.println("111111111111111");
-        System.out.println(page.getContent());
         // 将错误的商家id信息过滤
         List<OrderListResponse> result= page.getContent().stream().map(p -> {
             if (usernameMap.containsKey(p.getUid())) {
@@ -162,22 +160,17 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
                     throw new OrderWrongInputException(new WrongResponse(9998, "所有订单不允许修改成未支付订单"));
                 case PAID:
                     if (platformOrder.getState() == OrderState.EXPIRED || platformOrder.getState() == OrderState.WAITING_FOR_PAYING) {
-                        System.out.println("#######################################1");
                         AlipayOrder alipayOrder = new AlipayOrder(platformOrder.getImei(), platformUpdateParameters.getOrderId(),
                                 platformUpdateParameters.getRealPay(), platformUpdateParameters.getMemo(), date);
                         alipayOrderDataService.saveAlipayOrder(alipayOrder);
-                        System.out.println("#######################################2");
                     } else if (platformOrder.getState() == PAID) {
                         throw new OrderWrongInputException(new WrongResponse(9997, "不允许修改已支付订单"));
                     }
                     platformOrder.setMoney(platformUpdateParameters.getMoney());
                     platformOrder.setPayMoney(platformUpdateParameters.getRealPay());
-                    System.out.println("#######################################3");
                     platformOrder.setPayTime(date);
                     platformOrder.setState(PAID);
-                    System.out.println("#######################################4eqeq");
                     platformOrderDataService.savePlatformOrder(platformOrder);
-                    System.out.println("#######################################4");
                     //   platformOrderDataService.savePlatformOrder(platformOrder);
                     User user = userDataService.getUserById(platformOrder.getUid());
                     if (user != null) {
@@ -188,14 +181,12 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
                             merchant.setBalance(GetThreeBitsPoint(merchant.getBalance() + platformUpdateParameters.getRealPay() * (1 - platformOrder.getMerchantRate() / 100)));
                             merchantDataService.saveMerchant(merchant);
                         }
-                        System.out.println("#######################################5");
                         // 操作上级,商户的代理商
                         if (suser != null) {
                             if (suser.getRole() == 2) {
                                 Agent agent = agentDataService.findAgentById(suser.getTableId());
                                 agent.setBalance(GetThreeBitsPoint(agent.getBalance() + platformUpdateParameters.getRealPay() * (platformOrder.getMerchantRate()-platformOrder.getAgentRate())/ 100));
                                 agentDataService.saveAgent(agent);
-                                System.out.println("#######################################6");
                                 if (AgentDailyFlow.date == null)
                                     AgentDailyFlow.date = new Date();
                                 if (!DateUtils.isSameDay(AgentDailyFlow.date, new Date())) {
@@ -224,8 +215,6 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
                 default:
                     throw new BlankInputException();
             }
-            System.out.println("#######################################5");
-            System.out.println("#######################################6");
             return null;
         }
     }

@@ -34,7 +34,7 @@ spring:
     open-in-view: true
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/exempt?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    url: jdbc:mysql://192.168.50.240:3306/exempt?useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: debian-sys-maint   #debian-sys-maint（服务器数据库名）
     password: su4B1V2efWUxbRSm   #su4B1V2efWUxbRSm（服务器数据库密码）
     platform: mysql

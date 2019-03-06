@@ -76,9 +76,6 @@ public class ReportBlServiceImpl implements ReportBlService {
      */
     @Override
     public List<MerchantReportResponse> getReportOfMerchant(Date startDate, Date endDate) throws WrongInputException {
-        System.out.println("33333333333333333333333333333333");
-        System.out.println(startDate);
-        System.out.println(endDate);
         if (startDate == null) startDate = new Date();
         if (endDate == null) endDate = new Date();
         String date;
@@ -97,8 +94,6 @@ public class ReportBlServiceImpl implements ReportBlService {
             c2.set(Calendar.SECOND, 59);
             c2.set(Calendar.MILLISECOND, 999);
             endDate = c2.getTime();
-            System.out.println(startDate);
-            System.out.println(endDate);
             if (DateUtils.isSameDay(startDate, endDate))
                 date = FormatDateTime.dateToString(startDate, "yyyy-MM-dd");
             else
@@ -164,13 +159,9 @@ public class ReportBlServiceImpl implements ReportBlService {
                     if (merchantReportResponseMap.containsKey(platformOrder.getUid())) {
                         MerchantReportResponse merchantReportResponse = merchantReportResponseMap.get(platformOrder.getUid());
                         // SuccessOrdersRateAnalyse(merchantReportResponse.getSuccessOrdersRateList(),platformOrder.getType(),)
-                        System.out.println("qqqqqqqqqq");
                         merchantReportResponse.setTotalOrderList(TotalOrdersAnalyse(merchantReportResponse.getTotalOrderList(), platformOrder.getType(), 1));
-                        System.out.println(merchantReportResponse.getTotalOrderList().get(0).getTotalOrders() + merchantReportResponse.getTotalOrderList().get(1).getTotalOrders());
                         if (platformOrder.getState() == OrderState.PAID) { // 成功的订单
-                            System.out.println("eeeeeeeeee");
                             merchantReportResponse.setSuccessOrderList(SuccessOrdersAnalyse(merchantReportResponse.getSuccessOrderList(), platformOrder.getType(), 1));
-                            System.out.println("rrrrrrrrr");
                             merchantReportResponse.setDeposit(GetThreeBitsPoint(platformOrder.getPayMoney() + merchantReportResponse.getDeposit()));
                             Merchant merchant = merchantMap.get(platformOrder.getUid());
                             merchantReportResponse.setAvailiableDeposit(GetThreeBitsPoint(merchantReportResponse.getAvailiableDeposit() +
@@ -191,9 +182,7 @@ public class ReportBlServiceImpl implements ReportBlService {
 
                         }
                         List<SuccessOrdersRate> successOrdersRates = null;
-                        System.out.println("ttttttttttttt");
                         successOrdersRates = SuccessOrdersRateAnalyse(merchantReportResponse.getSuccessOrdersRateList(), merchantReportResponse.getSuccessOrderList(), merchantReportResponse.getTotalOrderList());
-                        System.out.println("yyyyyyyyyyyy");
                         merchantReportResponse.setSuccessOrdersRateList(successOrdersRates);
                         merchantReportResponseMap.put(platformOrder.getUid(), merchantReportResponse);
 
@@ -371,7 +360,6 @@ public class ReportBlServiceImpl implements ReportBlService {
     private List<SuccessOrdersRate> SuccessOrdersRateAnalyse(List<SuccessOrdersRate> SuccessOrdersRates, List<SuccessOrder> successOrders, List<TotalOrder> totalOrders) {
         if (SuccessOrdersRates.size() > 0) {
             for (SuccessOrdersRate p : SuccessOrdersRates) {
-                System.out.println("1zzzzz");
                 if (GetTotalOrdersAnalyse(totalOrders, p.getType()) == 0)
                     p.setSuccessOrdersRate(0);
                 else {
@@ -379,10 +367,6 @@ public class ReportBlServiceImpl implements ReportBlService {
                     p.setSuccessOrdersRate(Double.parseDouble(a));
                 }
             }
-        }
-        for (SuccessOrdersRate p : SuccessOrdersRates) {
-            System.out.println("1111111sdadad");
-            System.out.println(p.getType() + p.getSuccessOrdersRate());
         }
         return SuccessOrdersRates;
     }
