@@ -48,6 +48,12 @@ public class CardChangeOrder {
     //原因
     @Column(name = "reason")
     private String reason;
+    @Transient
+    private Date startDate;
+    @Transient
+    private Date endDate;
+    @Transient
+    private String withdrewStateSql;
 
     public CardChangeOrder() {
     }
@@ -65,6 +71,22 @@ public class CardChangeOrder {
         this.operateUsername = operateUsername;
         this.type = type;
         this.reason = reason;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
     public int getId() {
@@ -169,5 +191,13 @@ public class CardChangeOrder {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public String getWithdrewStateSql() {
+        return withdrewStateSql;
+    }
+
+    public void setWithdrewStateSql(String withdrewStateSql) {
+        this.withdrewStateSql = withdrewStateSql;
     }
 }

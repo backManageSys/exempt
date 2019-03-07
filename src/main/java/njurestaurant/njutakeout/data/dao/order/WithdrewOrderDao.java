@@ -2,6 +2,8 @@ package njurestaurant.njutakeout.data.dao.order;
 
 import njurestaurant.njutakeout.entity.order.WithdrewOrder;
 import njurestaurant.njutakeout.publicdatas.order.WithdrewState;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,4 +15,5 @@ public interface WithdrewOrderDao extends JpaRepository<WithdrewOrder, Integer> 
     List<WithdrewOrder> findWithdrewOrdersByOperateId(int id);
 
     List<WithdrewOrder> findAll(Specification<WithdrewOrder> dateBetween);
+    Page<WithdrewOrder> findAll(Specification<WithdrewOrder> dateBetween, Pageable pageable);
 }

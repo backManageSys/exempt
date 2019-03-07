@@ -34,6 +34,9 @@ import njurestaurant.njutakeout.util.FormatDateTime;
 import njurestaurant.njutakeout.util.StringParseUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 
@@ -217,8 +220,6 @@ public class TransactionBlServiceImpl implements TransactionBlService {
                 // 开始寻找供码用户
                 Random random = new Random();
                 List<Supplier> supplierList = supplierDataService.findSuppliersByLevel(merchant.getPriority());
-                System.out.println(merchant.getPriority());
-                System.out.println(supplierList);
                 int len = supplierList.size();
                 int randomNumber;
                 Supplier chosenSupplier = null;
@@ -324,11 +325,9 @@ public class TransactionBlServiceImpl implements TransactionBlService {
                 switch (payTypeId) {
                     case 1: // 收款通码离线码
                         qrCode = alipayDataService.findById(chosenDevice.getAlipayId()).getPassOffCode();
-                        System.out.println("off:" + qrCode);
                         break;
                     case 2:   //收款通码在线码
                         qrCode = alipayDataService.findById(chosenDevice.getAlipayId()).getPassQrCode();
-                        System.out.println(qrCode);
                         break;
                     case 3:    //转账固码
                         qrCode = TRANSFERSOLIDURL + alipayDataService.findById(chosenDevice.getAlipayId()).getUserId() + "\",\"a\":\"" + money + "\",\"m\":\"" + orderId + "\"}";
@@ -407,10 +406,8 @@ public class TransactionBlServiceImpl implements TransactionBlService {
      */
     private GetReceiptCodeResponse checkAlipayOnline(String imei, String userId) throws OrderNotPayedException {
         Boolean beensent = WebSocketHandler.sendMessageToUser(imei, new TextMessage(String.valueOf(new CheckOnlineParameters(imei, userId))));
-        System.out.println("1111111111111111111");
         if (!beensent)
             return null;
-        System.out.println("22222222222222222222222");
         Thread thread = Thread.currentThread();
         WebSocketHandler.mapThread.put(imei, thread);
         try {
@@ -418,31 +415,23 @@ public class TransactionBlServiceImpl implements TransactionBlService {
         } catch (InterruptedException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
-            System.out.println("aaaaaaaaaaaaaaaaaaaaaa");
         }
-        System.out.println("333333333333333333333333");
         WebSocketHandler.mapThread.remove(imei);
         TextMessage textMessage = WebSocketHandler.msgMap.get(imei);
-        System.out.println(textMessage);
-        System.out.println("4444444444444444444444");
         if (textMessage == null || StringUtils.isBlank(textMessage.getPayload())) {
             try {
                 WebSocketHandler.msgMap.remove(imei);
                 WebSocketHandler.socketSessionMap.get(imei).close();
                 WebSocketHandler.socketSessionMap.remove(imei);
-                System.out.println("55555555555555555555555555555");
             } catch (IOException e) {
                 e.printStackTrace();
-                System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbb");
             }
             return null;
         }
-        System.out.println("666666666666666666666666");
         //{"cmd":"passcode","imei":"304517300097652","type":"alipay","status":"success","userid":"2088022126490523","qrcode":"","offqrcode":""}
         try {
             JSONObject jsonObject = new JSONObject(textMessage.getPayload());
             WebSocketHandler.msgMap.remove(imei);
-            System.out.println("7777777777777777777777777");
             String cmd = jsonObject.getString("cmd");
             String type = jsonObject.getString("type");
             String im = jsonObject.getString("imei");
@@ -451,10 +440,8 @@ public class TransactionBlServiceImpl implements TransactionBlService {
             String qrCode = jsonObject.getString("qrcode");
             String offQrCode = jsonObject.getString("offqrcode");
             String status = jsonObject.getString("status");
-            System.out.println("8888888888888888888888");
             return new GetReceiptCodeResponse(cmd, type, im, status, "msg", userid, qrCode, offQrCode);
         } catch (JSONException e) {
-            System.out.println("9999999999999999999999999");
             return null;
         }
     }
@@ -501,16 +488,17 @@ public class TransactionBlServiceImpl implements TransactionBlService {
     }
 
     @Override
-    public List<WithdrewOrder> getAllWaitingWithdrewOrder() {
-        return withdrewOrderDataService.findByState(WithdrewState.WAITING).stream().peek(p -> {
+    public Page<WithdrewOrder> getAllWaitingWithdrewOrder(Pageable pageable, WithdrewOrder withdrewOrder) {
+        Page<WithdrewOrder> page = withdrewOrderDataService.findByState(0,WithdrewState.WAITING, pageable, withdrewOrder);
+        List<WithdrewOrder> list = page.getContent().stream().peek(p -> {
             String first = p.getCard_in().substring(0, 4);
             String last = p.getCard_in().substring(p.getCard_in().length() - 4);
             String middle = "";
             for (int i = 0; i < p.getCard_in().substring(4, p.getCard_in().length() - 4).length(); i++)
                 middle += "*";
             p.setCard_in(first + middle + last);
-            System.out.println(p.getCard_in());
         }).collect(Collectors.toList());
+        return new PageImpl<>(list, page.getPageable(), page.getTotalElements());
     }
 
     @Override
@@ -526,20 +514,25 @@ public class TransactionBlServiceImpl implements TransactionBlService {
     }
 
     @Override
-    public void dealWithdrewOrder(int id, WithdrewDealParameters withdrewDealParameters) throws WrongIdException, BlankInputException {
+    public void dealWithdrewOrder(int id, WithdrewDealParameters withdrewDealParameters) throws WrongIdException, BlankInputException, WrongInputException {
         User user = userDataService.getUserById(withdrewDealParameters.getOperatorId());
         if (user == null) throw new WrongIdException();
         WithdrewOrder withdrewOrder = withdrewOrderDataService.findWithdrewOrderById(id);
         if (withdrewOrder == null || withdrewOrder.getState() != WithdrewState.DEALING || withdrewOrder.getOperateId() != withdrewDealParameters.getOperatorId())
             throw new WrongIdException();
         if (WithdrewState.SUCCESS == withdrewDealParameters.getState()) {
+
             withdrewOrder.setState(WithdrewState.SUCCESS);
             withdrewOrder.setCard_out(withdrewDealParameters.getCompanyCardId());
             withdrewOrder.setMoney_in(GetThreeBitsPoint(withdrewOrder.getMoney_out() - 3));//手续费三元
             CompanyCard companyCard = companyCardDataService.findCompanyCardByCardNumber(withdrewDealParameters.getCompanyCardId());
-            companyCard.setBalance(GetThreeBitsPoint(companyCard.getBalance() - withdrewOrder.getMoney_out() + 3));
+            double money = companyCard.getBalance() - withdrewOrder.getMoney_out() + 3;
+            if (money<0){
+                throw new WrongInputException();
+            }
+            companyCard.setBalance(GetThreeBitsPoint(money));
             companyCardDataService.saveCompanyCard(companyCard);
-            withdrewOrder.setCard_out_balance(GetThreeBitsPoint(companyCard.getBalance() - withdrewOrder.getMoney_out() + 3));
+            withdrewOrder.setCard_out_balance(GetThreeBitsPoint(companyCard.getBalance()));
             CardChangeOrder cardChangeOrder = new CardChangeOrder(withdrewOrder.getCard_out(), withdrewOrder.getCard_in(),
                     withdrewOrder.getMoney_out(), withdrewOrder.getMoney_out() - 3, companyCard.getBalance(), 0, WithdrewState.SUCCESS, new Date(),
                     null, user.getUsername(), "出款", null);
@@ -581,30 +574,32 @@ public class TransactionBlServiceImpl implements TransactionBlService {
     }
 
     @Override
-    public List<WithdrewOrder> getMyWithdrewOrder(int id) throws WrongIdException {
+    public Page<WithdrewOrder> getMyWithdrewOrder(int id, Pageable pageable, WithdrewOrder withdrewOrder) throws WrongIdException {
+
         User user = userDataService.getUserById(id);
-        if (user.getRole() == 1 || user.getRole() == 4)
-            return withdrewOrderDataService.findByOperatorId(id).stream().peek(p -> {
+        if (user.getRole() == 1 || user.getRole() == 4) {
+            Page<WithdrewOrder> page = withdrewOrderDataService.findByState(id,WithdrewState.DEALING, pageable, withdrewOrder);
+            List list = page.getContent().stream().peek(p -> {
                 User u = userDataService.getUserById(p.getApplicantId());
                 User u1 = userDataService.getUserById(p.getOperateId());
                 p.setApplicantUsername(u.getUsername());
                 p.setOperateUsername(u1.getUsername());
             }).collect(Collectors.toList());
-        else
+            return new PageImpl<>(list, page.getPageable(), page.getTotalElements());
+        } else
             throw new WrongIdException();
     }
 
     @Override
-    public List<WithdrewOrder> getWithdrewOrder(int uid) {
-        return withdrewOrderDataService.findAll().stream().peek(p -> {
-
+    public Page<WithdrewOrder> getWithdrewOrder(int uid, Pageable pageable, WithdrewOrder withdrewOrder) {
+        Page<WithdrewOrder> page = withdrewOrderDataService.findByState(0,null, pageable, withdrewOrder);
+        List list = page.getContent().stream().peek(p -> {
             String first = p.getCard_in().substring(0, 4);
             String last = p.getCard_in().substring(p.getCard_in().length() - 4);
             String middle = "";
             for (int i = 0; i < p.getCard_in().substring(4, p.getCard_in().length() - 4).length(); i++)
                 middle += "*";
             p.setCard_in(first + middle + last);
-            System.out.println(p.getCard_in());
             User user = userDataService.getUserById(p.getApplicantId());
             User user1 = userDataService.getUserById(p.getOperateId());
             User user2 = userDataService.getUserById(uid);
@@ -621,5 +616,6 @@ public class TransactionBlServiceImpl implements TransactionBlService {
             }
 
         }).collect(Collectors.toList());
+        return new PageImpl<>(list, page.getPageable(), page.getTotalElements());
     }
 }

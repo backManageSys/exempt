@@ -226,7 +226,6 @@
         })
       },
       handleChange(val) {
-        console.log(val);
         if (val == 2) {
           this.getTeams();
 

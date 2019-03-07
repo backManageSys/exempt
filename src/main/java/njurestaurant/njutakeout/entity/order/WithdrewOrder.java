@@ -47,6 +47,12 @@ public class WithdrewOrder {
     private String  applicantUsername;
     @Transient
     private String operateUsername;
+    @Transient
+    private Date startDate;
+    @Transient
+    private Date endDate;
+    @Transient
+    private String withdrewStateSql;
 
     public WithdrewOrder() {
     }
@@ -60,6 +66,22 @@ public class WithdrewOrder {
         this.balance = balance;
         this.state = state;
         this.applyTime = applyTime;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
     public int getChangeId() {
@@ -212,5 +234,13 @@ public class WithdrewOrder {
 
     public void setMemo(String memo) {
         this.memo = memo;
+    }
+
+    public String getWithdrewStateSql() {
+        return withdrewStateSql;
+    }
+
+    public void setWithdrewStateSql(String withdrewStateSql) {
+        this.withdrewStateSql = withdrewStateSql;
     }
 }

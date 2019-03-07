@@ -123,7 +123,6 @@
         this.firstState = false;
       },
       editSecond() {
-        console.log(1111, this.form.secondPlatformName, this.status, this.form.secondPlatform);
         if (this.form.secondPlatform === "") {
           this.$message({
             message: "请填写二级通道名！",
@@ -139,7 +138,6 @@
               type: "warning"
             });
           } else {
-            console.log(response);
             this.$message({
               message: response.data,
               type: "success"
@@ -212,7 +210,6 @@
 
       },
       addSecond() {
-        console.log(this.form.secondPlatformName, this.value);
         addPayType(this.value, this.form.secondPlatformName, this.status).then(response => {
           if (response.code != 200) {
             this.$message({

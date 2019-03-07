@@ -138,8 +138,6 @@ public class SupplierBlServiceImpl implements SupplierBlService {
         } else {
             User user = userDataService.getUserById(id);
             User user1 = userDataService.getUserById(supplierUpdateParameters.getUid());
-            System.out.println(id);
-            System.out.println(supplierUpdateParameters.getUid());
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             if (!supplierUpdateParameters.getPassword().equals(user.getPassword())) {
                 user.setPassword(encoder.encode(supplierUpdateParameters.getPassword()));

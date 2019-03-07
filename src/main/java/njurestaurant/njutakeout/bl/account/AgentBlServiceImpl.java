@@ -22,18 +22,14 @@ import java.util.stream.Collectors;
 @Service
 public class AgentBlServiceImpl implements AgentBlService {
     private final AgentDataService agentDataService;
-
     @Value(value = "${spring.encrypt.privateKey}")
     private String privateKey;
-
     @Value(value = "${spring.encrypt.publicKey}")
     private String publicKey;
-
     @Autowired
     public AgentBlServiceImpl(AgentDataService agentDataService) {
         this.agentDataService = agentDataService;
     }
-
     /**
      * add the agent
      * @param agent the info of the agent

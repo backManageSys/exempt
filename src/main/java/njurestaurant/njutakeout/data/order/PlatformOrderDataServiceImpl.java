@@ -3,9 +3,11 @@ package njurestaurant.njutakeout.data.order;
 import njurestaurant.njutakeout.data.dao.order.PlatformOrderDao;
 import njurestaurant.njutakeout.dataservice.order.PlatformOrderDataService;
 import njurestaurant.njutakeout.entity.order.PlatformOrder;
-import njurestaurant.njutakeout.publicdatas.app.CodeType;
 import njurestaurant.njutakeout.publicdatas.order.OrderState;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -55,8 +57,8 @@ public class PlatformOrderDataServiceImpl implements PlatformOrderDataService {
     }
 
     @Override
-    public List<PlatformOrder> findAll() {
-        return platformOrderDao.findAll();
+    public Page<PlatformOrder> findAll(Pageable pageable, PlatformOrder platformOrder) {
+        return condition(pageable, platformOrder);
     }
 
     @Override
@@ -86,17 +88,20 @@ public class PlatformOrderDataServiceImpl implements PlatformOrderDataService {
 
     @Override
     public List<PlatformOrder> findByImeiAndPayTypeId(String imei, int payTypeId) {
-        return platformOrderDao.findPlatformOrderByImeiAndPayTypeId(imei,payTypeId);
+        return platformOrderDao.findPlatformOrderByImeiAndPayTypeId(imei, payTypeId);
     }
 
     @Override
-    public PlatformOrder findByImeiAndStateAndPayTypeIdAndMoney(String imei, OrderState orderState, int payTypeId , double money) {
-        return platformOrderDao.findPlatformOrderByImeiAndStateAndPayTypeIdAndMoney(imei,orderState,payTypeId,money);
+    public PlatformOrder findByImeiAndStateAndPayTypeIdAndMoney(String imei, OrderState orderState, int payTypeId, double money) {
+        return platformOrderDao.findPlatformOrderByImeiAndStateAndPayTypeIdAndMoney(imei, orderState, payTypeId, money);
     }
+
+
     @Override
-    public List<PlatformOrder>  findByImeiAndStateAndPayTypeId(String imei, OrderState orderState, int payTypeId) {
-        return platformOrderDao.findPlatformOrderByImeiAndStateAndPayTypeId(imei,orderState,payTypeId);
+    public List<PlatformOrder> findByImeiAndStateAndPayTypeId(String imei, OrderState orderState, int payTypeId) {
+        return platformOrderDao.findPlatformOrderByImeiAndStateAndPayTypeId(imei, orderState, payTypeId);
     }
+
     private Specification<PlatformOrder> dateBetween(Date startDate, Date endDate) {
         return new Specification<PlatformOrder>() {
             @Override
@@ -105,4 +110,57 @@ public class PlatformOrderDataServiceImpl implements PlatformOrderDataService {
             }
         };
     }
+
+    public Page<PlatformOrder> condition(Pageable pageable, PlatformOrder platformOrder) {
+        return platformOrderDao.findAll(new Specification<PlatformOrder>() {
+            @Override
+            public Predicate toPredicate(Root<PlatformOrder> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                List<Predicate> list = new ArrayList<>();
+                if (!StringUtils.isEmpty(platformOrder.getImei())) {
+                    list.add(cb.equal(root.get("imei").as(String.class), platformOrder.getImei()));
+                }
+                if (platformOrder.getOrderState() != null) {
+                    int i=0;
+                    for(OrderState orderState: OrderState.values())
+                        if (String.valueOf(orderState).equals(platformOrder.getOrderState())) {
+                            i=1;
+                            break;
+                        }
+                    if (i == 1) {
+                        OrderState orderState = OrderState.valueOf(platformOrder.getOrderState());
+                        list.add(cb.equal(root.get("state").as(OrderState.class), orderState));
+                    }else {
+                        //查一个不存在的值，目的是返回空查询
+                        list.add(cb.equal(root.get("state").as(OrderState.class), OrderState.ARRIVED));
+                        query.where(cb.and(list.toArray(new Predicate[list.size()])));
+                        return query.getRestriction();
+                    }
+                }
+                if (platformOrder.getPayTypeId() != 0) {
+                    list.add(cb.equal(root.get("payTypeId").as(Integer.class), platformOrder.getPayTypeId()));
+                }
+                if (!StringUtils.isEmpty(platformOrder.getRechargeId())) {
+                    list.add(cb.equal(root.get("rechargeId").as(String.class), platformOrder.getRechargeId()));
+                }
+                if (!StringUtils.isEmpty(platformOrder.getNumber())) {
+                    list.add(cb.equal(root.get("number").as(String.class), platformOrder.getNumber()));
+                }
+                if (!StringUtils.isEmpty(platformOrder.getMerchantName())) {
+                    list.add(cb.equal(root.get("merchantName").as(String.class), platformOrder.getMerchantName()));
+                }
+                if (!StringUtils.isEmpty(platformOrder.getType())) {
+                    list.add(cb.equal(root.get("type").as(String.class), platformOrder.getType()));
+                }
+                if (platformOrder.getStartDate() != null) {
+                    list.add(cb.greaterThan(root.get("time").as(Date.class), platformOrder.getStartDate()));
+                }
+                if (platformOrder.getEndDate() != null) {
+                    list.add(cb.lessThan(root.get("time").as(Date.class), platformOrder.getEndDate()));
+                }
+                query.where(cb.and(list.toArray(new Predicate[list.size()])));
+                return query.getRestriction();
+            }
+        }, pageable);
+    }
+
 }

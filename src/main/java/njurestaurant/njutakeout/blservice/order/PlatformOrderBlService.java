@@ -8,6 +8,8 @@ import njurestaurant.njutakeout.exception.WrongInputException;
 import njurestaurant.njutakeout.parameters.order.PlatformUpdateParameters;
 import njurestaurant.njutakeout.response.order.OrderListResponse;
 import njurestaurant.njutakeout.response.report.MerchantReportResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -19,12 +21,11 @@ public interface PlatformOrderBlService {
      *
      * @return the order information
      */
-    List<OrderListResponse> findAllPlatformOrders();
+    Page<OrderListResponse> findAllPlatformOrders(Pageable pageable,PlatformOrder platformOrder);
 
     PlatformOrder updatePlatformOrder(int id, PlatformUpdateParameters platformUpdateParameters) throws BlankInputException, OrderWrongInputException;
 
    // List<OrderListResponse> merchantOrderReportByUid(int uid);
 
-    List<MerchantReportResponse> merchantsOrderReport();
 
 }

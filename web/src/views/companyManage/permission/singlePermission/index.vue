@@ -82,11 +82,9 @@
             },
             methods: {
                 handleSizeChange(val) {
-                    console.log(`每页 ${val} 条`);
                   
                 },
                 handleCurrentChange(val) {
-                    console.log(`当前页: ${val}`);
                 },
                 getData(){
                     // this.getTeams();
@@ -94,7 +92,6 @@
                 },
                 getTeams(){
                     checkSinglePermission(this.form.post).then(response=>{
-                        console.log(response,'sdll')
                          if(response.data.infoCod){
                             this.$message({
                                 message: response.data.description,
@@ -107,7 +104,6 @@
                 },
                 getPost(){
                  postGet().then(response=>{
-                        console.log(response,'response')
                          if(response.code!=200){
                             this.$message({
                                 message: response.data.description,
@@ -119,7 +115,6 @@
                     })
             },
                 handleChange(val) {
-                    console.log(val);
                       if(val==2)
                     {
                         this.getTeams();
@@ -130,9 +125,7 @@
                         var valid =1
                         if (valid) {
                         // alert('submit!');
-                        console.log(this.formItem.sendValue)
                         checkSinglePermission(this.formItem.sendValue).then(response => {
-                            // console.log(response.data.infoCode)
                             if(response.code!=200){
                                 this.$message({
                                     message: response.data.description,
@@ -151,14 +144,12 @@
                                 a.permission = response.data.permission.join(',');
                                 a.post = response.data.post;
                                 this.teams = [a]
-                                console.log(this.teams,'ppp;')
                             }
                             resolve()
                         }).catch(error => {
                             this.$message(error);
                         })
                         } else {
-                        console.log('error submit!!');
                         return false;
                         }
                     //});
@@ -170,4 +161,3 @@
     <style scoped>
     
     </style>
-    

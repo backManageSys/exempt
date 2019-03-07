@@ -105,6 +105,7 @@ public class AppController {
     public ResponseEntity<Response> getAlipayByDevice(@RequestParam("imei") String imei) {
         return new ResponseEntity<>(new JSONResponse(200, alipayDao.findByImei(imei)), HttpStatus.OK);
     }
+
     @SystemControllerLog(descrption = "供码用户添加个人银行卡", actionType = "3")
     @ApiOperation(value = "供码用户添加个人银行卡", notes = "供码用户添加个人银行卡")
     @RequestMapping(value = "app/supplier/addPersonalCard", method = RequestMethod.POST)
@@ -116,7 +117,7 @@ public class AppController {
             alipay.setCardBalance(addPersonalCard.getCardBalance());
             alipayDataService.saveAlipay(alipay);
             return new ResponseEntity<>(new JSONResponse(200, "供码用户添加个人银行卡成功"), HttpStatus.OK);
-        }else
+        } else
             return new ResponseEntity<>(new JSONResponse(200, "已添加银行卡，不能重复添加"), HttpStatus.OK);
     }
 
@@ -151,10 +152,33 @@ public class AppController {
     }
 
     @ApiOperation(value = "供码用户查看名下所有归集卡", notes = "供码用户查看名下所有归集卡")
+    @RequestMapping(value = "app/supplier/getCollectingCard", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<Response> getCollectingCard(@RequestParam("uid") int uid) {
+        List<String> list = new ArrayList<>();
+        companyCardDataService.findCompanyCardByOperateId(uid).stream().peek(p -> list.add(p.getCardNumber())).collect(Collectors.toList());
+        return new ResponseEntity<>(new JSONResponse(200, list), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "供码用户查看所有总公司卡", notes = "供码用户查看所有公司卡")
     @RequestMapping(value = "app/supplier/getCompanyCard", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<Response> getCompanyCard(@RequestParam("uid") int uid) {
-        return new ResponseEntity<>(new JSONResponse(200, companyCardDataService.findCompanyCardByOperateId(uid)), HttpStatus.OK);
+    public ResponseEntity<Response> getCompanyCard() {
+        List<String> list = new ArrayList<>();
+        companyCardDataService.findAllCompanyCards().stream().peek(p -> {
+            User user = userDataService.getUserById(p.getOperateId());
+            switch (user.getRole()) {
+                case 1:
+                    list.add(p.getCardNumber());
+                    break;
+                case 4:
+                    p = null;
+                    break;
+                default:
+                    break;
+            }
+        }).collect(Collectors.toList());
+        return new ResponseEntity<>(new JSONResponse(200, list), HttpStatus.OK);
     }
 
     @ApiOperation(value = "googleApi", notes = "谷歌api验证")

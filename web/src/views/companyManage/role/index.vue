@@ -101,7 +101,6 @@ import Form from "../../../components/form/index";
             },
             getTeams(){
                 teamsGet().then(response=>{
-                    console.log(response,'sdll')
                      if(response.data.infoCod){
                         this.$message({
                             message: response.data.description,
@@ -116,14 +115,11 @@ import Form from "../../../components/form/index";
                 // this.$message('click on item ' + command.id);
                 this.codeAddParameters.team = command.id;
                 this.codeAddParameters.teamName = command.teamName;
-                // console.log('click on item ' + command.teamName);
             },
         onSubmit(formName) {
           this.$refs[formName].validate((valid) => {
             if (valid) {
-              // alert('submit!');
               addAdmin(this.form.code,this.form.operator,this.form.password,this.form.post,this.form.status,this.codeAddParameters.team,this.form.username).then(response => {
-                // console.log(response.data.infoCode)
                 if(response.data.infoCode){
                    this.$message({
                     message: response.data.description,
@@ -134,8 +130,6 @@ import Form from "../../../components/form/index";
                     message: '添加成功',
                     type: 'success'
                   });
-                  console.log(response.data.infoCode)
-                  console.log('ppp')
 
                 }
                 // const data = response.data
@@ -147,7 +141,6 @@ import Form from "../../../components/form/index";
                  this.$message(error);
               })
             } else {
-              console.log('error submit!!');
               return false;
             }
           });

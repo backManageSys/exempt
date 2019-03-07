@@ -120,11 +120,9 @@
       },
       methods:{
        firstChange(){
-                  console.log(111);
                   this.secondState = false;
                   },
                    secondChange(){
-                      console.log(111);
                       this.thirdState = false;
                       },
         onSubmit(formName) {
@@ -132,7 +130,6 @@
             if (valid) {
               // alert('submit!');
               addAgent(this.form.alipay,this.form.password,this.form.status,this.form.username,this.form.wechat).then(response => {
-                // console.log(response.data.infoCode)
                 if(response.data.infoCode){
                    this.$message({
                     message: response.data.description,
@@ -154,7 +151,6 @@
                  this.$message(error);
               })
             } else {
-              console.log('error submit!!');
               return false;
             }
           });
