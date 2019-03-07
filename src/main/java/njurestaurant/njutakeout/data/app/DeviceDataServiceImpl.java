@@ -15,6 +15,7 @@ import java.util.Optional;
 public class DeviceDataServiceImpl implements DeviceDataService {
     private final DeviceDao deviceDao;
     private final AlipayDataService alipayDataService;
+
     @Autowired
     public DeviceDataServiceImpl(DeviceDao deviceDao, AlipayDataService alipayDataService) {
         this.deviceDao = deviceDao;
@@ -34,7 +35,7 @@ public class DeviceDataServiceImpl implements DeviceDataService {
     @Override
     public Device findById(int id) {
         Optional<Device> deviceOptional = deviceDao.findById(id);
-        if(deviceOptional.isPresent())  return deviceOptional.get();
+        if (deviceOptional.isPresent()) return deviceOptional.get();
         else return null;
     }
 
@@ -50,7 +51,7 @@ public class DeviceDataServiceImpl implements DeviceDataService {
 
     @Override
     public Device findBySupplierIdAndImei(int id, String imei) {
-        return deviceDao.findDeviceBySupplierIdAndImei(id,imei);
+        return deviceDao.findDeviceBySupplierIdAndImei(id, imei);
     }
 
     @Override
@@ -67,14 +68,17 @@ public class DeviceDataServiceImpl implements DeviceDataService {
     public List<Device> findDevicesBySupplierId(int id) {
         return JSONFilter(deviceDao.findDevicesBySupplierId(id));
     }
+
     private List<Device> JSONFilter(List<Device> devices) {
         if (devices.size() != 0) {
             for (Device device : devices) {
                 device.setSupplier(null);
                 Alipay alipay = alipayDataService.findById(device.getAlipayId());
-                device.setLoginId(alipay.getLoginId());
-                device.setNickName(alipay.getName());
-                device.setAlipayBalance(alipay.getWealth());
+                if (alipay != null) {
+                    device.setLoginId(alipay.getLoginId());
+                    device.setNickName(alipay.getName());
+                    device.setAlipayBalance(alipay.getWealth());
+                }
             }
         }
         return devices;

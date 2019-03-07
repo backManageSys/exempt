@@ -18,6 +18,7 @@ jwt:
   secret: "wfhg9hr-1jfpjf-p3j-=vgf0pvmo3k=2-3rj0-3j=gn[=3-g[mj"
   header: Authorization
   tokenHead: "Bearer "
+  expiration: 604800
 oos:
   accessKey: "c4582dec5d0809103126"
   secretKey: "47c783687d4c452c5d71b817b8c481915fb0094a"
@@ -35,8 +36,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/exempt?useUnicode=true&characterEncoding=UTF-8&useSSL=false
-    username: root   #debian-sys-maint（服务器数据库名）
-    password: root   #su4B1V2efWUxbRSm（服务器数据库密码）
+    username: debian-sys-maint   #debian-sys-maint（服务器数据库名）
+    password: su4B1V2efWUxbRSm   #su4B1V2efWUxbRSm（服务器数据库密码）
     platform: mysql
     type: com.alibaba.druid.pool.DruidDataSource
     # 下面为连接池的补充设置，应用到上面所有数据源中

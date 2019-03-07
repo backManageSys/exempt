@@ -48,11 +48,6 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public JwtUser convertUserToJwtUser(User user) {
-//        return new JwtUser(
-//                user.getUsername(),
-//                user.getPassword(),
-//                mapToJwtRole(user.getRole())
-//        );
         return new JwtUser(
                 user.getUsername(),
                 user.getPassword(),
@@ -61,16 +56,6 @@ public class JwtServiceImpl implements JwtService {
                 user.getRole()
         );
     }
-
-//    @Override
-//    public JwtUser converStaffToJwtUser(Staff staff) {
-//        Role role = new Role(staff.getRole());
-//        return new JwtUser(
-//                staff.getStaffName(),
-//                staff.getPassword(),
-//                mapToJwtRole(role)
-//        );
-//    }
 
     private List<JwtRole> mapToJwtRole(Role role) {
         List<Role> roles = new ArrayList<>();
