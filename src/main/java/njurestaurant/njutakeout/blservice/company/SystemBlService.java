@@ -17,4 +17,6 @@ public interface SystemBlService {
     System findSystemById(int id) throws WrongIdException;
 
     List<System> findAllSystem();
+
+
 }

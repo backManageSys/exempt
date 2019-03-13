@@ -13,4 +13,5 @@ public class IndexController {
     public RedirectView index() {
         return new RedirectView("/swagger-ui.html");
     }
+
 }

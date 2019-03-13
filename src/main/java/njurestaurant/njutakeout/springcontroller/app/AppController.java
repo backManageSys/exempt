@@ -113,6 +113,9 @@ public class AppController {
     public ResponseEntity<Response> addPersonalCard(@RequestParam("loginId") String loginId, @RequestBody AddPersonalCard addPersonalCard) {
         Alipay alipay = alipayDataService.findByLoginId(loginId);
         if (StringUtils.isBlank(alipay.getCardNumber())) {
+            if(addPersonalCard.getCardNumber().length()>20||addPersonalCard.getCardNumber().length()<12){
+                return new ResponseEntity<>(new JSONResponse(400, "银行卡位数不正确！"), HttpStatus.OK);
+            }
             alipay.setCardNumber(addPersonalCard.getCardNumber());
             alipay.setCardBalance(addPersonalCard.getCardBalance());
             alipayDataService.saveAlipay(alipay);

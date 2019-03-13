@@ -188,6 +188,10 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<Response> addStaff(@RequestBody StaffAddParameters staffAddParameters) throws UsernameIsExistentException {
         if (!userBlService.checkUsername(staffAddParameters.getUsername())) {
+            // 检查用户名位数是否合法
+            if(!checkUsernameLength(staffAddParameters.getUsername())){
+                return new ResponseEntity<>(new JSONResponse(10100,"用户名位数不合法！"), HttpStatus.OK);
+            }
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             User user = new User(staffAddParameters.getUsername(), encoder.encode(staffAddParameters.getPassword()), 1, new ArrayList<>());
             Staff staff = new Staff(staffAddParameters.getUsername(), staffAddParameters.getTeam(), new Date(), staffAddParameters.getCode(), staffAddParameters.getOperator(), staffAddParameters.getStatus(), staffAddParameters.getPost(), user);
@@ -213,6 +217,10 @@ public class UserController {
         if (userBlService.checkUsername(agentAddParameters.getUsername())) {
             return new ResponseEntity<>(new JSONResponse(10100, new UsernameIsExistentException().getResponse()), HttpStatus.OK);
         } else {
+            // 检查用户名位数是否合法
+            if(!checkUsernameLength(agentAddParameters.getUsername())){
+                return new ResponseEntity<>(new JSONResponse(10100,"用户名位数不合法！"), HttpStatus.OK);
+            }
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             User user = new User(agentAddParameters.getUsername(), encoder.encode(agentAddParameters.getPassword()), 2, new ArrayList<>());
             Agent agent = new Agent(agentAddParameters.getUsername(), agentAddParameters.getStatus(), 0, 0, agentAddParameters.getApplyId(), user);
@@ -242,6 +250,10 @@ public class UserController {
         } else if (StringUtils.isBlank(merchantAddParameters.getUsername()) || StringUtils.isBlank(merchantAddParameters.getPassword())) {
             return new ResponseEntity<>(new JSONResponse(10120, new BlankInputException().getResponse()), HttpStatus.OK);
         } else {
+            // 检查用户名位数是否合法
+            if(!checkUsernameLength(merchantAddParameters.getUsername())){
+                return new ResponseEntity<>(new JSONResponse(10100,"用户名位数不合法！"), HttpStatus.OK);
+            }
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             User user = new User(merchantAddParameters.getUsername(), encoder.encode(merchantAddParameters.getPassword()), 3, new ArrayList<>());
             Merchant merchant = new Merchant(0, merchantAddParameters.getStatus(),
@@ -279,6 +291,10 @@ public class UserController {
         } else if (StringUtils.isBlank(supplierAddParameters.getUsername())) {
             return new ResponseEntity<>(new JSONResponse(10110, new BlankInputException().getResponse()), HttpStatus.OK);
         } else {
+            // 检查用户名长度是否合法
+            if(!checkUsernameLength(supplierAddParameters.getUsername())){
+                return new ResponseEntity<>(new JSONResponse(10100,"用户名位数不合法！"), HttpStatus.OK);
+            }
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             User user = new User(supplierAddParameters.getUsername(), encoder.encode(supplierAddParameters.getPassword()), 4, new ArrayList<>());
             Supplier supplier = new Supplier(user, supplierAddParameters.getId(), new Date(), supplierAddParameters.getStatus(), new ArrayList<>(), supplierAddParameters.getLevel(), 1);
@@ -305,6 +321,7 @@ public class UserController {
         if (StringUtils.isBlank(adminUpdateParameters.getPassword()) || StringUtils.isBlank(adminUpdateParameters.getStatus())) {
             return new ResponseEntity<>(new JSONResponse(10120, new WrongResponse(10120, "输入不能为空.")), HttpStatus.OK);
         }
+
         Staff staff = staffDao.findByUserId(id);
         staff.setTeam(adminUpdateParameters.getTeam());
         staff.setPost(adminUpdateParameters.getPost());
@@ -631,4 +648,16 @@ public class UserController {
 //        }
 //        return new ResponseEntity<>(new JSONResponse(200, list), HttpStatus.OK);
 //    }
+    /**
+     * 检查用户名差点是否合法
+     * @param username
+     * @return
+     */
+    private boolean checkUsernameLength(String username){
+        // 检查用户名位数是否合法
+        if(username.length()>12||username.length()<5){
+            return false;
+        }
+        return true;
+    }
 }

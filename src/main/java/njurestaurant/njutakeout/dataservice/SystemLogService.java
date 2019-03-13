@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface SystemLogService {
 
-    public List<SystemLog> findAll();
+    public List<SystemLog> findAll(Integer page,Integer size,String condition);
 
     public void save(SystemLog log);
 
