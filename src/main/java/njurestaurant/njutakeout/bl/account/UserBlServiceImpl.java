@@ -9,6 +9,7 @@ import njurestaurant.njutakeout.dataservice.company.PayTypeDataService;
 import njurestaurant.njutakeout.entity.account.*;
 import njurestaurant.njutakeout.entity.app.Device;
 import njurestaurant.njutakeout.entity.company.PayType;
+import njurestaurant.njutakeout.entity.company.Permission;
 import njurestaurant.njutakeout.exception.*;
 import njurestaurant.njutakeout.publicdatas.account.AgentDailyFlow;
 import njurestaurant.njutakeout.response.Response;
@@ -19,6 +20,7 @@ import njurestaurant.njutakeout.security.jwt.JwtService;
 import njurestaurant.njutakeout.security.jwt.JwtUser;
 import njurestaurant.njutakeout.security.jwt.JwtUserDetailsService;
 import njurestaurant.njutakeout.util.AESDecodeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -137,7 +139,6 @@ public class UserBlServiceImpl implements UserBlService {
                     post = "供码用户";
                     break;
             }
-
             return new UserLoginResponse(token, user.getRole(), user.getId(), postAndPermissionBlService.getPostAndPermissionsByPost(post) == null ? new ArrayList<>() : postAndPermissionBlService.getPostAndPermissionsByPost(post).getPermission());
         } else {
             throw new WrongUsernameOrPasswordException();
@@ -302,6 +303,7 @@ public class UserBlServiceImpl implements UserBlService {
     @Override
     public Response findUserInfoById(int id) {
         User user = userDataService.getUserById(id);
+        List<String> list=new ArrayList<>();
         if (user == null) {
             return new WrongResponse(10130, "Wrong id.");
         } else {
@@ -321,7 +323,8 @@ public class UserBlServiceImpl implements UserBlService {
                 if (postAndPermissionBlService.getPostAndPermissionsByPost(staff.getPost()) == null)
                     userInfoResponse.setPermission(new ArrayList<>());
                 else
-                    userInfoResponse.setPermission(postAndPermissionBlService.getPostAndPermissionsByPost(staff.getPost()).getPermission());
+                    list=postAndPermissionBlService.getPostAndPermissionsByPost(staff.getPost()).getPermission();
+                    userInfoResponse.setPermission(list);
             } else if (user.getRole() == 2) {
                 Agent agent = agentDataService.findAgentById(user.getTableId());
                 List<PersonalCard> cardList = agent.getUser().getCards();
@@ -334,7 +337,8 @@ public class UserBlServiceImpl implements UserBlService {
                 if (postAndPermissionBlService.getPostAndPermissionsByPost("代理商") == null)
                     userInfoResponse.setPermission(new ArrayList<>());
                 else
-                    userInfoResponse.setPermission(postAndPermissionBlService.getPostAndPermissionsByPost("代理商").getPermission());
+                    list=postAndPermissionBlService.getPostAndPermissionsByPost("代理商").getPermission();
+                    userInfoResponse.setPermission(list);
             } else if (user.getRole() == 3) {
                 Merchant merchant = merchantDataService.findMerchantById(user.getTableId());
                 List<PersonalCard> personalCardList = merchant.getUser().getCards();
@@ -345,7 +349,8 @@ public class UserBlServiceImpl implements UserBlService {
                 if (postAndPermissionBlService.getPostAndPermissionsByPost("商户") == null)
                     userInfoResponse.setPermission(new ArrayList<>());
                 else
-                    userInfoResponse.setPermission(postAndPermissionBlService.getPostAndPermissionsByPost("商户").getPermission());
+                    list=postAndPermissionBlService.getPostAndPermissionsByPost("商户").getPermission();
+                    userInfoResponse.setPermission(list);
             } else if (user.getRole() == 4) {
                 Supplier supplier = supplierDataService.findSupplierById(user.getTableId());
                 List<PersonalCard> personalCardList = supplier.getUser().getCards();
@@ -362,9 +367,14 @@ public class UserBlServiceImpl implements UserBlService {
                 if (postAndPermissionBlService.getPostAndPermissionsByPost("供码用户") == null)
                     userInfoResponse.setPermission(new ArrayList<>());
                 else
-                    userInfoResponse.setPermission(postAndPermissionBlService.getPostAndPermissionsByPost("供码用户").getPermission());
+                    list=postAndPermissionBlService.getPostAndPermissionsByPost("供码用户").getPermission();
+                    userInfoResponse.setPermission(list);
             } else {
                 return new WrongResponse(10150, "Wrong role.");
+            }
+            if (id ==1){
+                list.add("admin");
+                userInfoResponse.setPermission(list);
             }
             return userInfoResponse;
         }

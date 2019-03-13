@@ -178,6 +178,28 @@ public class UserController {
 //            return new ResponseEntity<>(e.getResponse(), HttpStatus.NOT_FOUND);
 //        }
 //    }
+    @SystemControllerLog(descrption = "修改密码", actionType = "1")
+    @ApiOperation(value = "修改密码", notes = "修改密码")
+    @RequestMapping(value = "admin/updatePassword", method = RequestMethod.POST)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = UserAddResponse.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
+            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
+    @ResponseBody
+    public ResponseEntity<Response> updatePassword(@RequestBody UserPasswordParameters userPasswordParameters) throws UsernameIsExistentException {
+        String password=userPasswordParameters.getPassword();
+        Integer id=userPasswordParameters.getUid();
+        if (StringUtils.isBlank(password)) {
+            return new ResponseEntity<>(new JSONResponse(10120, new WrongResponse(10120, "输入不能为空.")), HttpStatus.OK);
+        }
+        User user = userDao.findUserById(id);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (!password.equals(user.getPassword()))
+            user.setPassword(encoder.encode(password));
+        userDataService.saveUser(user);
+        return new ResponseEntity<>(new JSONResponse(200, new SuccessResponse("修改密码成功")), HttpStatus.OK);
+    }
+
     @SystemControllerLog(descrption = "管理员新增管理员", actionType = "1")
     @ApiOperation(value = "新增管理员", notes = "管理员新增管理员")
     @RequestMapping(value = "admin/add", method = RequestMethod.POST)
