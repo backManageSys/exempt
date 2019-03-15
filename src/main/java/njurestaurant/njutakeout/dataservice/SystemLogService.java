@@ -1,11 +1,8 @@
 package njurestaurant.njutakeout.dataservice;
 
-import njurestaurant.njutakeout.data.dao.SystemLogIn;
+import njurestaurant.njutakeout.data.dao.SystemLogLeftJoinModel;
 import njurestaurant.njutakeout.entity.SystemLog;
-import njurestaurant.njutakeout.response.company.SystemLogResponse;
 import org.springframework.data.domain.Page;
-
-import java.util.List;
 
 /**
  * @Description:
@@ -15,7 +12,7 @@ import java.util.List;
  */
 public interface SystemLogService {
 
-    public Page<SystemLogIn> findAll(Integer page, Integer size, String condition);
+    public Page<SystemLogLeftJoinModel> findAll(Integer page, Integer size, String condition);
 
     public void save(SystemLog log);
 
@@ -23,4 +20,6 @@ public interface SystemLogService {
 
     public void delete(long id);
 
+
+    Long getCount();
 }

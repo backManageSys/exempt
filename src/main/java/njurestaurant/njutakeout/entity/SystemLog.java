@@ -18,7 +18,7 @@ public class SystemLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id ;
+    private Integer id ;
 
     @Column(name = "requestip")
     private String requestip; //操作IP
@@ -70,11 +70,11 @@ public class SystemLog {
         this.username = username;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -153,7 +153,8 @@ public class SystemLog {
     public SystemLog() {
     }
 
-    public SystemLog(String requestip, String type, int userid, String description, Date actiondate, int exceptioncode, String exceptiondetail, String actionmethod, String params, String username) {
+    public SystemLog(Integer id,String requestip, String type, int userid, String description, Date actiondate, int exceptioncode, String exceptiondetail, String actionmethod, String params, String username) {
+        this.id = id;
         this.requestip = requestip;
         this.type = type;
         this.userid = userid;

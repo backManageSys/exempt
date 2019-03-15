@@ -33,7 +33,7 @@ public class SystemLogController {
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     public ResponseEntity<Response> getLimit(@RequestParam Integer page,@RequestParam Integer size,@RequestParam String condition){
-        List<SystemLogResponse> all = systemLogBlService.findAll(page, size,condition);
+        SystemLogResponse  all = systemLogBlService.findAll(page, size,condition);
         return new ResponseEntity<>(new JSONResponse(200, all), HttpStatus.OK);
     }
 }

@@ -13,5 +13,5 @@ public interface SystemLogBlService {
      * @param size 每页多少
      * @return
      */
-    List<SystemLogResponse> findAll(Integer page, Integer size, String condition);
+     SystemLogResponse  findAll(Integer page, Integer size, String condition);
 }
