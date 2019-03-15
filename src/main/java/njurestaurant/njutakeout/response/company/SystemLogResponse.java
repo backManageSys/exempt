@@ -44,8 +44,6 @@ public class SystemLogResponse {
                 '}';
     }
 
-    public SystemLogResponse() {
-    }
 
     public SystemLogResponse(String requestip, String type, String username, String description, Date actiondate, int exceptioncode, String exceptiondetail, String actionmethod, String params) {
         this.requestip = requestip;

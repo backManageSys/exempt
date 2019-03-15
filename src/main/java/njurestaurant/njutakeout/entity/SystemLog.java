@@ -49,6 +49,18 @@ public class SystemLog {
 
     @Transient
     private String username;
+    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
+    @JoinTable(name = "user")
+    @JoinColumn(name="userid",referencedColumnName = "id")
+    private User user;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public String getUsername() {
         return username;
@@ -65,7 +77,6 @@ public class SystemLog {
     public void setId(int id) {
         this.id = id;
     }
-
 
     public String getRequestip() {
         return requestip;
@@ -137,5 +148,21 @@ public class SystemLog {
 
     public void setParams(String params) {
         this.params = params;
+    }
+
+    public SystemLog() {
+    }
+
+    public SystemLog(String requestip, String type, int userid, String description, Date actiondate, int exceptioncode, String exceptiondetail, String actionmethod, String params, String username) {
+        this.requestip = requestip;
+        this.type = type;
+        this.userid = userid;
+        this.description = description;
+        this.actiondate = actiondate;
+        this.exceptioncode = exceptioncode;
+        this.exceptiondetail = exceptiondetail;
+        this.actionmethod = actionmethod;
+        this.params = params;
+        this.username = username;
     }
 }

@@ -1,7 +1,9 @@
 package njurestaurant.njutakeout.dataservice;
 
+import njurestaurant.njutakeout.data.dao.SystemLogIn;
 import njurestaurant.njutakeout.entity.SystemLog;
 import njurestaurant.njutakeout.response.company.SystemLogResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -13,7 +15,7 @@ import java.util.List;
  */
 public interface SystemLogService {
 
-    public List<SystemLog> findAll(Integer page, Integer size, String condition);
+    public Page<SystemLogIn> findAll(Integer page, Integer size, String condition);
 
     public void save(SystemLog log);
 

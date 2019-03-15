@@ -1,4 +1,5 @@
 package njurestaurant.njutakeout.data;
+import njurestaurant.njutakeout.data.dao.SystemLogIn;
 import njurestaurant.njutakeout.data.dao.SystemLogRepository;
 import njurestaurant.njutakeout.dataservice.SystemLogService;
 import njurestaurant.njutakeout.entity.SystemLog;
@@ -14,6 +15,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,11 +30,12 @@ public class SystemLogServiceImpl implements SystemLogService {
     @Autowired
     SystemLogRepository systemLogRepository ;
     @Override
-    public List<SystemLog> findAll(Integer page, Integer size, String condition) {
+    public  Page<SystemLogIn> findAll(Integer page, Integer size, String condition) {
         Pageable pageable = new PageRequest(page,size);
+        // 获取分页数据
+        Page<SystemLogIn> logPage = systemLogRepository.findBySearch(condition,pageable);
 
-        Page<SystemLog> logPage = systemLogRepository.findBySearch(condition,pageable);
-        return logPage.getContent();
+       return  logPage;
     }
 
     @Override

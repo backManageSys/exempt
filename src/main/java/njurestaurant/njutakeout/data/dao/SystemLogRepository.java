@@ -19,9 +19,9 @@ import java.util.List;
  */
 public interface SystemLogRepository extends JpaRepository<SystemLog,Integer> {
 
-    @Query(value = "select t1.*,t2.username from systemlog as t1 left join user as t2 on t1.userid = t2.id where t1.description like ?1",
+    @Query(value = "select t1.*,t2.username as username from systemlog as t1 left join user as t2 on t1.userid = t2.id where t1.description like ?1",
             countQuery = "select count(t1.id) from systemlog as t1 left join user as t2 on t1.userid = t2.id where t1.description like ?1",nativeQuery=true)
-    Page<SystemLog> findBySearch(String condition, Pageable pageable);
+    Page<SystemLogIn> findBySearch(String condition, Pageable pageable);
 
 
 }
