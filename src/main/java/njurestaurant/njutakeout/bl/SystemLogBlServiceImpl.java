@@ -1,21 +1,30 @@
 package njurestaurant.njutakeout.bl;
 
 import njurestaurant.njutakeout.blservice.SystemLogBlService;
+import njurestaurant.njutakeout.data.dao.account.UserDao;
 import njurestaurant.njutakeout.dataservice.SystemLogService;
 import njurestaurant.njutakeout.entity.SystemLog;
+import njurestaurant.njutakeout.entity.account.User;
+import njurestaurant.njutakeout.response.company.SystemLogResponse;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class SystemLogBlServiceImpl implements SystemLogBlService {
 
+
     private SystemLogService systemLogService;
 
+    private UserDao userDao;
+
     @Autowired
-    public SystemLogBlServiceImpl(SystemLogService systemLogService) {
+    public SystemLogBlServiceImpl(SystemLogService systemLogService, UserDao userDao) {
         this.systemLogService = systemLogService;
+        this.userDao = userDao;
     }
 
     /**
@@ -25,8 +34,15 @@ public class SystemLogBlServiceImpl implements SystemLogBlService {
      * @return
      */
     @Override
-    public List<SystemLog> findAll(Integer page, Integer size,String condition){
+    public List<SystemLogResponse> findAll(Integer page, Integer size, String condition){
         condition = "%"+condition+"%";
-        return systemLogService.findAll(page, size,condition);
+        List<SystemLog> logs = systemLogService.findAll(page, size, condition);
+        List<SystemLogResponse> list = new ArrayList();
+        logs.forEach(item -> {
+            SystemLogResponse logResponse = new SystemLogResponse();
+            BeanUtils.copyProperties(item, logResponse);
+            list.add(logResponse);
+        });
+        return list;
     }
 }

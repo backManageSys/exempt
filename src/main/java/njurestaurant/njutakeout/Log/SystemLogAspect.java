@@ -2,6 +2,7 @@ package njurestaurant.njutakeout.Log;
 
 import njurestaurant.njutakeout.dataservice.SystemLogService;
 import njurestaurant.njutakeout.entity.SystemLog;
+import njurestaurant.njutakeout.entity.account.User;
 import njurestaurant.njutakeout.response.JSONResponse;
 import njurestaurant.njutakeout.response.Response;
 import njurestaurant.njutakeout.response.WrongResponse;
@@ -71,6 +72,7 @@ public class SystemLogAspect {
         SystemLog systemLog = new SystemLog();
         //获取session中的用户
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
         systemLog.setUserid(uid);
         //获取请求的ip
         String ip = request.getRemoteAddr();

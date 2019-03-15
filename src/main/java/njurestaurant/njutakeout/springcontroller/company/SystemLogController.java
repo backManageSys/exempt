@@ -9,14 +9,12 @@ import njurestaurant.njutakeout.entity.SystemLog;
 import njurestaurant.njutakeout.response.JSONResponse;
 import njurestaurant.njutakeout.response.Response;
 import njurestaurant.njutakeout.response.WrongResponse;
+import njurestaurant.njutakeout.response.company.SystemLogResponse;
 import njurestaurant.njutakeout.response.user.PersonalCardAddResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,8 +32,8 @@ public class SystemLogController {
             @ApiResponse(code = 200, message = "Success", response = PersonalCardAddResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public ResponseEntity<Response> getLimit(Integer page, Integer size,String condition){
-        List<SystemLog> all = systemLogBlService.findAll(page, size,condition);
+    public ResponseEntity<Response> getLimit(@RequestParam Integer page,@RequestParam Integer size,@RequestParam String condition){
+        List<SystemLogResponse> all = systemLogBlService.findAll(page, size,condition);
         return new ResponseEntity<>(new JSONResponse(200, all), HttpStatus.OK);
     }
 }

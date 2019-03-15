@@ -2,6 +2,7 @@ package njurestaurant.njutakeout.blservice;
 
 import njurestaurant.njutakeout.dataservice.SystemLogService;
 import njurestaurant.njutakeout.entity.SystemLog;
+import njurestaurant.njutakeout.response.company.SystemLogResponse;
 
 import java.util.List;
 
@@ -12,5 +13,5 @@ public interface SystemLogBlService {
      * @param size 每页多少
      * @return
      */
-    List<SystemLog> findAll(Integer page, Integer size,String condition);
+    List<SystemLogResponse> findAll(Integer page, Integer size, String condition);
 }

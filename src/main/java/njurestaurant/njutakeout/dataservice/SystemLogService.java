@@ -1,6 +1,7 @@
 package njurestaurant.njutakeout.dataservice;
 
 import njurestaurant.njutakeout.entity.SystemLog;
+import njurestaurant.njutakeout.response.company.SystemLogResponse;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  */
 public interface SystemLogService {
 
-    public List<SystemLog> findAll(Integer page,Integer size,String condition);
+    public List<SystemLog> findAll(Integer page, Integer size, String condition);
 
     public void save(SystemLog log);
 

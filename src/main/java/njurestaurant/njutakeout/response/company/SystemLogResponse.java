@@ -1,61 +1,62 @@
-package njurestaurant.njutakeout.entity;
+package njurestaurant.njutakeout.response.company;
 
-import njurestaurant.njutakeout.entity.account.User;
-
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.Date;
 
-/**
- * @Description:
- * @Author: vesus
- * @CreateDate: 2018/5/20 上午11:12
- * @Version: 1.0
- */
-@Entity
-@Table(name = "SYSTEMLOG")
-public class SystemLog {
+public class SystemLogResponse {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private int id ;
 
-    @Column(name = "requestip")
     private String requestip; //操作IP
 
-    @Column(name = "type")
     private String type ;//  操作类型 1 操作记录 2异常记录
 
-    @Column(name = "userid")
-    private int userid ;// 操作人ID
+    private String username ;// 操作人ID
 
-    @Column(name = "description")
     private String description;// 操作描述
 
-    @Column(name = "actiondate")
     private Date actiondate ;// 操作时间
 
-    @Column(name = "exceptioncode")
     private int exceptioncode ;// 异常code
 
-    @Column(name = "exceptiondetail")
     private String exceptiondetail ;// 异常详情
 
-    @Column(name = "actionmethod")
     private String actionmethod ;//请求方法
 
-    @Column(name = "params")
     private String params;//请求参数
 
-    @Transient
-    private String username;
-
-    public String getUsername() {
-        return username;
+    @Override
+    public String toString() {
+        return "SystemLogResponse{" +
+                "id=" + id +
+                ", requestip='" + requestip + '\'' +
+                ", type='" + type + '\'' +
+                ", userid=" + username +
+                ", description='" + description + '\'' +
+                ", actiondate=" + actiondate +
+                ", exceptioncode=" + exceptioncode +
+                ", exceptiondetail='" + exceptiondetail + '\'' +
+                ", actionmethod='" + actionmethod + '\'' +
+                ", params='" + params + '\'' +
+                '}';
     }
 
-    public void setUsername(String username) {
+    public SystemLogResponse() {
+    }
+
+    public SystemLogResponse(String requestip, String type, String username, String description, Date actiondate, int exceptioncode, String exceptiondetail, String actionmethod, String params) {
+        this.requestip = requestip;
+        this.type = type;
         this.username = username;
+        this.description = description;
+        this.actiondate = actiondate;
+        this.exceptioncode = exceptioncode;
+        this.exceptiondetail = exceptiondetail;
+        this.actionmethod = actionmethod;
+        this.params = params;
     }
 
     public int getId() {
@@ -65,7 +66,6 @@ public class SystemLog {
     public void setId(int id) {
         this.id = id;
     }
-
 
     public String getRequestip() {
         return requestip;
@@ -83,12 +83,12 @@ public class SystemLog {
         this.type = type;
     }
 
-    public int getUserid() {
-        return userid;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserid(int userid) {
-        this.userid = userid;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getDescription() {
