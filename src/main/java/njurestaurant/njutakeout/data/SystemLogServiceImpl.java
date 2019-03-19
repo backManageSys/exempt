@@ -9,6 +9,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @Description:
  * @Author: vesus
@@ -21,12 +23,12 @@ public class SystemLogServiceImpl implements SystemLogService {
     @Autowired
     SystemLogRepository systemLogRepository ;
     @Override
-    public  Page<SystemLogLeftJoinModel> findAll(Integer page, Integer size, String condition) {
+    public List<SystemLog> findAll(Integer page, Integer size, String condition) {
         Pageable pageable = new PageRequest(page,size);
         // 获取分页数据
-        Page<SystemLogLeftJoinModel> logPage = systemLogRepository.findBySearch(condition,pageable);
+        Page<SystemLog> logPage = systemLogRepository.findBySearch(condition,pageable);
 
-       return  logPage;
+       return  logPage.getContent();
     }
 
     @Override

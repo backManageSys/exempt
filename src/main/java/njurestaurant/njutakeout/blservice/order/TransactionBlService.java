@@ -14,12 +14,12 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface TransactionBlService {
-    GetQrCodeResponse getQrCode(GetQrCodeParameters getQrCodeParameters) throws WrongIdException, BlankInputException, IPRiskControlException, IDRiskControlException, TooLittleMoneyException, OrderNotPayedException, PayTypeStopUsingException;
+    GetQrCodeResponse getQrCode(GetQrCodeParameters getQrCodeParameters) throws WrongIdException, BlankInputException, IPRiskControlException, IDRiskControlException, TooLittleMoneyException, OrderNotPayedException, PayTypeStopUsingException, VerifySignException;
 
     void addDevice();
 
     String findQrCodeByOrderId(String orderid) throws WrongIdException;
-    
+
     PlatformOrder findPlatformOrderByImeiAndState(String imei, OrderState orderState);
 
     WithdrewOrder addWithdrewOrder(WithdrewParameters withdrewParameters) throws WrongIdException, BlankInputException, WrongInputException;

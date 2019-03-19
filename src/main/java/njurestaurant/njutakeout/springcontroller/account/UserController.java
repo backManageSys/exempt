@@ -28,7 +28,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -178,7 +186,7 @@ public class UserController {
 //            return new ResponseEntity<>(e.getResponse(), HttpStatus.NOT_FOUND);
 //        }
 //    }
-    @SystemControllerLog(descrption = "修改密码", actionType = "1")
+    @SystemControllerLog(descrption = "修改密码", actionType = "3")
     @ApiOperation(value = "修改密码", notes = "修改密码")
     @RequestMapping(value = "admin/updatePassword", method = RequestMethod.POST)
     @ApiResponses(value = {
@@ -187,6 +195,7 @@ public class UserController {
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     @ResponseBody
     public ResponseEntity<Response> updatePassword(@RequestBody UserPasswordParameters userPasswordParameters) throws UsernameIsExistentException {
+
         String password=userPasswordParameters.getPassword();
         Integer id=userPasswordParameters.getUid();
         if (StringUtils.isBlank(password)) {

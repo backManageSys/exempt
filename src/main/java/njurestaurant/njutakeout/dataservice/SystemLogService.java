@@ -4,6 +4,9 @@ import njurestaurant.njutakeout.data.dao.SystemLogLeftJoinModel;
 import njurestaurant.njutakeout.entity.SystemLog;
 import org.springframework.data.domain.Page;
 
+import javax.validation.constraints.Size;
+import java.util.List;
+
 /**
  * @Description:
  * @Author: vesus
@@ -12,7 +15,7 @@ import org.springframework.data.domain.Page;
  */
 public interface SystemLogService {
 
-    public Page<SystemLogLeftJoinModel> findAll(Integer page, Integer size, String condition);
+    public List<SystemLog> findAll(Integer page, Integer size, String condition);
 
     public void save(SystemLog log);
 

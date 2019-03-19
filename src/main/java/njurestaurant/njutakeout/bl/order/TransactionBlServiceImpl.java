@@ -31,6 +31,8 @@ import njurestaurant.njutakeout.publicdatas.order.WithdrewState;
 import njurestaurant.njutakeout.response.app.GetReceiptCodeResponse;
 import njurestaurant.njutakeout.response.transaction.GetQrCodeResponse;
 import njurestaurant.njutakeout.util.FormatDateTime;
+import njurestaurant.njutakeout.util.MD5;
+import njurestaurant.njutakeout.util.Sha256Util;
 import njurestaurant.njutakeout.util.StringParseUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,7 +130,10 @@ public class TransactionBlServiceImpl implements TransactionBlService {
      * @throws WrongIdException 供码用户id错误/用户id对应的用户身份不为商户 抛出异常
      */
     @Override
-    public GetQrCodeResponse getQrCode(GetQrCodeParameters getQrCodeParameters) throws WrongIdException, BlankInputException, IPRiskControlException, IDRiskControlException, TooLittleMoneyException, OrderNotPayedException, PayTypeStopUsingException {
+    public GetQrCodeResponse getQrCode(GetQrCodeParameters getQrCodeParameters) throws WrongIdException, BlankInputException, IPRiskControlException, IDRiskControlException, TooLittleMoneyException, OrderNotPayedException, PayTypeStopUsingException,VerifySignException {
+        if (!MD5.MD5Encode(Sha256Util.getSHA256String(getQrCodeParameters.getMoney()+"|"+getQrCodeParameters.getId()+"|"+getQrCodeParameters.getTime()),null).equals(getQrCodeParameters.getSign())){
+            throw  new VerifySignException();
+        }
         if (Double.parseDouble(getQrCodeParameters.getMoney()) <= money_threshold) {
             throw new TooLittleMoneyException();
         }

@@ -18,7 +18,7 @@ public class SystemLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer id ;
+    private int id ;
 
     @Column(name = "requestip")
     private String requestip; //操作IP
@@ -26,8 +26,8 @@ public class SystemLog {
     @Column(name = "type")
     private String type ;//  操作类型 1 操作记录 2异常记录
 
-    @Column(name = "userid")
-    private int userid ;// 操作人ID
+    @Column(name = "username")
+    private String username ;// 操作人ID
 
     @Column(name = "description")
     private String description;// 操作描述
@@ -47,36 +47,15 @@ public class SystemLog {
     @Column(name = "params")
     private String params;//请求参数
 
-    @Transient
-    private String username;
-    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
-    @JoinTable(name = "user")
-    @JoinColumn(name="userid",referencedColumnName = "id")
-    private User user;
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
+
 
     public String getRequestip() {
         return requestip;
@@ -94,12 +73,12 @@ public class SystemLog {
         this.type = type;
     }
 
-    public int getUserid() {
-        return userid;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserid(int userid) {
-        this.userid = userid;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getDescription() {
@@ -148,22 +127,5 @@ public class SystemLog {
 
     public void setParams(String params) {
         this.params = params;
-    }
-
-    public SystemLog() {
-    }
-
-    public SystemLog(Integer id,String requestip, String type, int userid, String description, Date actiondate, int exceptioncode, String exceptiondetail, String actionmethod, String params, String username) {
-        this.id = id;
-        this.requestip = requestip;
-        this.type = type;
-        this.userid = userid;
-        this.description = description;
-        this.actiondate = actiondate;
-        this.exceptioncode = exceptioncode;
-        this.exceptiondetail = exceptiondetail;
-        this.actionmethod = actionmethod;
-        this.params = params;
-        this.username = username;
     }
 }

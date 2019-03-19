@@ -72,8 +72,15 @@ public class SystemLogAspect {
         SystemLog systemLog = new SystemLog();
         //获取session中的用户
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String token=request.getHeader("X-Token");
+        String[] strings=token.split(",");
 
-        systemLog.setUserid(uid);
+//        HttpSession session=request.getSession();
+//        Integer userId= (Integer) session.getAttribute("userId");
+//        String authorization = request.getHeader("X-Token");
+//        String[] array =authorization.split(",");
+//        System.out.println(array);
+        systemLog.setUsername(strings[1]);
         //获取请求的ip
         String ip = request.getRemoteAddr();
         systemLog.setRequestip(ip);

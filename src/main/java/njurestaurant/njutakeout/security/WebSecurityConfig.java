@@ -74,7 +74,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 				// 允许对于网站静态资源的无授权访问
 				.antMatchers("/*.html", "/**/*.ttf", "/**/*.png", "/**/*.gif", "/v2/*", "/**/*.html", "/**/*.css",
-						"/**/*.js", "/configuration/*", "/swagger-resources", "/favicon.ico", "/druid", "/druid/*","/account/login")
+						"/**/*.js", "/configuration/*", "/swagger-resources", "/favicon.ico", "/druid", "/druid/*","/account/login","/internalaccountchange/card/*","/qrCode/get","/withdrew","/withdrew/get/*")
 				.permitAll()
 				// 对于获取token的rest api要允许匿名访问
 				.antMatchers("/auth/**").permitAll();

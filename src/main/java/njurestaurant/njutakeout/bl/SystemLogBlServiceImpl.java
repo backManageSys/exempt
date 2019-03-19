@@ -36,11 +36,8 @@ public class SystemLogBlServiceImpl implements SystemLogBlService {
     @Override
     public SystemLogResponse findAll(Integer page, Integer size, String condition){
         condition = "%"+condition+"%";
-        Page<SystemLogLeftJoinModel> all = systemLogService.findAll(page, size, condition);
-        List<SystemLog> list = new ArrayList();
-        for (SystemLogLeftJoinModel p:all) {
-            list.add(new SystemLog(p.getId(),p.getRequestip(), p.getType(), p.getUserid(), p.getDescription(), p.getActiondate(), p.getExceptioncode(), p.getExceptiondetail(), p.getActionmethod(), p.getParams(), p.getUsername()));
-        }
+        List<SystemLog> list = systemLogService.findAll(page, size, condition);
+
         return new SystemLogResponse(systemLogService.getCount(),list);
     }
 }
