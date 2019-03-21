@@ -53,6 +53,9 @@ public class PlatformOrder {
     private double agentRate;
     @Column(name = "merchantRate")
     private double merchantRate;
+
+    @Transient
+    private String username;
     @Transient
     private String merchantName;
     @Transient

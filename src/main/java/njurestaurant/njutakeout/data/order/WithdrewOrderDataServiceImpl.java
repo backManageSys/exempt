@@ -80,6 +80,21 @@ public class WithdrewOrderDataServiceImpl implements WithdrewOrderDataService {
         };
     }
 
+    @Override
+    public Page<WithdrewOrder> findAll(String condition, Pageable pageable) {
+        String state="";
+        if(condition.equals("等待处理")){
+            state="0";
+        }else if(condition.equals("正在处理")){
+            state="1";
+        }else if(condition.equals("提现成功")){
+            state="2";
+        }else if(condition.equals("提现失败")){
+            state="3";
+        }
+        return withdrewOrderDao.findAll(condition,state,pageable);
+    }
+
     public Page<WithdrewOrder> condition(int id , WithdrewState withdrewState , Pageable pageable, WithdrewOrder withdrewOrder) {
         return withdrewOrderDao.findAll(new Specification<WithdrewOrder>() {
             @Override

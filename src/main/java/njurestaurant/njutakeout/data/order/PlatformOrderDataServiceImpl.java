@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -57,8 +58,8 @@ public class PlatformOrderDataServiceImpl implements PlatformOrderDataService {
     }
 
     @Override
-    public Page<PlatformOrder> findAll(Pageable pageable, PlatformOrder platformOrder) {
-        return condition(pageable, platformOrder);
+    public Page<PlatformOrder> findAll(String condition,String uid,Pageable pageable) {
+        return  platformOrderDao.findAll(condition,uid,pageable);
     }
 
     @Override
@@ -111,7 +112,7 @@ public class PlatformOrderDataServiceImpl implements PlatformOrderDataService {
         };
     }
 
-    public Page<PlatformOrder> condition(Pageable pageable, PlatformOrder platformOrder) {
+/*    public Page<PlatformOrder> condition(Pageable pageable, PlatformOrder platformOrder) {
         return platformOrderDao.findAll(new Specification<PlatformOrder>() {
             @Override
             public Predicate toPredicate(Root<PlatformOrder> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
@@ -161,6 +162,6 @@ public class PlatformOrderDataServiceImpl implements PlatformOrderDataService {
                 return query.getRestriction();
             }
         }, pageable);
-    }
+    }*/
 
 }

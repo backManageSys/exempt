@@ -8,6 +8,9 @@ import njurestaurant.njutakeout.response.SuccessResponse;
 import njurestaurant.njutakeout.response.user.*;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 @Service
 public interface UserBlService {
     /**
@@ -18,7 +21,7 @@ public interface UserBlService {
      * @return the login info to  response
      * @throws WrongUsernameOrPasswordException the username or password is error
      */
-    UserLoginResponse login(String username, String password) throws WrongUsernameOrPasswordException, CannotRegisterException,RoleIdentityNotConformException, BlockUpException, WaitingException;
+    UserLoginResponse login(String username, String password, HttpServletRequest request) throws WrongUsernameOrPasswordException, CannotRegisterException,RoleIdentityNotConformException, BlockUpException, WaitingException;
 
     /**
      * get user openid

@@ -10,6 +10,7 @@ import njurestaurant.njutakeout.response.order.OrderListResponse;
 import njurestaurant.njutakeout.response.report.MerchantReportResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -20,8 +21,10 @@ public interface PlatformOrderBlService {
      * 查看全部订单明细
      *
      * @return the order information
+     *
      */
-    Page<OrderListResponse> findAllPlatformOrders(Pageable pageable,PlatformOrder platformOrder);
+
+    Page<OrderListResponse> findAllPlatformOrders(@RequestParam("condition") String condition, @RequestParam("page") Integer page, @RequestParam("size") Integer size);
 
     PlatformOrder updatePlatformOrder(int id, PlatformUpdateParameters platformUpdateParameters) throws BlankInputException, OrderWrongInputException;
 

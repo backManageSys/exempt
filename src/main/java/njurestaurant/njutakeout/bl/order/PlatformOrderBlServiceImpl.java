@@ -31,8 +31,10 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -92,16 +94,45 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
      * @return the order information
      */
     @Override
-    public Page<OrderListResponse> findAllPlatformOrders(Pageable pageable,PlatformOrder platformOrder) {
+    public Page<OrderListResponse> findAllPlatformOrders(@RequestParam("condition") String condition, @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
         // 找出全部商家的信息
         List<User> merchantUser = userDataService.getUserByRole(3);
         Map<Integer, String> usernameMap = new HashMap<>();
         for (User user : merchantUser) {
             usernameMap.put(user.getId(), user.getUsername());
         }
-        Page<PlatformOrder> page= platformOrderDataService.findAll(pageable,platformOrder);
+        Pageable pageable= PageRequest.of(size-1,page);
+
+        //通道ID模糊，渠道名迷糊
+        if(condition=="收款通码离线码"||condition=="支付宝"){
+            condition="1";
+        }else if(condition=="收款通码在线码"||condition=="支付宝"){
+            condition="2";
+        }else if(condition=="转账固码"||condition=="支付宝"){
+            condition="3";
+        }else if(condition=="转账通码"||condition=="支付宝"){
+            condition="4";
+        }else if(condition=="红包"||condition=="支付宝"){
+            condition="5";
+        }else if(condition=="收款固码"||condition=="支付宝"){
+            condition="6";
+        }else if(condition=="收款码"||condition=="微信"){
+            condition="7";
+        }
+        else if(condition=="主动收款"||condition=="支付宝"){
+            condition="8";
+        }
+        //根据姓名迷糊查询
+        User conditionUser=userDao.findUserByUsername(condition);
+        Page<PlatformOrder> pages=null;
+        if(conditionUser!=null){
+            String uid=conditionUser.getId()+"";
+            pages= platformOrderDataService.findAll(condition,uid,pageable);
+        }else {
+            pages= platformOrderDataService.findAll(condition,"",pageable);
+        }
         // 将错误的商家id信息过滤
-        List<OrderListResponse> result= page.getContent().stream().map(p -> {
+        List<OrderListResponse> result= pages.getContent().stream().map(p -> {
             if (usernameMap.containsKey(p.getUid())) {
                 User user = userDao.findUserById(p.getUid());
                 Merchant merchant = merchantDataService.findMerchantById(user.getTableId());
@@ -120,11 +151,7 @@ public class PlatformOrderBlServiceImpl implements PlatformOrderBlService {
             } else return null;
             return null;
         }).filter(pf -> pf != null).collect(Collectors.toList());
-        Page page1 =new PageImpl(result,page.getPageable(),page.getTotalElements());
-//        Collections.sort(result, (o1, o2) -> {
-//            //按照抽成前存款大小进行降序排列
-//            return Integer.compare(0, o1.getTime().compareTo(o2.getTime()));
-//        });
+        Page page1 =new PageImpl(result,pages.getPageable(),pages.getTotalElements());
         return  page1;
     }
 

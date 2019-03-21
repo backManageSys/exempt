@@ -11,6 +11,7 @@ import njurestaurant.njutakeout.response.transaction.GetQrCodeResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface TransactionBlService {
@@ -32,5 +33,5 @@ public interface TransactionBlService {
 
     Page<WithdrewOrder> getMyWithdrewOrder(int id,Pageable pageable , WithdrewOrder withdrewOrder) throws WrongIdException;
 
-    Page<WithdrewOrder> getWithdrewOrder(int uid,Pageable pageable , WithdrewOrder withdrewOrder);
+    Page<WithdrewOrder> getWithdrewOrder(HttpServletRequest request,String condition, Integer page, Integer size);
 }

@@ -48,8 +48,8 @@ public class OrderController {
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     @ResponseBody
-    public ResponseEntity<Response> getOrders(@PageableDefault(value = 3000 ,sort = { "time" }, direction = Sort.Direction.DESC )  Pageable pageable ,@RequestBody PlatformOrder platformOrder ) {
-        return new ResponseEntity<>(new JSONResponse(200,  platformOrderBlService.findAllPlatformOrders(pageable , platformOrder)), HttpStatus.OK);
+    public ResponseEntity<Response> getOrders(@PageableDefault(value = 3000 ,sort = { "time" }, direction = Sort.Direction.DESC )@RequestParam("condition") String condition, @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
+        return new ResponseEntity<>(new JSONResponse(200,  platformOrderBlService.findAllPlatformOrders(condition ,page,size)), HttpStatus.OK);
     }
     @SystemControllerLog(descrption = "修改订单",actionType = "3")
     @ApiOperation(value = "修改订单", notes = "修改订单")

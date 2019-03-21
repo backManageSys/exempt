@@ -28,6 +28,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -89,25 +91,12 @@ public class UserBlServiceImpl implements UserBlService {
      * @throws WrongUsernameOrPasswordException the username or password is error
      */
     @Override
-    public UserLoginResponse login(String username, String password) throws WrongUsernameOrPasswordException, CannotRegisterException, BlockUpException, WaitingException {
+    public UserLoginResponse login(String username, String password, HttpServletRequest request) throws WrongUsernameOrPasswordException, CannotRegisterException, BlockUpException, WaitingException {
         if (username.length() == 0) {
             throw new CannotRegisterException();
         }
-//        if (password.equals(USER_DEFAULT_PASSWORD)) {
-//            if (!userDataService.isUserExistent(username)) {
-//                userDataService.saveUser(new User(username, password, 1, 0));
-////                userDataService.saveUser(new User("", username, password, Role.USER, new ArrayList<>(), new ArrayList<>()));
-//            }
-//            JwtUser jwtUser = (JwtUser) jwtUserDetailsService.loadUserByUsername(username);
-//            String token = jwtService.generateToken(jwtUser, EXPIRATION);
-//            return new UserLoginResponse(token);
-//        } else {
         if (userDataService.confirmPassword(username, password)) {
             User user = userDataService.getUserByUsername(username);
-//                if(StringUtils.isBlank(user.getOriginPassword())) {
-//                    user.setOriginPassword(RSAUtils.encryptedDataOnJava(password, publicKey));
-//                    userDataService.saveUser(user);
-//                }
             JwtUser jwtUser = (JwtUser) jwtUserDetailsService.loadUserByUsername(username);
             String token = jwtService.generateToken(jwtUser, EXPIRATION);
             String post = null;
@@ -143,7 +132,6 @@ public class UserBlServiceImpl implements UserBlService {
         } else {
             throw new WrongUsernameOrPasswordException();
         }
-        //       }
     }
 
     @Override

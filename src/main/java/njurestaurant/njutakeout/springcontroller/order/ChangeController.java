@@ -35,6 +35,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 
 @RestController
@@ -60,7 +63,7 @@ public class ChangeController {
         this.alipayDataService = alipayDataService;
     }
 
-    @ApiOperation(value = "查看内部码账变订单", notes = "查看内部码账变信息")
+    /*@ApiOperation(value = "查看内部码账变订单", notes = "查看内部码账变信息")
     @RequestMapping(value = "internalaccountchange/qrcode", method = RequestMethod.POST)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
@@ -69,6 +72,18 @@ public class ChangeController {
     @ResponseBody
     public ResponseEntity<Response> ShowQRcodeChangeOrder(@PageableDefault(value = 3000,sort = { "operateTime" }, direction = Sort.Direction.DESC ) Pageable pageable, @RequestBody QRcodeChangeOrder qRcodeChangeOrder) {
         return new ResponseEntity<>(new JSONResponse(200, changeOrderDataService.findAllQrCodeChangeOrder(pageable,qRcodeChangeOrder)), HttpStatus.OK);
+    }*/
+
+    @ApiOperation(value = "查看内部码账变订单", notes = "查看内部码账变信息")
+    @RequestMapping(value = "internalaccountchange/qrcode", method = RequestMethod.POST)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
+            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
+    @ResponseBody
+    public ResponseEntity<Response> ShowQRcodeChangeOrder(@RequestParam("condition") String  condition,@RequestParam("page") Integer page,@RequestParam("size") Integer size) {
+
+        return new ResponseEntity<>(new JSONResponse(200, changeOrderDataService.findAllQrCodeChangeOrder(condition,page,size)), HttpStatus.OK);
     }
 
     @SystemControllerLog(descrption = "添加内部卡账变订单",actionType = "1")
@@ -102,14 +117,19 @@ public class ChangeController {
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     @ResponseBody
-    public ResponseEntity<Response> GetCardChangeOrder(@RequestParam("uid") int uid,@PageableDefault(value = 5,sort = { "operateTime" }, direction = Sort.Direction.DESC ) Pageable pageable, @RequestBody CardChangeOrder cardChangeOrder) {
-        User user = userDataService.getUserById(uid);
-        if (user == null)
+    @CrossOrigin(allowedHeaders="*",allowCredentials="true")
+    public ResponseEntity<Response> GetCardChangeOrder(HttpServletRequest request, @RequestParam("condition") String condition, @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
+
+
+        String Token=request.getHeader("X-Token");
+        String [] line=Token.split(",");
+        User user=userDataService.getUserByUsername(line[1]);
+        if (user == null) {
             return new ResponseEntity<>(new JSONResponse(10160, new WrongResponse(10160, "该用户无法查看内部卡账变订单。")), HttpStatus.OK);
-        if (user.getRole() == 1) {
-            return new ResponseEntity<>(new JSONResponse(200, changeOrderDataService.findAllCardChangeOrder(null,pageable,cardChangeOrder)), HttpStatus.OK);
+        }else if (user.getRole() == 1) {
+            return new ResponseEntity<>(new JSONResponse(200, changeOrderDataService.findAllCardChangeOrder(null,condition,page,size)), HttpStatus.OK);
         } else if (user.getRole() == 4) {
-            return new ResponseEntity<>(new JSONResponse(200, changeOrderDataService.findAllCardChangeOrder(user.getUsername(),pageable,cardChangeOrder)), HttpStatus.OK);
+            return new ResponseEntity<>(new JSONResponse(200, changeOrderDataService.findAllCardChangeOrder(user.getUsername(),condition,page,size)), HttpStatus.OK);
         } else
             return new ResponseEntity<>(new JSONResponse(10160, new WrongResponse(10160, "该用户无法查看内部卡账变订单。")), HttpStatus.OK);
     }

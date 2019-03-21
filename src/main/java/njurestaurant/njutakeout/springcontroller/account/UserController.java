@@ -90,9 +90,10 @@ public class UserController {
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     @ResponseBody
-    public ResponseEntity<Response> login(@RequestBody UserLoginParameters userLoginParameters) throws RoleIdentityNotConformException {
+    public ResponseEntity<Response> login(HttpServletRequest request,@RequestBody UserLoginParameters userLoginParameters) throws RoleIdentityNotConformException {
         try {
-            UserLoginResponse userLoginResponse = userBlService.login(userLoginParameters.getUsername(), userLoginParameters.getPassword());
+            UserLoginResponse userLoginResponse = userBlService.login(userLoginParameters.getUsername(), userLoginParameters.getPassword(),request);
+            request.getSession().setAttribute("userName",userLoginParameters.getUsername());
             return new ResponseEntity<>(new JSONResponse(200, userLoginResponse), HttpStatus.OK);
         } catch (WrongUsernameOrPasswordException e) {
             e.printStackTrace();

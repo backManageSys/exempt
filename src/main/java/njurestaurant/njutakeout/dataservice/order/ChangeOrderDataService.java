@@ -14,9 +14,9 @@ public interface ChangeOrderDataService {
     CardChangeOrder saveCardChangeOrder(CardChangeOrder CardChangeOrder);
 
     QRcodeChangeOrder findByLoginId(String loginId);
+    List<QRcodeChangeOrder> findAllQrCodeChangeOrder(String  condition,Integer page,Integer size);
 
-    List<QRcodeChangeOrder> findAllQrCodeChangeOrder(Pageable pageable , QRcodeChangeOrder qRcodeChangeOrder);
-    List<CardChangeOrder> findAllCardChangeOrder(String username,Pageable pageable , CardChangeOrder cardChangeOrder);
+    List<CardChangeOrder> findAllCardChangeOrder(String username,String condition,Integer page,Integer size);
 
     List<QRcodeChangeOrder> findAllQrCodeChangeOrderByDate(Date startDate, Date endDate);
 

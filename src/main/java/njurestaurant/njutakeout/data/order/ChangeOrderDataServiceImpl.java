@@ -10,6 +10,8 @@ import njurestaurant.njutakeout.publicdatas.order.OrderState;
 import njurestaurant.njutakeout.publicdatas.order.WithdrewState;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -50,13 +52,32 @@ public class ChangeOrderDataServiceImpl implements ChangeOrderDataService {
     }
 
     @Override
-    public List<QRcodeChangeOrder> findAllQrCodeChangeOrder(Pageable pageable, QRcodeChangeOrder qRcodeChangeOrder) {
-        return condition(pageable, qRcodeChangeOrder);
+    public List<QRcodeChangeOrder> findAllQrCodeChangeOrder(String  condition,Integer page,Integer size) {
+
+        Pageable pageable =PageRequest.of(size-1,page);
+        Page<QRcodeChangeOrder> pageList = QRcodeChangeOrderDao.findAll(condition, pageable);
+        return pageList.getContent();
     }
 
+
+    /**
+     * 内部卡账变订单  Timor 18点53分
+     * @param username
+     * @param condition
+     * @param page
+     * @param size
+     * @return
+     */
     @Override
-    public List<CardChangeOrder> findAllCardChangeOrder(String username, Pageable pageable, CardChangeOrder cardChangeOrder) {
-        return condition1(username,pageable, cardChangeOrder);
+    public List<CardChangeOrder> findAllCardChangeOrder(String username, String condition,Integer page,Integer size) {
+
+        //分页
+        Pageable pageable=PageRequest.of(size-1,page);
+       if(username==null){
+            return  CardChangeOrderDao.findAll(condition,pageable).getContent();
+       }else {
+           return  CardChangeOrderDao.findAllByOperateUsername(username,condition,pageable).getContent();
+       }
     }
 
 
@@ -108,77 +129,5 @@ public class ChangeOrderDataServiceImpl implements ChangeOrderDataService {
                 return cb.between(root.get("finalOperateTime"), startDate, endDate);
             }
         };
-    }
-
-    public List<QRcodeChangeOrder> condition(Pageable pageable, QRcodeChangeOrder qRcodeChangeOrder) {
-        return QRcodeChangeOrderDao.findAll(new Specification<QRcodeChangeOrder>() {
-            @Override
-            public Predicate toPredicate(Root<QRcodeChangeOrder> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Predicate> list = new ArrayList<>();
-                if (!StringUtils.isEmpty(qRcodeChangeOrder.getLoginId())) {
-                    list.add(cb.equal(root.get("loginId").as(String.class), qRcodeChangeOrder.getLoginId()));
-                }
-                if (!StringUtils.isEmpty(qRcodeChangeOrder.getCardNumber())) {
-                    list.add(cb.equal(root.get("cardNumber").as(String.class), qRcodeChangeOrder.getCardNumber()));
-                }
-                if (!StringUtils.isEmpty(qRcodeChangeOrder.getState())) {
-                    list.add(cb.equal(root.get("state").as(String.class), qRcodeChangeOrder.getState()));
-                }
-                if (qRcodeChangeOrder.getStartDate() != null) {
-                    list.add(cb.greaterThan(root.get("operateTime").as(Date.class), qRcodeChangeOrder.getStartDate()));
-                }
-                if (qRcodeChangeOrder.getEndDate() != null) {
-                    list.add(cb.lessThan(root.get("operateTime").as(Date.class), qRcodeChangeOrder.getEndDate()));
-                }
-                query.where(cb.and(list.toArray(new Predicate[list.size()])));
-                return query.getRestriction();
-            }
-        }, pageable);
-    }
-
-    public List<CardChangeOrder> condition1(String username, Pageable pageable, CardChangeOrder cardChangeOrder) {
-        return CardChangeOrderDao.findAll(new Specification<CardChangeOrder>() {
-            @Override
-            public Predicate toPredicate(Root<CardChangeOrder> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Predicate> list = new ArrayList<>();
-                if (!StringUtils.isEmpty(cardChangeOrder.getCardNumber_out())) {
-                    list.add(cb.equal(root.get("cardNumber_out").as(String.class), cardChangeOrder.getCardNumber_out()));
-                }
-                if (!StringUtils.isEmpty(cardChangeOrder.getCardNumber_in())) {
-                    list.add(cb.equal(root.get("cardNumber_in").as(String.class), cardChangeOrder.getCardNumber_in()));
-                }
-                if (cardChangeOrder.getState() != null) {
-                    list.add(cb.equal(root.get("state").as(WithdrewState.class), cardChangeOrder.getState()));
-                }
-                if (cardChangeOrder.getWithdrewStateSql()!= null) {
-                    int i=0;
-                    for(WithdrewState withdrewState: WithdrewState.values())
-                        if (String.valueOf(withdrewState).equals(cardChangeOrder.getWithdrewStateSql())) {
-                            i=1;
-                            break;
-                        }
-                    if (i == 1) {
-                        WithdrewState withdrewState = WithdrewState.valueOf(cardChangeOrder.getWithdrewStateSql());
-                        list.add(cb.equal(root.get("state").as(WithdrewState.class), withdrewState));
-                    }else {
-                        //查一个不存在的值，目的是返回空查询
-                        list.add(cb.equal(root.get("state").as(WithdrewState.class), 5));
-                        query.where(cb.and(list.toArray(new Predicate[list.size()])));
-                        return query.getRestriction();
-                    }
-                }
-                if (cardChangeOrder.getStartDate() != null) {
-                    list.add(cb.greaterThan(root.get("operateTime").as(Date.class), cardChangeOrder.getStartDate()));
-                }
-                if (cardChangeOrder.getEndDate() != null) {
-                    list.add(cb.lessThan(root.get("operateTime").as(Date.class), cardChangeOrder.getEndDate()));
-                }
-                if (username != null) {
-                    list.add(cb.equal(root.get("operateUsername").as(String.class), username));
-                }
-                query.where(cb.and(list.toArray(new Predicate[list.size()])));
-                return query.getRestriction();
-            }
-        }, pageable);
     }
 }

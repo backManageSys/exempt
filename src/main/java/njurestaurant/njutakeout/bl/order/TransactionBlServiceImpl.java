@@ -38,10 +38,13 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.TextMessage;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -596,9 +599,15 @@ public class TransactionBlServiceImpl implements TransactionBlService {
     }
 
     @Override
-    public Page<WithdrewOrder> getWithdrewOrder(int uid, Pageable pageable, WithdrewOrder withdrewOrder) {
-        Page<WithdrewOrder> page = withdrewOrderDataService.findByState(0,null, pageable, withdrewOrder);
-        List list = page.getContent().stream().peek(p -> {
+    @Transactional
+    public Page<WithdrewOrder> getWithdrewOrder(HttpServletRequest request,String condition, Integer page, Integer size) {
+
+
+        Pageable pageable= PageRequest.of(size-1,page);
+        /*String name=request.getHeader("X-Token").split(",")[1];*/
+        Integer uid=userDataService.getUserByUsername("admin").getId();
+        Page<WithdrewOrder> pages = withdrewOrderDataService.findAll(condition,pageable);
+        List list = pages.getContent().stream().peek(p -> {
             String first = p.getCard_in().substring(0, 4);
             String last = p.getCard_in().substring(p.getCard_in().length() - 4);
             String middle = "";
@@ -621,6 +630,6 @@ public class TransactionBlServiceImpl implements TransactionBlService {
             }
 
         }).collect(Collectors.toList());
-        return new PageImpl<>(list, page.getPageable(), page.getTotalElements());
+        return new PageImpl<>(list, pages.getPageable(), pages.getTotalElements());
     }
 }

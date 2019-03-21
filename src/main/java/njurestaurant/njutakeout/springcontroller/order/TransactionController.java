@@ -132,8 +132,8 @@ public class TransactionController {
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     @ResponseBody
-    public ResponseEntity<Response> WithdrewHistory(@RequestParam("uid") int uid,@PageableDefault(value =3000 ,sort = { "applyTime" }, direction = Sort.Direction.DESC ) Pageable pageable , @RequestBody WithdrewOrder withdrewOrder) {
-        return new ResponseEntity<>(new JSONResponse(200, transactionBlService.getWithdrewOrder(uid,pageable,withdrewOrder)), HttpStatus.OK);
+    public ResponseEntity<Response> WithdrewHistory(HttpServletRequest request,@PageableDefault(value =3000 ,sort = { "applyTime" }, direction = Sort.Direction.DESC )@RequestParam("condition") String condition,@RequestParam("page")Integer page,@RequestParam("size")Integer size) {
+        return new ResponseEntity<>(new JSONResponse(200, transactionBlService.getWithdrewOrder(request,condition,page,size)), HttpStatus.OK);
     }
 
     @ApiOperation(value = "查看未处理的提现订单", notes = "财务查看未处理的提现订单")

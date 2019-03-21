@@ -51,6 +51,7 @@ public class TeamBlServiceImpl implements TeamBlService {
      */
     @Override
     public List<Team> loadAllTeam() {
+
         return teamDataService.findAllTeams();
     }
 

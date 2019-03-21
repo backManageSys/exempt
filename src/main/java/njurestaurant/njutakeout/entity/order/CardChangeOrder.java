@@ -20,16 +20,16 @@ public class CardChangeOrder {
     private String cardNumber_in;
     //转出金额
     @Column(name = "money_out")
-    private double money_out;
+    private Double money_out;
     //到卡金额
     @Column(name = "money_in")
-    private double money_in;
+    private Double money_in;
     //转出卡卡上余额
     @Column(name = "card_balance_out")
-    private double cardBalanceOut;
+    private Double cardBalanceOut;
     //转入卡卡上余额
     @Column(name = "card_balance_in")
-    private double cardBalanceIn;
+    private Double cardBalanceIn;
     //订单状态
     @Column(name = "state")
     private WithdrewState state;
