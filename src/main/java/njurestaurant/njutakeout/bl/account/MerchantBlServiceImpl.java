@@ -135,6 +135,9 @@ public class MerchantBlServiceImpl implements MerchantBlService {
     @Override
     public List<Merchant> findAllMerchants() {
         List<Merchant> merchantList = merchantDataService.getAllMerchants();
+        for (Merchant merchant:merchantList){
+            merchant.setApplyName(userDao.findUserById(merchant.getApplyId()).getUsername());
+        }
         return JSONFilter(merchantList);
     }
 
@@ -146,6 +149,9 @@ public class MerchantBlServiceImpl implements MerchantBlService {
             throw new WrongIdException();
         } else {
             List<Merchant> result = JSONFilter(merchantDataService.getMerchantsByApplyId(id));
+            for (Merchant merchant:result){
+                merchant.setApplyName(userDao.findUserById(merchant.getApplyId()).getUsername());
+            }
             return result;  //最好传id
         }
     }
@@ -153,6 +159,9 @@ public class MerchantBlServiceImpl implements MerchantBlService {
     @Override
     public List<Merchant> findMerchantsByState(String status) {
         List<Merchant> merchantList = merchantDataService.getMerchantsByState(status);
+        for (Merchant merchant:merchantList){
+            merchant.setApplyName(userDao.findUserById(merchant.getApplyId()).getUsername());
+        }
         return JSONFilter(merchantList);
     }
 

@@ -25,6 +25,9 @@ public class CompanyCard {
     @Column(name = "operateId")
     private int operateId;
 
+    @Transient
+    private String operateName;
+
     public CompanyCard() {
     }
 
@@ -109,5 +112,13 @@ public class CompanyCard {
 
     public void setOperateId(int operateId) {
         this.operateId = operateId;
+    }
+
+    public String getOperateName() {
+        return operateName;
+    }
+
+    public void setOperateName(String operateName) {
+        this.operateName = operateName;
     }
 }

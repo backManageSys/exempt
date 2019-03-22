@@ -1,5 +1,6 @@
 package njurestaurant.njutakeout.data.company;
 
+import njurestaurant.njutakeout.data.dao.account.UserDao;
 import njurestaurant.njutakeout.data.dao.company.CompanyCardDao;
 import njurestaurant.njutakeout.dataservice.company.CompanyCardDataService;
 import njurestaurant.njutakeout.entity.company.CompanyCard;
@@ -12,10 +13,12 @@ import java.util.Optional;
 @Service
 public class CompanyCardDataServiceImpl implements CompanyCardDataService {
     private CompanyCardDao companyCardDao;
+    private UserDao userDao;
 
     @Autowired
-    public CompanyCardDataServiceImpl(CompanyCardDao companyCardDao) {
+    public CompanyCardDataServiceImpl(CompanyCardDao companyCardDao,UserDao userDao) {
         this.companyCardDao = companyCardDao;
+        this.userDao=userDao;
     }
 
     /**
@@ -35,7 +38,13 @@ public class CompanyCardDataServiceImpl implements CompanyCardDataService {
      */
     @Override
     public List<CompanyCard> findAllCompanyCards() {
-        return companyCardDao.findAll();
+
+        List<CompanyCard> list=companyCardDao.findAll();
+        for (CompanyCard companyCard:list){
+            companyCard.setOperateName(userDao.findUserById(companyCard.getOperateId()).getUsername());
+        }
+
+        return list;
     }
 
     /**

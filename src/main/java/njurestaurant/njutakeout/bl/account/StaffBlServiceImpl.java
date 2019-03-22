@@ -1,6 +1,7 @@
 package njurestaurant.njutakeout.bl.account;
 
 import njurestaurant.njutakeout.blservice.account.StaffBlService;
+import njurestaurant.njutakeout.data.dao.account.UserDao;
 import njurestaurant.njutakeout.dataservice.account.StaffDataService;
 import njurestaurant.njutakeout.entity.account.PersonalCard;
 import njurestaurant.njutakeout.entity.account.Staff;
@@ -22,12 +23,15 @@ public class StaffBlServiceImpl implements StaffBlService {
     private final static long EXPIRATION = 604800;
 
     private final StaffDataService staffDataService;
+    private final UserDao userDao;
+
     private final JwtService jwtService;
 
     @Autowired
-    public StaffBlServiceImpl(StaffDataService staffDataService,  JwtService jwtService) {
+    public StaffBlServiceImpl(UserDao userDao,StaffDataService staffDataService,  JwtService jwtService) {
         this.staffDataService = staffDataService;
         this.jwtService = jwtService;
+        this.userDao=userDao;
     }
 
     @Value(value = "${spring.encrypt.privateKey}")
@@ -83,12 +87,11 @@ public class StaffBlServiceImpl implements StaffBlService {
     @Override
     public List<Staff> findAllStaffs() {
         List<Staff> staffList = JSONFilter(staffDataService.getAllStaffs());
-//        staffList = staffList.stream().peek(s -> {
-//            User user = s.getUser();
-//            if(StringUtils.isNotBlank(user.getOriginPassword()))
-//                user.setOriginPassword(RSAUtils.decryptDataOnJava(user.getOriginPassword(), privateKey));
-//            else user.setOriginPassword("");
-//        }).collect(Collectors.toList());
+        for (Staff staff:staffList){
+            Integer Id=Integer.parseInt(staff.getOperator());
+            staff.setOperatorName(userDao.findUserById(Id).getUsername());
+        }
+
         return staffList;
     }
 

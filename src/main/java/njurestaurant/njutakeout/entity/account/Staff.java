@@ -27,6 +27,10 @@ public class Staff {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    //上级名称
+    @Transient
+    private String operatorName;
+
     public Staff() {
     }
 
@@ -107,6 +111,14 @@ public class Staff {
         this.operator = operator;
     }
 
+    public String getOperatorName() {
+        return operatorName;
+    }
+
+    public void setOperatorName(String operatorName) {
+        this.operatorName = operatorName;
+    }
+
     public String getStatus() {
         return status;
     }
@@ -114,6 +126,7 @@ public class Staff {
     public void setStatus(String status) {
         this.status = status;
     }
+
 
     public User getUser() {
         return user;
