@@ -72,5 +72,6 @@ public class StaffDataServiceImpl implements StaffDataService {
     @Override
     public List<Staff> getAllStaffs() {
         return staffDao.findAll();
-    }
+
+}
 }
