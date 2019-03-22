@@ -64,7 +64,6 @@ export default {
   components: { VueRecaptcha },
   data() {
     const validateUsername = (rule, value, callback) => {
-      console.log(value)
       if (!isvalidUsername(value)) {
         callback(new Error('请输入正确的用户名'))
       } else {
@@ -121,24 +120,16 @@ export default {
         this.pwdType = 'password'
       }
     },
+
     handleLogin() {
-    //  console.log("dfdfsffd1")
       this.$refs.loginForm.validate(valid => {//如果表单为false，不会进入validate函数内部，而是直接返回。
         this.$router.push({ path: this.redirect || '/' })
-        console.log("23123123")
-        console.log(valid)
         if (valid) {
-         // console.log("dfdfsffd4")
           this.loading = true ;
-         // console.log("dfdfsffd5")
           this.$store.dispatch('Login', this.loginForm).then(() =>{
-         //   console.log("dfdfsffd6")
             this.loading = false
-          //  console.log("dfdfsffd7")
           //  if(response.code == 200){
-         //   console.log("dfdfsffd8")
             this.$router.push({ path:  this.redirect ||'/' })
-        //    console.log("asdASASD9")
         //    }
           }).catch(() => {
             this.loading = false
@@ -148,7 +139,6 @@ export default {
             //     });
           })
         } else {
-          console.log('error submit!!')
           return false
         }
       })
@@ -160,34 +150,25 @@ export default {
       this.$refs.invisibleRecaptcha.execute()
     },
     onVerify: function (response) {
-      console.log('Verify: ' + response,'key',this.secretkey)
 
       codeVerify(response).then(res=>{
-        console.log(res)
       })
-      console.log('qweaxcsd')
     },
     onExpired: function () {
-      console.log('Expired')
     },
     resetRecaptcha () {
       this.$refs.recaptcha.reset() // Direct call reset method
     },
- 
+
    validate(event) {
-    console.log("1212s");
     event.preventDefault();
-    console.log("12121");
     if (!document.getElementById('field').value) {
-      console.log("1212w");
       alert("You must add text to the required field");
     } else {
-      console.log("1212d");
       grecaptcha.execute();
-      console.log("document.getElementById('field').value");
     }
   },
- 
+
    onload() {
     var element = document.getElementById('submit');
     element.onclick = validate;

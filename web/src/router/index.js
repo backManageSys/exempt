@@ -4,7 +4,7 @@ import Router from 'vue-router'
 // in development-env not use lazy-loading, because lazy-loading too many pages will cause webpack hot update too slow. so only in production use lazy-loading;
 // detail: https://panjiachen.github.io/vue-element-admin-site/#/lazy-loading
 
-Vue.use(Router)
+Vue.use(Router);
 
 /* Layout */
 import Layout from '../views/layout/Layout'
@@ -118,7 +118,7 @@ export const asyncRouterMap = [
         children: [
           {
             path: 'postAdd',
-            name: 'permission',
+            name: 'postAdd',
             component: () => import('@/views/companyManage/post/addPost/index'),
             meta: { title: '岗位添加',role:['岗位添加'] }
           },
@@ -229,7 +229,12 @@ export const asyncRouterMap = [
          }
         ]
       },
-
+      {
+        path: 'showLogs',
+        name :'showLogs',
+        component: () => import('@/views/companyManage/showLogs/index'),
+        meta: { title: '日志明细',role:['日志明细']},
+      }
 
     ]
   },
@@ -360,8 +365,8 @@ export const asyncRouterMap = [
         meta: { title: '银行卡设置',role:['银行卡设置'] },
         children: [
           {
-            path: 'cardAdd',
-            name: 'cardAdd',
+            path: 'addCard',
+            name: 'addCard',
             component: () => import('@/views/userCenter/bankCardSetting/addcard/index'),
             meta: { title: '个人添加银行卡',role:['个人添加银行卡'], breadcrumb: false },
             breadcrumb: false
@@ -373,8 +378,8 @@ export const asyncRouterMap = [
             meta: { title: '个人银行卡',role:['个人银行卡'] },
           },
            {
-            path: 'cardskiting',
-            name: 'cardskiting',
+            path: 'personageCardskiting',
+            name: 'personageCardskiting',
             component: () => import('@/views/userCenter/bankCardSetting/cardskiting/index'),
             meta: { title: '提现历史',role:['提现历史'] },
            }
@@ -401,7 +406,8 @@ export const asyncRouterMap = [
     redirect: '/finance/receiveCodeList',
     name: 'finance',
     meta: {
-      title: '财务管理',role:['财务管理'],
+      title: '财务管理',
+      role:['财务管理'],
       icon: 'nested'
     },
     children: [
@@ -427,7 +433,7 @@ export const asyncRouterMap = [
         path: 'c2p',
         name: 'c2p',
         component: () => import('@/views/change/C2Pcard/index'),
-        meta: { title: '添加内卡账变', role: ['处理订单'] },
+        meta: { title: '添加内卡账变', role: ['添加内卡账变'] },
       },
       // {
       //   path: 'p2c',
@@ -478,7 +484,8 @@ export const asyncRouterMap = [
     component: Layout,
     name: 'report',
     meta: {
-      title: '报表统计',role:['报表统计'],
+      title: '报表统计',
+      role:['报表统计'],
       icon: 'report'
     },
     children: [
@@ -525,7 +532,8 @@ export const asyncRouterMap = [
     component: Layout,
     name: 'order',
     meta: {
-      title: '订单管理',role:['订单管理'],
+      title: '订单管理',
+      role:['订单管理'],
       icon: 'order'
     },
     children: [

@@ -65,7 +65,6 @@
             },
             methods: {
                 del(index, row) {
-                    console.log(row);
                     deletePost(row.id).then(response=> {
                         if(response.data.infoCode){
                             this.$message({
@@ -104,7 +103,6 @@
                         }
                     })*/
                     postGet().then(response=>{
-                        console.log(response,'response')
                          if(response.data.infoCod){
                             this.$message({
                                 message: response.data.description,
@@ -116,7 +114,6 @@
                     })
                 },
                 handleChange(val) {
-                    console.log(val);
                       if(val==2)
                     {
                         this.getTeams();

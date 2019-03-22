@@ -108,7 +108,6 @@
       filterData() {
         return this.teams.filter(item => {
           var reg = new RegExp(this.searchStr, "i");
-          console.log(item.merchantName);
           return !this.searchStr || reg.test(item.merchantName) || reg.test(item.balance);
         });
       },

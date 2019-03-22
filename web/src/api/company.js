@@ -78,6 +78,7 @@ export function codesGet() {
     method: 'get'
   })
 }
+//  用户中心/商户管理/审批商户
 export function waitApprovalMer() {
   return request({
     url: '/company/approval/merchants',
@@ -86,6 +87,7 @@ export function waitApprovalMer() {
     }
   })
 }
+
 export function ApprovalMer(
   alipay,
   approverId,
@@ -158,7 +160,6 @@ export function cardsGet() {
   })
 }
 export function cardDelete(id) {
-  console.log(id)
   return request({
       url: '/company/card/delete/'+id,
       method: 'get',
@@ -200,14 +201,7 @@ export function deletePost(id) {
     method: 'get'
   })
 }
-export function postGet() {
-  return request({
-    url: '/company/post/list',
-    method: 'get',
-    params: {
-    }
-  })
-}
+
 
 
 export function teamAdd(area, operator, status, supervisor, teamName, verifyCode) {
@@ -224,10 +218,20 @@ export function teamAdd(area, operator, status, supervisor, teamName, verifyCode
     }
   })
 }
+//  公司管理/所有团队
 export function teamsGet() {
   return request({
     url: '/company/teams',
     method: 'get'
+  })
+}
+//  公司管理/管理员管理/所有管理员
+export function postGet() {
+  return request({
+    url: '/company/post/list',
+    method: 'get',
+    params: {
+    }
   })
 }
 export function teamDelete(id, verifyCode) {
@@ -284,6 +288,7 @@ export function titleUpdate(title) {
     }
   })
  }
+
 export function titleList(){
   return request({
     url: '/company/sys/list',
@@ -308,15 +313,15 @@ export function SetRiskcontrol(newtime){
 
 export function getLoginId(uid){
   return request({
-    url: '/app/supplier/getLoginId'+'?uid='+uid,
+    url: '/app/supplier/getLoginId?uid='+uid,
     method: 'get',
   })
 }
 
 export function getCompanyCard(uid){
   return request({
-    url: '/app/supplier/getCompanyCard'+'?uid='+uid,
-    method: 'get',
+    url: '/app/supplier/getCompanyCard?uid='+uid,
+    method: 'get'
   })
 }
 

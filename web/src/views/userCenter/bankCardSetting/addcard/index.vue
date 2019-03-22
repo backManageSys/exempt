@@ -56,16 +56,13 @@
         },
       created(){
           this.form.uid = store.getters.uid;
-          console.log(store.getters.uid);
       },
       methods:{
         onSubmit(formName) {
           this.$refs[formName].validate((valid) => {
             if (valid) {
               // alert('submit!');
-              console.log(this.form.uid);
               cardAdd(this.form.accountOfBank,this.form.bank,this.form.bin,this.form.name,this.form.number,this.form.status,this.form.uid).then(response => {
-                // console.log(response.data.infoCode)
                 if(response.code!=200){
                    this.$message({
                     message: response.data.description,

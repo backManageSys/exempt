@@ -7,7 +7,7 @@
         <el-select style="width: 200px" v-model="accountChangeValue" placeholder="请选择" @change="accountChange1" >
           <el-option
             v-for="item in accountChange"
-            :key="item.cardNumber"
+            :key=""
             :label="item.cardNumber"
             :value="item.cardNumber">
           </el-option>
@@ -17,7 +17,7 @@
         <el-select style="width: 200px" v-model="formaddParameters.cardNumber_in" placeholder="出款账号">
           <el-option
             v-for="item in cardNumber_ins"
-            :key="item"
+            :key=""
             :label="item"
             :value="item">
           </el-option>
@@ -27,7 +27,7 @@
         <el-select style="width: 200px" v-model="formaddParameters.cardNumber_out" placeholder="入款账号">
           <el-option
             v-for="item in cardNumber_outs"
-            :key="item"
+            :key=""
             :label="item"
             :value="item">
           </el-option>
@@ -84,7 +84,6 @@
     },
     created() {
       this.formaddParameters.operateId = store.getters.uid;
-      // console.log(this.treepermissions)
       this.getData();
 
     },
@@ -117,6 +116,7 @@
 
 
           getCompanyCard2(store.getters.uid).then(response => {
+            console.log(response,'response__cardNumber_ins')
             if (response.code !== 200) {
               this.$message({
                 message: response.data.description,
@@ -127,6 +127,7 @@
             }
           });
           companyCards().then(response => {
+            console.log(response,'cardNumber_outs')
             if (response.code !== 200) {
               this.$message({
                 message: response.data.description,
@@ -148,14 +149,12 @@
             });
           } else {
             this.cardNumber_ins = response.data;
-            console.log(this.cardNumber_ins, 'this.cardNumber_ins')
           }
         })
 
       },
       getCompanyCards() {
         cardsGet().then(response => {
-          console.log(response, 'response')
           if (response.code != 200) {
             this.$message({
               message: response.data.description,
@@ -163,7 +162,6 @@
             });
           } else {
             this.cardNumber_outs = response.data.companyCardList;
-            console.log(' this.cardNumber_outs', this.cardNumber_outs)
           }
         })
       },
@@ -218,10 +216,8 @@
       getCheckedKeys() {
         this.formaddParameters.permission = this.$refs.tree.getCheckedKeys();
         this.formaddParameters.permission = this.formaddParameters.permission.concat(this.$refs.tree.getHalfCheckedKeys());
-        // console.log(this.formaddParameters.permission,this.formaddParameters.permission1 )
       },
       handleChange(val) {
-        console.log(val);
         if (val == 2) {
           this.getpermissions();
         }

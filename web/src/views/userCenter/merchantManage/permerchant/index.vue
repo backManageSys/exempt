@@ -9,8 +9,8 @@
         <el-table-column prop="name" label="商户名"  align="center"></el-table-column>
         <el-table-column prop="priority" label="等级"  align="center"></el-table-column>
         <el-table-column prop="balance" label="余额"  align="center"></el-table-column>
-        <el-table-column prop="applyId" label="操作上级id"  align="center"></el-table-column>
-        <el-table-column prop="addTimep" label="添加时间"  align="center" min-width="70%"></el-table-column>
+        <el-table-column prop="applyName" label="操作上级"  align="center"></el-table-column>
+        <el-table-column prop="addTime" label="添加时间"  align="center" min-width="70%"></el-table-column>
         <el-table-column prop="statusp" label="状态"  align="center">
              <template slot-scope="{row}">
             <el-button type="success" size="small" v-if="row.status=='启用'">启用</el-button>
@@ -200,7 +200,6 @@ import {getTime} from '@/utils/index'
             filterData() {
                 return this.teams.filter((item) => {
                     var reg = new RegExp(this.searchStr, 'i')
-                    console.log(item.name)
                     return !this.searchStr || reg.test(item.name)
                 })
             },
@@ -303,12 +302,10 @@ import {getTime} from '@/utils/index'
 
             },
             handleSizeChange(val) {
-                console.log(`每页 ${val} 条`);
                 this.pagesize=val;
 
             },
             handleCurrentChange(val) {
-                console.log(`当前页: ${val}`);
                 this.currentPage=val;
             },
             getData(){
@@ -317,7 +314,7 @@ import {getTime} from '@/utils/index'
             },
             getTeams(){
                 merchantsGet().then(response=>{
-                    console.log(response,'sdll')
+                  console.log(response,'permerchantResponse')
                      if(response.data.infoCod){
                         this.$message({
                             message: response.data.description,
@@ -337,11 +334,14 @@ import {getTime} from '@/utils/index'
                             });
                             this.teams = a ;
                        }
+                       console.log(this.teams,'teams')
+                       this.teams.forEach(value => {
+                         value.addTime = getTime(value.addTime)
+                       })
                     }
                 })
             },
             handleChange(val) {
-                console.log(val);
                   if(val==2)
                 {
                     this.getTeams();

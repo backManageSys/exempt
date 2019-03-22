@@ -1,9 +1,10 @@
 import Cookies from 'js-cookie'
 
 const TokenKey = 'Admin-Token'
-const Uid = '0'
+const Uid = '00'
 const RolesKey = []
 const RoleKey = 0
+const uname = 'un'
 
 export function getToken() {
   return Cookies.get(TokenKey)
@@ -51,6 +52,21 @@ export function setUid(token) {
 export function removeUid() {
   return Cookies.remove(Uid)
 }
+
+export function getUname() {
+  return Cookies.get(uname)
+}
+
+export function setUname(username) {
+  return Cookies.set(uname, username)
+}
+
+export function removeUname() {
+  return Cookies.remove(uname)
+}
+
+
+
 
 // export function getName() {
 //   return Cookies.get(Name)

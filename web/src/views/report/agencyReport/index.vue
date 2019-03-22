@@ -122,7 +122,6 @@
       filterData() {
         return this.teams.filter(item => {
           var reg = new RegExp(this.searchStr, "i");
-          console.log(item.username);
           return !this.searchStr || reg.test(item.username) || reg.test(item.balance);
         });
       },
@@ -156,7 +155,6 @@
               }
             });
             item.depositList1 = list1;
-            console.log(222, item.depositList1)
           });
         }
       },
@@ -185,7 +183,6 @@
       },
       dateSearch() {
         agencyReport(getTimeFormat(this.startDate), getTimeFormat(this.endDate)).then(response => {
-          console.log(response, 'sdll')
           if (response.code != 200) {
             this.$message({
               message: response.data.description,
@@ -214,7 +211,6 @@
       },
       getTeams() {
         agencyReport(getTimeFormat(new Date()), getTimeFormat(new Date())).then(response => {
-          console.log(response, 'sdll')
           if (response.code != 200) {
             this.$message({
               message: response.data.description,

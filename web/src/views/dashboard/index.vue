@@ -30,7 +30,6 @@ export default {
   },
   created(){
      GetAnnouncement().then(response=>{
-        console.log(response,'response')
           if(response.code!=200){
             this.$message({
                 message: "暂无公告",

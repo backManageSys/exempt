@@ -15,7 +15,8 @@
         <el-table-column prop="attribution" label="归属" align="center" ></el-table-column>
         <el-table-column prop="relation" label="关联" align="center" min-width="150%"></el-table-column>
         <el-table-column prop="status" label="状态" align="center"></el-table-column>
-        <el-table-column label="操作" fixed="right" align="center" >
+          <el-table-column prop="operateName" label="操作上级" align="center" ></el-table-column>
+          <el-table-column label="操作" fixed="right" align="center" >
             <template scope="scope">
                 <el-button size="small"
                         @click="operationDel(scope.$index,scope.row)">删除</el-button>
@@ -123,6 +124,7 @@ import { cardsGet,cardDelete,teamVerifyCodeCheckByTeamName } from '@/api/company
             },
             getcards(){
                 cardsGet().then(response=>{
+                  console.log(response,'CardsGetResponse');
                      if(response.data.infoCod){
                         this.$message({
                             message: response.data.description,

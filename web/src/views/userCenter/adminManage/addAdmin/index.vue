@@ -118,13 +118,11 @@
               // this.$message('click on item ' + command.id);
               this.form.team = command.id;
               this.form.teamName = command.teamName;
-              // console.log('click on item ' + command.teamName);
           },
          handleCommandPost(command) {
               // this.$message('click on item ' + command.id);
               this.form.post = command.post;
               // this.form.teamName = command.teamName;
-              // console.log('click on item ' + command.teamName);
           },
           getData(){
               // this.getcodes();
@@ -133,7 +131,6 @@
           },
           getTeams(){
                 teamsGet().then(response=>{
-                    console.log(response,'11111111111111')
                      if(response.code !=200){
                         this.$message({
                             message: response.data.description,
@@ -146,22 +143,16 @@
             },
             getPosts(){
                postGet().then(response=>{
-                    console.log(response,'222222222222222222')
-                    // console.log("11111111");
                       if(response.code !=200){
                         this.$message({
                             message: response.data.description,
                             type: 'warning'
                         });
-                       //  console.log("11111111aaaaa");
                     }else{
-                      // console.log("11111111bbbbb");
                         this.posts = response.data;
                         var a=[];
                         this.posts.forEach(el =>{
                             if(el.post != '商户' && el.post != '供码用户' && el.post != '代理商')
-                                //  console.log(el.);
-                                //  console.log("11111111vvvv");
                                 a.push(el);
                         });
                         this.posts = a;
@@ -171,9 +162,7 @@
         onSubmit(formName) {
           this.$refs[formName].validate((valid) => {
             if (valid) {
-              // alert('submit!');
               addAdmin(this.form.code,this.form.operator,this.form.password,this.form.post,this.form.status,this.form.team,this.form.username).then(response => {
-                // console.log(response.data.infoCode)
                 if(response.data.infoCode){
                    this.$message({
                     message: response.data.description,

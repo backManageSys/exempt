@@ -203,7 +203,6 @@
           if (valid) {
             // alert('submit!');
             addAgent(this.form.applyId, this.form.password, this.form.status, this.form.username, list ).then(response => {
-              // console.log(response.data.infoCode)
               if (response.data.infoCode) {
                 this.$message({
                   message: response.data.description,

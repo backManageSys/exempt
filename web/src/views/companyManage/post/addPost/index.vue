@@ -31,7 +31,6 @@ import { addPost } from '@/api/company'
         methods: {
             postAdd(){
                     addPost(this.postaddParameters.post,).then(response=>{
-                        console.log(response,'sdll')
                         if(response.code!=200){
                             this.$message({
                                 message: response.data.description,

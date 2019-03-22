@@ -58,7 +58,8 @@ export default {
         id: "",
         level: "",
         password: "",
-        username: ""
+        username: "",
+        status:''
       },
       options: [
         {
@@ -108,7 +109,6 @@ export default {
             this.form.status
           )
             .then(response => {
-              // console.log(response.data.infoCode)
               if (response.data.infoCode) {
                 this.$message({
                   message: response.data.description,

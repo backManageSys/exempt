@@ -1,10 +1,28 @@
 <template>
   <div>
+    <div class="updatePswWrap">
+      <!--修改密码按钮-->
+      <p><button @click.prevent="formShow" v-show="updateBtnSn">修改密码</button></p>
+      <!--表单-->
+      <div class="updatePswBg" v-show="formVis" @click="formShow">
+        <form class="updatePswCont" @click.prevent.stop>
+          <div class="pswInp">
+            <label for="psw">新密码:</label>
+            <!--新密码输入框-->
+            <input id="psw" type="password" v-model="newPsw" placeholder="" @focus="" @blur="onBlur" required />
+            <p v-show="markVis">密码必须8位以上且包含数字和字母</p>
+          </div>
+          <!--两个按钮的整体父级-->
+          <div class="btnWrap">
+            <button type="button" @click.prevent="cancel">取消</button>
+            <button type="button" @click.prevent="submitPsw">提交修改</button>
+          </div>
+        </form>
+      </div>
+    </div>
     <el-card v-if="userInfo.role==1" class="box-card">
       <div slot="header" class="clearfix">
-        <span
-          class="span"
-        >个人信息</span>
+        <span class="span">个人信息</span>
       </div>
       <div class="text item">{{ '用 户 名: ' + userInfo.username }}</div>
       <div class="text item">{{ '所属团队: ' + info.team }}</div>
@@ -150,6 +168,8 @@
   import {withdrew} from "@/api/transaction";
   import {getTime} from "@/utils/index";
   import {getSelect, getPayType, supplierUpdate} from '@/api/role'
+  import {isvalidPassword} from '@/utils/validate'
+  import {updatePsw} from "@/api/role"; // 修改密码
   // getInfo(uid)
   export default {
     filters: {
@@ -166,6 +186,10 @@
     },
     data() {
       return {
+        updateBtnSn : true,
+        formVis : false,//控制修改密码的表单显隐
+        markVis : false,// 控制提示语显隐
+        newPsw : '######################################',
         point: "",
         options1: [],
         options2: [],
@@ -196,7 +220,6 @@
     },
     methods: {
       getPayType() {
-        console.log(6325, this.value);
         getPayType(this.value).then(response => {
           if (response.code !== 200) {
             this.$message({
@@ -216,7 +239,6 @@
               type: "warning"
             });
           } else {
-            console.log(2131, response.data);
             this.options1 = response.data;
           }
         });
@@ -252,7 +274,6 @@
         });
       },
       firstChange() {
-        console.log(111);
         this.secondState = false;
         this.options2 = [];
         this.point = "";
@@ -267,7 +288,6 @@
               type: "warning"
             });
           } else {
-            console.log(2222, response.data);
             if (response.data === undefined) {
               this.point = 0;
             } else {
@@ -285,7 +305,6 @@
         this.dialogFormVisible = true;
         this.newRow.type = this.userInfo.role == 2 ? "agent" : "merchant";
         this.newRow.id = store.getters.uid;
-        // console.log("opendialog");
         //this.newRow = JSON.parse(JSON.stringify(row));
       },
       alipayRate() {
@@ -301,7 +320,6 @@
           }
           this.value = response.data.info.codeCategory;
           this.value1 = response.data.info.payTypeId;
-          console.log(5555, this.value);
           this.list = this.userInfo.cards;
           this.userInfo.role_ch = this.userInfo.role == 1 ? "管理员" : this.userInfo.role == 2 ? "代理" : this.userInfo.role == 3 ? "商户" : "供码用户";
           this.info = response.data.info;
@@ -334,11 +352,51 @@
           }
         });
         this.dialogFormVisible = false;
-      }
+      },
+      //点击弹出修改密码的表单
+      formShow(){
+        this.formVis = !this.formVis;
+      },
+      //取消修改密码
+      cancel(){
+        this.formVis = !this.formVis;
+      },
+      // 提交新密码
+      submitPsw(){
+        if (isvalidPassword(this.newPsw)){
+          this.markVis = false;// 隐藏密码错误提示语
+          updatePsw(this.newPsw,this.$store.state.user.uid).then((data)=>{
+            if (data.code == 200) {
+              this.formVis = false;
+              this.$message({
+                    message: '修改密码成功',
+                    type: 'success'
+                  })
+            } else {
+              this.$message({
+                    message: data.data.description,
+                    type: 'warning'
+                  });
+            }
+          }).catch((err)=>{
+            console.log(err)
+          });
+        }else {
+          this.markVis = true;//显示密码错误提示语
+        }
+      },
+      // 密码框失去焦点时触发
+      onBlur(){
+        if (isvalidPassword(this.newPsw)){
+          this.markVis = false;// 隐藏密码错误提示语
+        }else {
+          this.markVis = true;//显示密码错误提示语
+        }
+      },
     }
   };
 </script>
-<style>
+<style scoped>
   .text {
     font-size: 14px;
   }
@@ -364,6 +422,103 @@
   .box-card {
     width: 680px;
     height: 350px;
-    margin: 80px auto;
+    margin: 0 auto 80px;
+  }
+  /*修改密码——整体父级盒子*/
+  .updatePswWrap  {
+    width: 680px;
+    margin: 60px auto 30px;
+    color: #606266;
+    -webkit-box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    padding: 8px 0;
+  }
+  .updatePswWrap *  {
+    background-color: transparent;
+    box-sizing: border-box;
+    border: none;
+    color: #606266;
+  }
+  .updatePswWrap button  {
+    border: 1px solid #dcdfe6;
+    cursor: pointer;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    padding: 12px 20px;
+    margin: 0 8px;
+    outline: none;
+  }
+  .updatePswWrap button:active  {
+    border-color: #3a8ee6;
+    color:#3a8ee6;
+  }
+  .updatePswWrap button:hover  {
+    background-color: #ecf5ff;
+    color:#3a8ee6;
+  }
+  /*修改密码的按钮的外层*/
+  .updatePswWrap>p  {
+    width: 100%;
+    padding-left: 1px;
+  }
+  /*表单背景*/
+  .updatePswBg  {
+    transition: 300ms;
+    display: flex;
+    justify-content: space-around;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: auto;
+    margin: 0;
+    z-index: 100;
+    background-color: rgba(60,60,60,0.7);
+  }
+  /*表单*/
+  .updatePswCont   {
+    margin: auto;
+    overflow: auto;
+    width: 600px;
+    padding: 60px;
+    background-color: #fff;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+  }
+  /*密码输入框外层*/
+  .pswInp  {
+    width: 100%;
+    position: relative;
+    margin-bottom: 20px;
+  }
+  /*提示语*/
+  .pswInp>p  {
+    position: absolute;
+    right: 0px;
+    top: -4px;
+    color: #ff6600;
+    font-size: 15px;
+  }
+  /*输入框*/
+  #psw  {
+    width: 170px;
+    height:40px;
+    font-size: 14px;
+    padding: 0 15px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: 1px solid #dcdfe6;
+    outline: none;
+  }
+  #psw:focus  {
+    border-color:#3a8ee6;
+  }
+  /*label*/
+  .pswInp>label  {
+    line-height: 40px;
   }
 </style>

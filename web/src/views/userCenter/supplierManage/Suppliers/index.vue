@@ -19,7 +19,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="applicantId" label="操作上级id" align="center"></el-table-column>
+      <el-table-column prop="applicant" label="操作上级" align="center"></el-table-column>
       <el-table-column prop="timep" label="添加时间" align="center" min-width="120%"></el-table-column>
       <el-table-column prop="status" label="账号状态" align="center"></el-table-column>
       <el-table-column label="操作" fixed="right" align="center">
@@ -42,7 +42,7 @@
     <el-dialog title="修改供码用户信息" :visible.sync="dialogFormVisible">
       <el-form ref="form" :model="newRow.user" :rules="addRules" label-width="13%">
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="newRow.user.username" type="text" placeholder="用户名" style="width:90%;"></el-input>
+          <el-input v-model="newRow.user.username" disabled="disabled" type="text" placeholder="用户名" style="width:90%;"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input v-model="newRow.user.password" type="password" placeholder="密码" style="width:90%;"></el-input>
@@ -187,7 +187,6 @@
       filterData() {
         return this.teams.filter(item => {
           var reg = new RegExp(this.searchStr, "i");
-          console.log(item.user.username);
           return !this.searchStr || reg.test(item.user.username);
         });
       },
@@ -260,7 +259,6 @@
       },
       openDialog(index, row) {
         this.dialogFormVisible = true;
-        // console.log(row)
         this.newRow = row;
         this.value =   this.newRow.codeCategory;
         this.value1 =   this.newRow.payTypeId;
@@ -276,16 +274,11 @@
         // this.newRow.password = row.user.password;
         //this.newRow = JSON.parse(JSON.stringify(row));
         this.newRowIndex = index;
-        console.log(this.newRow);
-        console.log(this.newRowIndex);
-        console.log("111111111111111111");
       },
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
         this.pagesize = val;
       },
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
         this.currentPage = val;
       },
       getData() {
@@ -293,7 +286,7 @@
       },
       getTeams() {
         suppliersGet().then(response => {
-          console.log(response, "sdll");
+          console.log(response,'SuppliersResponse');
           if (response.code != 200) {
             this.$message({
               message: response.data.description,
@@ -304,7 +297,6 @@
 
             this.teams.forEach(el => {
               el.devices.forEach(de => {
-                console.log(de.imei);
                 de.device_team = de.imei + " " + (de.online ? "在线" : "离线");
               });
               el.timep = getTime(el.time)

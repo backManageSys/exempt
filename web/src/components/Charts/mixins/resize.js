@@ -8,6 +8,7 @@ export default {
   },
   mounted() {
     this.__resizeHandler = debounce(() => {
+      console.log('window窗口变化')
       if (this.chart) {
         this.chart.resize()
       }

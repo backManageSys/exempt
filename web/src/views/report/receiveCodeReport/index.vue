@@ -78,7 +78,6 @@
       filterData() {
         return this.teams.filter(item => {
           var reg = new RegExp(this.searchStr, "i");
-          console.log(item.alipayLoginId);
           return !this.searchStr || reg.test(item.alipayLoginId) || reg.test(item.payMoney);
         });
       },
@@ -98,7 +97,6 @@
       },
       dateSearch() {
         receiveCodeReport(getTimeFormat(this.startDate), getTimeFormat(this.endDate)).then(response => {
-          console.log(response, 'sdll')
           if (response.code != 200) {
             this.$message({
               message: response.data.description,
@@ -127,7 +125,6 @@
       },
       getTeams() {
         receiveCodeReport(getTimeFormat(new Date()), getTimeFormat(new Date())).then(response => {
-          console.log(response, "sdll");
           if (response.code != 200) {
             this.$message({
               message: response.data.description,
@@ -136,8 +133,6 @@
           } else {
             if (response.data.length != 0)
               this.teams = response.data;
-            console.log("4141ads");
-            console.log(store.getters.name);
             var a = [];
             if (store.getters.role == 4) {
               this.teams.forEach(el => {

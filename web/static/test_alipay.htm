@@ -105,7 +105,33 @@
   </footer>
 </div>
 <script>
-
+  document.addEventListener('DOMContentLoader',function() {
+    console.log(456789456132);
+    var url = 'https://openauth.alipay.com/oauth2/publicAppAuthorize.htm?app_id=2016092000557898&scope=auth_user&redirect_uri=http://xuanlv1.natapp1.cc/order/getUserIdByAli';
+    var xhr;
+    if (window.ActiveXObject){
+      xhr = new ActiveXObject("Microsoft.XMLHTTP");//IE5 IE6
+    } else {
+      xhr = new XMLHttpRequest();//IE7.0+ 以及其他浏览器
+    }
+    console.log(xhr.readyState);//1
+    xhr.open("GET",url,true);//设置请求
+    console.log(xhr.readyState);//2
+    console.log(navigator.userAgent);//3
+    if (navigator.userAgent.indexOf("Trident") == -1){
+      xhr.onload = function () {
+        console.log(xhr.readyState);//4
+        if (xhr.readyState == 4 && this.status == 200){
+          document.getElementById("text").innerHTML = this.responseText;
+          //从后台返回纯文本
+        }else {
+          document.getElementById("text").innerText = "error";
+        }
+      }
+    }else {
+      xhr.onreadystatechange
+    }
+  },false)
   function GetQueryString(name) {
     var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
     var r = window.location.search.substr(1).match(reg);
@@ -1105,7 +1131,5 @@
     color: #aeaeae
   }
 </style>
-
-
 </body>
 </html>

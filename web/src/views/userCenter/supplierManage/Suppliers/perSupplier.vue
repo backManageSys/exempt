@@ -245,7 +245,6 @@ import store from '../../../../store'
       },
       openDialog(row) {
         this.dialogFormVisible = true;
-        console.log(row);
         this.equipmentTitle =  row.imei;
         getAlipayByDevice(row.imei).then(response => {
           if (response.code !== 200) {
@@ -254,7 +253,6 @@ import store from '../../../../store'
               type: "warning"
             });
           } else {
-            console.log(response.data);
             this.zfb = response.data;
           }
         });
@@ -303,14 +301,12 @@ import store from '../../../../store'
               type: "warning"
             });
           } else {
-            console.log(12323112,response.data);
            this.equipment = response.data;
           }
         });
       },
       getTeams() {
          suppliersGet().then(response=>{
-                    console.log(response,'sdll',store.getters.uid)
                      if(response.code!=200){
                         this.$message({
                             message: response.data.description,
@@ -319,21 +315,17 @@ import store from '../../../../store'
                     }else{
                        var teams = response.data;
                        this.equipment = response.data.devices;
-                       console.log(2123213,response.data,this.equipment);
                         var a =[];
                         teams.forEach(el => {
                             //el.devices = [{imei:"123",online:1},{imei:"456",online:0}]
                             el.devices.forEach(de=>{
-                                console.log(de.imei)
                                 de.device_team = de.imei +'\xa0\xa0\xa0\xa0'+ (de.online?'在线':'离线')+'\xa0\xa0\xa0\xa0'+'已'+de.status;
                             })
-                            console.log(el.user.id,store.getters.uid)
                             if(el.user.id == store.getters.uid){
                                 a = el
                             }
                         })
                         this.teams = [a]
-                        console.log(this.teams)
                     }
                 })
       }

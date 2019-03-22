@@ -194,7 +194,6 @@ import store from '../../../../store';
             });
           },
           firstChange() {
-            console.log(111);
             this.secondState = false;
           },
           secondChange() {
@@ -262,7 +261,6 @@ import store from '../../../../store';
           },
             getTeams(){
                 agentsGet().then(response=>{
-                    console.log(response,'sdll')
                      if(response.data.infoCod){
                         this.$message({
                             message: response.data.description,
@@ -285,7 +283,6 @@ import store from '../../../../store';
                 })
             },
             handleChange(val) {
-                console.log(val);
                   if(val==2)
                 {
                     this.getTeams();

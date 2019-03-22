@@ -1,4 +1,5 @@
 import { asyncRouterMap, constantRouterMap } from '@/router'
+import { removeRole,removeUid,removeUname } from '@/utils/auth'
 
 /**
  * 通过meta.role判断是否与当前用户权限匹配
@@ -12,9 +13,8 @@ import { asyncRouterMap, constantRouterMap } from '@/router'
 //     return true;
 //   }
 // }
-function hasPermission(roles, permissionRoles) {
-  // console.log('setpermission',permissionRoles,roles, roles.some(role => permissionRoles.indexOf(role) >= 0))
-  if (roles.indexOf('admin') >= 0) return true // admin permission passed directly
+function hasPermission(permissionRoles,roles) {
+  if (roles.indexOf('admin') >= 0 ) return true // 第二次 判断后台传来的权限树是否有admin这个总管理标记，有的话直接传递的管理权限
   if (!permissionRoles) return true
   return roles.some(role => permissionRoles.indexOf(role) >= 0)
   // if (roles.some(role => permissionRoles.indexOf(role) >= 0))
@@ -30,24 +30,17 @@ function hasPermission(roles, permissionRoles) {
  * @param roles
  */
 function filterAsyncRouter(routes, roles) {
-  const res = []
-  // console.log(routes)
-  // console.log(roles)
+  const res = [];
   routes.forEach(route => {
-    const tmp = { ...route }
-    // console.log(tmp)
-    var flag = hasPermission(roles, tmp.meta.role)
-    // console.log(flag,tmp)
+    const tmp = { ...route };
+    var flag = hasPermission( tmp.meta.role,roles);
     if (flag) {
-      // console.log(tmp.meta.role)
       if (tmp.children) {
         tmp.children = filterAsyncRouter(tmp.children, roles)
       }
       res.push(tmp)
     }
-  })
-
-  // console.log('res',res)
+  });
   return res
 }
 
@@ -67,17 +60,19 @@ const permission = {
       return new Promise(resolve => {
         const { roles } = data
         let accessedRouters
-        if (roles.includes('admin')) {
+        if (roles.includes('admin')) { // 判断后台传来的权限树是否有admin这个总管理标记。如果有则给其所有权限
           accessedRouters = asyncRouterMap
-        } else {
+        } else { // 如果没有。则过滤出——符合当前账号的权限
           accessedRouters = filterAsyncRouter(asyncRouterMap, roles)
         }
-        // console.log(accessedRouters,'accessedRouters')
-        commit('SET_ROUTERS', accessedRouters)
+        commit('SET_ROUTERS', accessedRouters)  // 调用store中方法。将过滤后的菜单权限发送给state中addRouters
         resolve()
       })
     },
     CleanRoutes({ commit }){
+      removeRole();//退出删除cookie的role
+      removeUid();//退出删除cookie的uid
+      removeUname();//退出删除cookie的un ——uname
       commit('SET_ROUTERS',[])
     }
   }

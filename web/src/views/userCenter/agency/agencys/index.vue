@@ -38,7 +38,7 @@
     <el-dialog title="修改代理信息" :visible.sync="dialogFormVisible">
       <el-form ref="form" :model="newRow.user" :rules="addRules" label-width="20%">
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="newRow.user.username" placeholder="请输入用户名" style="width:90%;"></el-input>
+          <el-input v-model="newRow.user.username" disabled="disabled" placeholder="请输入用户名" style="width:90%;"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input v-model="newRow.user.password" type="password" placeholder="请输入密码" style="width:90%;"></el-input>
@@ -214,7 +214,6 @@
         });
       },
       firstChange() {
-        console.log(111);
         this.secondState = false;
       },
       secondChange() {
@@ -296,7 +295,6 @@
       },
       getTeams() {
         agentsGet().then(response => {
-          console.log(response, 'sdll')
           if (response.data.infoCod) {
             this.$message({
               message: response.data.description,
@@ -313,7 +311,6 @@
         })
       },
       handleChange(val) {
-        console.log(val);
         if (val == 2) {
           this.getTeams();
         }

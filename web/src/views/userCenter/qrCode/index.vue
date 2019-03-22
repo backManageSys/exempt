@@ -56,8 +56,10 @@
           <el-button @click="dialogFormVisible = false">关 闭</el-button>
         </div>
       </el-dialog>
-
     </el-form>
+    <div class="erWeiMa">
+      <vue-qr :logoSrc="config.logo" :text="config.value" :margin="0"></vue-qr>
+    </div>
   </div>
 </template>
 
@@ -66,19 +68,25 @@
   import {qrCodeGet, redirect, rateGet} from '@/api/personal'
   import {getSelect, getPayType} from '@/api/role'
   import config from '../../../../config'
-
+  import VueQr from 'vue-qr'
+  // D:\project\web\exempt\web\static\test_alipay.htm
+  // D:\project\web\exempt\web\src\views\userCenter\qrCode\index.vue
   export default {
     data() {
       return {
+        config : {
+          logo:'',//二维码的图片
+          value: 'http://xuanlv1.natapp1.cc/exempt/web/static/test_alipay.htm?h=0.1&i=%20123466789'//二维码内容
+        },
         options1: [],
-        options2: [],
-        value: '',
-        value1: '',
+        options2: [],// 第二个下拉菜单的数据
+        value: '',//第一个选项菜单
+        value1: '',//第二个选项；
         value2: '',
         secondState: true,
         thirdState: true,
         selectState: true,
-        dialogFormVisible: false,
+        dialogFormVisible: false,//
         status: '',
         qrCode: '',
         formparameters: {
@@ -98,11 +106,13 @@
         isdisabled: false
       }
     },
+    components : {
+      VueQr
+    },
     created() {
       // this.formparameters.merchantId = store.getters.uid
       this.formparameters.merchantId = this.formparameters.merchantId
       this.formparameters.time = Date.parse(new Date()) / 1000;
-      // console.log(this.$route.path,location.href,this.config)
       this.BASE_API = process.env.BASE_API;
       this.img_src = this.urlBase + this.BASE_API;
     },
@@ -139,7 +149,6 @@
         });
       },
       firstChange() {
-        console.log(111);
         this.secondState = false;
       },
       secondChange() {
@@ -165,31 +174,30 @@
         })
       },
       getCode() {
+        // console.log("跳转跳转跳转跳转");
+        // window.open('../../../../static/zhifu/index.html');
         this.isdisabled = true;
         this.formparameters.time = Date.parse(new Date()) / 1000;
         qrCodeGet(this.formparameters.id, this.formparameters.ip, this.formparameters.memo, this.formparameters.merchantName,
           this.formparameters.money, this.formparameters.sign, this.formparameters.time, this.value1).then(res => {
-          // console.log(res)
           if (res.code != 200) {
             this.$message({
               message: res.data.reason,
               type: 'warning'
             });
           } else {
-                         console.log(12312);
-            // location.href = "../../a.htm";
-            this.img_src = this.urlBase + this.BASE_API + res.data.url + "?orderId=" + res.data.orderId;
-            var ispc = this.IsPC();
-            if (ispc) {
-              //window.open("static/test.htm?img_src="+this.img_src);
-              console.log(111,this.img_src);
-              this.dialogFormVisible = true;
-              // window.open ("static/test.htm?img_src=" + this.img_src);
+            if (this.value1 == 8){
             } else {
-              // window.open ("static/test_phone.htm?img_src=" + this.img_src);
+              this.img_src = this.urlBase + this.BASE_API + res.data.url + "?orderId=" + res.data.orderId;
+              var ispc = this.IsPC();
+              if (ispc) {
+                //window.open("static/test.htm?img_src="+this.img_src);
+                this.dialogFormVisible = true;
+                // window.open ("static/test.htm?img_src=" + this.img_src);
+              } else {
+                // window.open ("static/test_phone.htm?img_src=" + this.img_src);
+              }
             }
-
-            // console.log(this.img_src)
           }
           this.isdisabled = false;
         })
@@ -210,5 +218,13 @@
 </script>
 
 <style scoped>
-
+  .erWeiMa  {
+    width: 200px;
+    height: 200px;
+    margin: 15px auto 60px;
+  }
+  .erWeiMa>img  {
+    width: 100%;
+    height: 100%;
+  }
 </style>

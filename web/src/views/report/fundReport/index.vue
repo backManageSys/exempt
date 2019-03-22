@@ -75,7 +75,6 @@
       filterData() {
         return this.teams.filter(item => {
           var reg = new RegExp(this.searchStr, "i");
-          console.log(item.supplierToCom);
           return !this.searchStr || reg.test(item.supplierToCom) || reg.test(item.comToAgent) || reg.test(comToMerchant);
         });
       },
@@ -95,7 +94,6 @@
       },
       dateSearch() {
         fundingReport(getTimeFormat(this.startDate), getTimeFormat(this.endDate)).then(response => {
-          console.log(response, 'sdll')
           if (response.code != 200) {
             this.$message({
               message: response.data.description,
@@ -124,7 +122,6 @@
       },
       getTeams() {
         fundingReport(getTimeFormat(new Date()), getTimeFormat(new Date())).then(response => {
-          console.log(response, 'sdll')
           if (response.code != 200) {
             this.$message({
               message: response.data.description,

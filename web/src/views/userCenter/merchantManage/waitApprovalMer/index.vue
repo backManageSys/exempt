@@ -16,7 +16,7 @@
       <!-- <el-table-column prop="approverId" label="审核人id"  align="center"></el-table-column> -->
       <el-table-column prop="priority" label="等级" align="center"></el-table-column>
       <!-- <el-table-column prop="user.password" label="密码"  align="center"></el-table-column> -->
-      <el-table-column prop="applyId" label="代理商id" align="center"></el-table-column>
+      <el-table-column prop="applyName" label="代理商" align="center"></el-table-column>
       <el-table-column prop="status" label="状态" align="center"></el-table-column>
       <el-table-column label="操作" width="280" align="center">
         <template scope="scope">
@@ -173,7 +173,6 @@
         this.alipayRateDialogFormVisible = true;
       },
       approval(index, row, status) {
-        // console.log(row);
         ApprovalMer(
           row.alipay,
           store.getters.uid,
@@ -205,18 +204,16 @@
 
       },
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
 
       },
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
       },
       getData() {
         this.getTeams();
       },
       getTeams() {
         waitApprovalMer().then(response => {
-          console.log(response, 'sdll')
+          console.log(response,'waitApprovalMerResponse')
           if (response.code != 200) {
             this.$message({
               message: "获取待审批商户失败",
@@ -234,7 +231,6 @@
         })
       },
       handleChange(val) {
-        console.log(val);
         if (val == 2) {
           this.getTeams();
         }

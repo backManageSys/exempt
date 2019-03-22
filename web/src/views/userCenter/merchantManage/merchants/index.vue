@@ -9,7 +9,7 @@
       <el-table-column prop="name" label="商户名" align="center"></el-table-column>
       <el-table-column prop="priority" label="等级" align="center"></el-table-column>
       <el-table-column prop="balance" label="余额" align="center"></el-table-column>
-      <el-table-column prop="applyId" label="操作上级id" align="center"></el-table-column>
+      <el-table-column prop="applyName" label="操作上级" align="center"></el-table-column>
       <el-table-column prop="addTimep" label="添加时间" align="center" min-width="70%"></el-table-column>
       <el-table-column prop="statusp" label="状态" align="center">
         <template slot-scope="{row}">
@@ -43,7 +43,7 @@
     <el-dialog title="查看或修改商户信息" :visible.sync="dialogFormVisible">
       <el-form ref="form" :model="newRow.user" :rules="addRules" label-width="20%">
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="newRow.user.username" placeholder="用户名" style="width:90%;"></el-input>
+          <el-input v-model="newRow.user.username" disabled="disabled" placeholder="用户名" style="width:90%;"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input v-model="newRow.user.password" type="password" placeholder="密码" style="width:90%;"></el-input>
@@ -217,7 +217,6 @@
       filterData() {
         return this.teams.filter((item) => {
           var reg = new RegExp(this.searchStr, 'i')
-          console.log(item.name)
           return !this.searchStr || reg.test(item.name)
         })
       },
@@ -255,7 +254,6 @@
         });
       },
       firstChange() {
-        console.log(111);
         this.secondState = false;
       },
       secondChange() {
@@ -345,12 +343,10 @@
         this.newRow.level = row.priority;
       },
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
         this.pagesize = val;
 
       },
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
         this.currentPage = val;
       },
       getData() {
@@ -359,7 +355,7 @@
       },
       getTeams() {
         merchantsGet().then(response => {
-          console.log(response, 'sdll')
+          console.log(response,'MerchantsGetResponse');
           if (response.data.infoCod) {
             this.$message({
               message: response.data.description,
@@ -378,7 +374,6 @@
         })
       },
       handleChange(val) {
-        console.log(val);
         if (val == 2) {
           this.getTeams();
         }

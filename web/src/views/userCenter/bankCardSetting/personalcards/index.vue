@@ -70,9 +70,7 @@
                     this.getTeams();
                 },
                 getTeams(){
-                    console.log('asdasdasd',store.getters.uid)
                     cardsGetOne(store.getters.uid).then(response=>{
-                        console.log(response,'sdll')
                          if(response.code!=200){
                             this.$message({
                                 message: response.data.description,
@@ -84,7 +82,6 @@
                     })
                 },
                 handleChange(val) {
-                    console.log(val);
                       if(val==2)
                     {
                         this.getTeams();
@@ -97,4 +94,3 @@
     <style scoped>
     
     </style>
-    

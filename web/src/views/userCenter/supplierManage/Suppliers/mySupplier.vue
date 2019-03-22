@@ -104,7 +104,6 @@ import store from '../../../../store'
       filterData() {
         return this.teams.filter(item => {
           var reg = new RegExp(this.searchStr, "i");
-          console.log(item.user.username);
           return !this.searchStr || reg.test(item.user.username);
         });
       },
@@ -141,7 +140,6 @@ import store from '../../../../store'
       },
       openDialog(index, row) {
         this.dialogFormVisible = true;
-        // console.log(row)
         this.newRow = row;
         // if(row.codeType==None){
         //     this.newRow.codeType = 'TSOLID'
@@ -152,14 +150,11 @@ import store from '../../../../store'
         // this.newRow.password = row.user.password;
         //this.newRow = JSON.parse(JSON.stringify(row));
         this.newRowIndex = index;
-        console.log(this.newRow);
       },
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
         this.pagesize = val;
       },
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
         this.currentPage = val;
       },
       getData() {
@@ -167,7 +162,6 @@ import store from '../../../../store'
       },
       getTeams() {
          suppliersGet().then(response=>{
-                    console.log(response,'sdll',store.getters.uid)
                      if(response.code!=200){
                         this.$message({
                             message: response.data.description,
@@ -178,17 +172,13 @@ import store from '../../../../store'
                         var a =[];
                         teams.forEach(el => {
                             el.devices.forEach(de=>{
-                                console.log(de.imei)
                                 de.device_team = de.imei +' '+ (de.online?'在线':'离线');
                             })
-                            console.log(el.id,store.getters.uid)
                             if(el.applicantId == store.getters.uid){
                                 a.push(el)
-                                console.log(el)
                             }
                         })
                         this.teams = a
-                        console.log(this.teams)
                     }
                 })
       }

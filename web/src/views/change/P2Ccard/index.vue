@@ -3,13 +3,13 @@
     <div class="app-container">
         <el-form :label-position="labelPosition" :model="formaddParameters" class="demo-form-inline" style="margin-top:30px">
             <el-form-item label="个人卡号" label-width="10%">
-             <el-select  style="width: 200px" v-model="formaddParameters.cardNumber_in" placeholder="个人卡号">
+             <el-select style="width: 200px" v-model="formaddParameters.cardNumber_in" placeholder="个人卡号">
                  <el-option
                     v-for="item in cardNumber_ins"
                     :key="item.id"
                     :label="item.cardNumber"
                     :value="item.cardNumber">
-                    </el-option>
+                 </el-option>
             </el-select >
             </el-form-item>
             <el-form-item label="公司卡号" label-width="10%">
@@ -66,7 +66,6 @@ import { P2Ccard } from '@/api/change'
         },
         created(){
             this.formaddParameters.operateId = store.getters.uid;
-            // console.log(this.treepermissions)
             this.getData();
             
         },
@@ -80,14 +79,12 @@ import { P2Ccard } from '@/api/change'
                             });
                         }else{
                             this.cardNumber_outs = response.data;
-                            console.log(this.cardNumber_outs,'this.cardNumber_outs')
                         }
                 })
 
             },
             getCompanyCards(){
                 cardsGet().then(response=>{
-                        console.log(response,'response')
                          if(response.code!=200){
                             this.$message({
                                 message: response.data.description,
@@ -95,7 +92,6 @@ import { P2Ccard } from '@/api/change'
                             });
                         }else{
                             this.cardNumber_ins = response.data.companyCardList;
-                            console.log(' this.cardNumber_ins', this.cardNumber_ins)
                         }
                     })
             },
@@ -126,10 +122,8 @@ import { P2Ccard } from '@/api/change'
             getCheckedKeys(){
                 this.formaddParameters.permission = this.$refs.tree.getCheckedKeys();
                 this.formaddParameters.permission = this.formaddParameters.permission.concat(this.$refs.tree.getHalfCheckedKeys());
-                // console.log(this.formaddParameters.permission,this.formaddParameters.permission1 )
             },
             handleChange(val) {
-                console.log(val);
                   if(val==2)
                 {
                     this.getpermissions();

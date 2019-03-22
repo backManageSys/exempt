@@ -3,8 +3,6 @@
  */
 
 export function isvalidUsername(str) {
-  console.log("123")
-  console.log(str)
   //必须字母开头，可以纯字母可以加数字字符  唯一不可以加的就是汉字
   const reg = /^[a-zA-Z][a-zA-Z0-9!@#$%^&*~`,.+=\-_\<\>\?:;'"{}\[\]|/\\]*$/
   return reg.test(str)

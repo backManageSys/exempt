@@ -1,3 +1,4 @@
+<!--内部码账变订单-->
 <template>
   <div class="chart-container">
     <el-input
@@ -5,9 +6,11 @@
       style="width:30vw;margin:20px 0 20px 0;"
       suffix-icon="el-icon-search"
       placeholder="请输入搜索内容"
+      @keyup.enter.prevent="getTeams"
     ></el-input>
+    <!--:data="filterData.slice((currentPage-1)*pagesize,currentPage*pagesize)"-->
     <el-table
-      :data="filterData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
+      :data="teams"
       height="500"
       border
       style="width: 100%"
@@ -56,24 +59,34 @@ export default {
           operateId: 0
         }
       ],
-      currentPage: 1,
-      pagesize: 10,
-      searchStr: ""
+      currentPage: 1,//当前页
+      pagesize: 10,//每页显示数量
+      searchStr: "",//搜索框的值
     };
   },
   computed: {
-    filterData() {
-      return this.teams.filter(item => {
-        var reg = new RegExp(this.searchStr, "i");
-        console.log(item.operateId);
-        return (
-          !this.searchStr || reg.test(item.operateId) || reg.test(item.money)
-        );
-      });
-    },
+    /*
+      filterData() {
+        console.log("CODEfilterDatafilterDatafilterDatafilterDatafilterDatafilterDatafilterData")
+        return this.teams.filter(item => {
+          var reg = new RegExp(this.searchStr, "i");
+          console.log(item.operateId);
+          return (
+            !this.searchStr || reg.test(item.operateId) || reg.test(item.money)
+          );
+        });
+      },
+    */
     total(){
       return this.teams.length;
     }
+  },
+  mounted () {
+    // 获取搜索按钮，并添加点击事件
+    var searchBtn = document.getElementsByClassName('el-input__icon')[0];
+    searchBtn.addEventListener('click',()=> {
+      this.getTeams();
+    },false)
   },
   created() {
     this.getData();
@@ -82,23 +95,26 @@ export default {
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
       this.pagesize = val;
+      this.getTeams();
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
       this.currentPage = val;
+      this.getTeams();
     },
     getData() {
       this.getTeams();
     },
     getTeams() {
-      qrcode().then(response => {
-        console.log(response, "sdll");
+      qrcode(this.searchStr,this.pagesize,this.currentPage)
+        .then(response => {
         if (response.code != 200) {
           this.$message({
             message: response.data.description,
             type: "warning"
           });
         } else {
+
           if (response.data.length != 0) {
             this.teams = response.data;
             if(store.getters.role == 1){     
@@ -117,6 +133,8 @@ export default {
             }
           }
         }
+      }).catch(err=>{
+        console.log(err)
       });
     }
   }

@@ -67,12 +67,10 @@
             },
             methods: {
                 handleSizeChange(val) {
-                    console.log(`每页 ${val} 条`);
                     this.pagesize=val;
                   
                 },
                 handleCurrentChange(val) {
-                    console.log(`当前页: ${val}`);
                     this.currentPage=val;
                 },
                 getData(){
@@ -80,7 +78,6 @@
                 },
                 getTeams(){
                     cardsGet().then(response=>{
-                        console.log(response,'sdll')
                          if(response.code!=200){
                             this.$message({
                                 message: response.data.description,
@@ -92,7 +89,6 @@
                     })
                 },
                 handleChange(val) {
-                    console.log(val);
                       if(val==2)
                     {
                         this.getTeams();

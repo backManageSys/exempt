@@ -1,3 +1,4 @@
+<!--内部卡账变订单-->
 <template>
   <div class="chart-container">
     <el-input
@@ -5,9 +6,10 @@
       style="width:30vw;margin:20px 0 20px 0;"
       suffix-icon="el-icon-search"
       placeholder="请输入搜索内容"
+      @keyup.enter.prevent="getTeams"
     ></el-input>
     <el-table
-      :data="filterData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
+      :data="teams"
       height="500"
       border
       style="width: 100%">
@@ -90,14 +92,14 @@ export default {
       newRow:{
 
       },
-      currentPage: 1,
-      pagesize: 10,
-      searchStr: "",
+      currentPage: 1,//当前页
+      pagesize: 10,//每页显示数量
+      searchStr: "",//搜索框的值
       dialogFormVisible:false
     };
   },
   computed: {
-    filterData() {
+    /*filterData() {
       return this.teams.filter(item => {
         var reg = new RegExp(this.searchStr, "i");
         console.log(item.cardNumber_in);
@@ -107,10 +109,17 @@ export default {
           reg.test(item.money)
         );
       });
-    },
+    },*/
     total(){
       return this.teams.length;
     }
+  },
+  mounted () {
+    // 获取搜索按钮，并添加点击事件
+    var searchBtn = document.getElementsByClassName('el-input__icon')[0];
+    searchBtn.addEventListener('click',()=> {
+      this.getTeams();
+    },false)
   },
   created() {
     this.getData();
@@ -182,16 +191,18 @@ export default {
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
       this.pagesize = val;
+      this.getTeams();
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
       this.currentPage = val;
+      this.getTeams();
     },
     getData() {
       this.getTeams();
     },
    getTeams() {
-     ShowCardOrder(store.getters.uid).then(response => {
+     ShowCardOrder(this.searchStr,this.pagesize,this.currentPage).then(response => {
         if (response.code != 200) {
           this.$message({
             message: response.data.description,
@@ -199,11 +210,13 @@ export default {
           });
         } else {
           if (response.data.length !== 0) {
+            console.log(response,'response');
             this.teams = response.data;
             this.teams.forEach(el => {
-              el.operateTimep = getTime(el.operateTime);
-              el.finalOperateTime = getTime(el.finalOperateTime);
-              el.operateTime = getTime(el.operateTime);
+              // 判断 是否有值。如果有  则继续判断是否包含NaN  如果没有。则正常执行，否则赋值 —— 空
+              el.operateTimep = el.operateTimep && (el.operateTimep.indexOf("NaN") == -1) ? getTime(el.operateTime) : "空";
+              el.finalOperateTime = el.finalOperateTime && (el.finalOperateTime.indexOf("NaN") == -1) ? getTime(el.finalOperateTime) : "空";
+              el.operateTime = el.operateTime && (el.operateTime.indexOf("NaN") == -1) ? getTime(el.operateTime) : "空" ;
             });
 
           }
@@ -215,11 +228,7 @@ export default {
 </script>
 
 <style scoped>
-/* .chart-container{
-  position: relative;
-  width: 100%;
-  height: calc(100vh - 84px);
-} */
+
 </style>
 
 

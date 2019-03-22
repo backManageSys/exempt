@@ -1,5 +1,6 @@
 export function getTreePermissions() {
-  return [{
+  return [
+    {
     title: '公司管理', icon: 'example',
     children: [
       {
@@ -90,10 +91,10 @@ export function getTreePermissions() {
           }
         ]
       },
+      {title : '日志明细'}
     ]
   },
     {
-
       title: '用户中心',
       children: [
         {
@@ -169,7 +170,6 @@ export function getTreePermissions() {
       ]
     },
     {
-
       title: '财务管理',
       children: [
         {
@@ -185,8 +185,6 @@ export function getTreePermissions() {
           title: '添加内卡账变',
         }
       ]
-
-
     },
     {
       title: '报表统计',

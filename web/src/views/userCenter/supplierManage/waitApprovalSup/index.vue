@@ -92,7 +92,6 @@
             },
             methods: {
                 approval(index, row,state) {
-                    console.log(row);
                     row.state = state;
                     ApprovalSup(
                             row.id,
@@ -118,18 +117,15 @@
 
                 },
                 handleSizeChange(val) {
-                    console.log(`每页 ${val} 条`);
-                  
+
                 },
                 handleCurrentChange(val) {
-                    console.log(`当前页: ${val}`);
                 },
                 getData(){
                     this.getTeams();
                 },
                 getTeams(){
                     waitApprovalSup().then(response=>{
-                        console.log(response,'sdll')
                          if(response.data.infoCod){
                             this.$message({
                                 message: response.data.description,
@@ -145,7 +141,6 @@
                     })
                 },
                 handleChange(val) {
-                    console.log(val);
                       if(val==2)
                     {
                         this.getTeams();
@@ -158,4 +153,3 @@
     <style scoped>
     
     </style>
-    

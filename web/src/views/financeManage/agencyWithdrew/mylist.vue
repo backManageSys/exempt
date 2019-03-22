@@ -91,7 +91,7 @@
   import {withdrewDeal, withdrewList} from '@/api/transaction'
   import {getTime} from '@/utils/index'
   import store from '../../../store'
-  import {getCompanyCard} from "@/api/role";
+  import { getCompanyCard } from "@/api/role";
 
   export default {
     data() {
@@ -128,6 +128,7 @@
         id: '',
         memo: '',
         state: '',
+        tableHeight:'100'
       }
     },
     mounted: function () {

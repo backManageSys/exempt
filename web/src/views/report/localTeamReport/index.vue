@@ -74,7 +74,6 @@
       filterData() {
         return this.teams.filter(item => {
           var reg = new RegExp(this.searchStr, "i");
-          console.log(item.supplierName);
           return !this.searchStr || reg.test(item.supplierName) || reg.test(item.realReceipt);
         });
       },
@@ -94,7 +93,6 @@
       },
       dateSearch() {
         supplierReport(getTimeFormat(this.startDate), getTimeFormat(this.endDate)).then(response => {
-          console.log(response, 'sdll')
           if (response.code != 200) {
             this.$message({
               message: response.data.description,
@@ -123,7 +121,6 @@
       },
       getTeams() {
         supplierReport(getTimeFormat(new Date()), getTimeFormat(new Date())).then(response => {
-          console.log(response, 'sdll')
           if (response.code != 200) {
             this.$message({
               message: response.data.description,
@@ -137,10 +134,6 @@
             // });
             var a = [];
             if (store.getters.role == 4) {
-              console.log("1213")
-              console.log(store.getters.name)
-              console.log(store.getters.uid)
-              console.log("1212")
               this.teams.forEach(el => {
                 if (store.getters.name == el.supplierName)
                   a.push(el);

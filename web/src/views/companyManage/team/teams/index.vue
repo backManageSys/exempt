@@ -212,6 +212,7 @@ import { getTime,getTimeFormat } from "@/utils/index";
             },
             getTeams(){
                 teamsGet().then(response=>{
+                  console.log(response,'所有团队');
                      if(response.code != 200){
                         this.$message({
                             message: response.data.description,

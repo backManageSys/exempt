@@ -9,7 +9,7 @@
       <!-- <el-table-column prop="user.username" label="用户名"  align="center"></el-table-column> -->
       <el-table-column prop="name" label="商户名" align="center"></el-table-column>
       <el-table-column prop="balance" label="余额" align="center"></el-table-column>
-      <el-table-column prop="applyId" label="代理商id" align="center"></el-table-column>
+      <el-table-column prop="applyName" label="代理商" align="center"></el-table-column>
       <el-table-column prop="addTimep" label="申请时间" align="center"></el-table-column>
       <el-table-column prop="statusp" label="状态" align="center">
         <template slot-scope="{row}">
@@ -123,9 +123,6 @@
   export default {
     data() {
       const validateUsername = (rule, value, callback) => {
-        console.log(rule)
-        console.log(value)
-        console.log(callback)
         if (!isvalidUsername(value)) {
           callback(new Error('请输入正确的用户名（只能由英文字母组成）'))
         } else {
@@ -229,7 +226,6 @@
       filterData() {
         return this.teams.filter((item) => {
           var reg = new RegExp(this.searchStr, 'i')
-          console.log(item.name)
           return !this.searchStr || reg.test(item.name)
         })
       },
@@ -267,7 +263,6 @@
         });
       },
       firstChange() {
-        console.log(111);
         this.secondState = false;
       },
       secondChange() {
@@ -351,12 +346,10 @@
 
       },
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
         this.pagesize = val;
 
       },
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
         this.currentPage = val;
       },
       getData() {
@@ -365,7 +358,7 @@
       },
       getTeams() {
         merchantsMy(store.getters.uid).then(response => {
-          console.log(response, 'sdll')
+          console.log(response,'MerchantsMyResponse')
           if (response.data.infoCod) {
             this.$message({
               message: response.data.description,
@@ -384,7 +377,6 @@
         })
       },
       handleChange(val) {
-        console.log(val);
         if (val == 2) {
           this.getTeams();
         }

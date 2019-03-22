@@ -8,3 +8,16 @@ export function getList(params) {
   })
 }
 
+// 获取日志明细——操作记录
+export function getLimit(size,page,condition) {
+  return request({
+    url: '/systemLog/getLimit?page='+page+"&size="+size+"&condition="+condition,
+    method: 'get'
+    // data : {
+    //   page : page,
+    //   size : size,
+    //   condition: condition
+    // }
+  })
+}
+

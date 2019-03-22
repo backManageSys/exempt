@@ -16,7 +16,7 @@
             :data="teams.slice((currentPage-1)*pagesize,currentPage*pagesize)"
             :height="tableHeight"
             border
-            style="width: 100%">
+            style="width:100%">
             <el-table-column prop="id" label="id" align="center"></el-table-column>
             <el-table-column prop="cardId" label="银行卡号" align="center"></el-table-column>
             <el-table-column prop="applicantId" label="申请人id" align="center"></el-table-column>
@@ -87,7 +87,8 @@
                         }
                     ],
                     currentPage:1,
-                    pagesize:10
+                    pagesize:10,
+                    tableHeight:'100'
                 }
             },
             mounted:function(){

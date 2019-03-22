@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1.0, shrink-to-fit=no" user-scalable=no>
+    <style>
+        html  {
+            font-size:14px;
+        }
+        body {
+            font: 14px '宋体',Tahoma,Helvetica,Arial,sans-serif;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        li {
+            list-style-type: none;
+        }
+        a {
+            text-decoration: none;
+        }
+        figure>img {
+            width: 100%;
+            height: 100%;
+        }
+        /*整体*/
+        .wrap {
+            width: 54.857142857142854rem;
+            height: 100vh;
+            margin: 0 auto;
+            background-color: #f2f2f2;
+            padding: 1.6428571428571428rem 0 0;
+        }
+        /*头部图片*/
+        .headIco {
+            margin: 0 auto 1.2142857142857142rem;
+            width: 8.142857142857142rem;
+            height: 2.857142857142857rem;
+        }
+        /*图标下文字*/
+        .headTextBox {
+            width: 100%;
+            margin-bottom: 0.7857142857142857rem;
+        }
+        /*文字盒子*/
+        .headText {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.7857142857142857rem;
+        }
+        /*两个文字盒子直接父级*/
+        .headText>p {
+            display: inline-block;
+        }
+        /*每个显示数字的文字*/
+        .headText>p>span {
+            display: inline-block;
+            min-width: 4.285714285714286rem;
+        }
+        /*左侧文字*/
+        .headText_L {
+        }
+        /*右侧文字*/
+        .headText_R {
+            color: red;
+        }
+        /*文字下面的分割背景*/
+        .headBotBg {
+            width: 100%;
+            padding: 0.7142857142857143rem 0;
+            background: #b0acac;
+        }
+        /*二维码直接父级*/
+        .erWm {
+            width: 14.571428571428571rem;
+            height: 14.571428571428571rem;
+            margin: 0 auto;
+            border:1px solid transparent;
+        }
+        /*提示语*/
+        .markFont {
+            text-align: center;
+            font-size: 1.2142857142857142rem;
+            line-height: 2.5rem;
+            color: #000;
+            font-weight: 700;
+        }
+        /*动态倒计时数字*/
+        .markNum {
+            color: #f00;
+            margin: 0 0.35714285714285715rem;
+        }
+        /*末尾提示语*/
+        .butFont {
+            text-align: center;
+            font-size: 1.4285714285714286rem;
+            line-height: 2.5rem;
+            color: red;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .wrap  {
+                width: 100%;
+            }
+        }
+        @media (max-width: 320px)  {
+            .headText_L  {
+                
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="header">
+        <figure class="headIco"><img src="alipay.png" alt=""></figure>
+    </div>
+    <!--图标下-->
+    <div class="headTextBox">
+        <!--文字内容-->
+        <div class="headText">
+            <p class="headText_L">扫码支付：<span class="headText_L_num">0.10</span></p>
+            <p class="headText_R">实到：<span class="headText_R_num">0.10</span></p>
+        </div>
+        <div class="headBotBg"></div>
+    </div>
+    <!--二维码-->
+    <figure class="erWm">
+        <img class="erWmImg" src="https://info.wanerfa.com/api/pay/v1/img10?token=NGQ0UEttdGFGdHZoRnN2aWUzSENpU1ZjQlZEMWNRcXBwOVpXUlRLanY2cTdlbDhFdmxsVW9TeWxqR1JreCt0a0d6RlRrQlc4TExJcytuRmhsakd4SGNPNHprUmRkM3BiSkRHTW13akl4TndqOG5PZVBqSFlWU1dTV0hhUVBVYUc=&type=1" alt="">
+    </figure>
+    <p class="markFont">支付通道将在<span class="markNum">180</span>秒后关闭</p>
+    <p class="butFont">支付宝调整，红包支付时间稍长，请耐心等候</p>
+</div>
+</body>
+<script>
+    /*头部左侧文数字*/
+    var headText_L_num  = document.getElementsByClassName('headText_L_num')[0];
+    /*头部右侧数字*/
+    var headText_R_num  = document.getElementsByClassName('headText_R_num')[0];
+    /*末尾动态倒计时*/
+    var markNum  = document.getElementsByClassName('markNum')[0];
+    document.addEventListener('DOMContentLoaded',function () {
+        var count = 180;//计数
+        setInterval(function () {
+            count--;
+            console.log(count);
+            markNum.innerText = count;
+            if (!count) {
+                clearInterval(1);
+            }
+        },1000);
+    },false);
+</script>
+</html>

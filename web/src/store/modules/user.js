@@ -1,6 +1,6 @@
 import { login, logout, getInfo } from '@/api/login'
 import { getToken, setToken, removeToken, getRoles, getRole } from '@/utils/auth'
-import { getUid, setUid, setRole} from '../../utils/auth';
+import { getUid, setUid, setRole,setUname} from '../../utils/auth';
 import { get } from 'https';
 import { Store } from 'vuex';
 
@@ -38,28 +38,19 @@ const user = {
   actions: {
     // 登录
     Login({ commit }, userInfo) {
-      console.log('pppasd')
-      const username = userInfo.username.trim()
+      const username = userInfo.username.trim();
+      setUname(username);
       return new Promise((resolve, reject) => {
         login(username, userInfo.password).then(response => {
-          console.log(response)
           const data = response.data
-          setToken(data.token)
-          setUid(data.uid)
-          setRole(data.role)
-        
-          console.log('role',data.role)
+          setToken(data.token);
+          setUid(data.uid);
+          setRole(data.role);
+
+          // window.sessionStorage.setItem('userId',data.uid);// 登陆时记录uid到session
           commit('SET_ROLE', data.role)
           commit('SET_TOKEN', data.token)
           commit('SET_UID', data.uid)
-          // console.log('role',"3333333333333333")
-          // console.log('role',store.getters.)
-          // console.log('role',Store.getRole())
-          // console.log('role',getUid())
-          // console.log('role',state.getUid())
-          // console.log('role',user.state.getUid())
-          // console.log('role',state.uid)
-          // console.log('role',user.state.uid)
           resolve()
         }).catch(error => {
           reject(error)
@@ -68,17 +59,15 @@ const user = {
     },
 
     // 获取用户信息
-    GetInfo({ commit, state }) {                                                               
+    GetInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
-        console.log('get info')
-        console.log(state.uid)
         getInfo(state.uid).then(response => {
           const data = response.data
           var roles = ['404', '面板','用户信息','用户中心']
           if (data.permissions && data.permissions.length > 0) { // 验证返回的roles是否是一个非空数组
             roles = roles.concat(data.permissions)
             commit('SET_ROLES', roles)
-            
+
             commit('SET_NAME', data.info.user.username)
           } else {
             reject('未获取到角色')

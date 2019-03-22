@@ -28,7 +28,16 @@ export default {
     message() {
       return '网管说这个页面你不能进......'
     }
+  },
+  data () {
+    return {
+
+    }
+  },
+  methods : {
+
   }
+
 }
 </script>
 

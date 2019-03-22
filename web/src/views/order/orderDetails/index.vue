@@ -1,8 +1,9 @@
+<!--订单明细-->
 <template>
-        <div class="app-container">
-             <el-input v-model="searchStr" suffix-icon="el-icon-search" placeholder="请输入搜索内容"></el-input>
+  <div class="app-container">
+             <el-input v-model="searchStr" @keyup.enter.prevent="getTeams" suffix-icon="el-icon-search" placeholder="请输入搜索内容"></el-input>
             <el-table
-            :data="filterData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
+            :data="teams"
             border
             style="width: 100%">
             <el-table-column prop="orderNumber" label="订单编号"  align="center" min-width="110%"></el-table-column>
@@ -64,11 +65,11 @@
                 <el-button @click="dialogFormVisible = false;">取 消</el-button>
                 <el-button type="primary" @click="confirm">确 定</el-button>
             </div>
-    </el-dialog>
+      </el-dialog>
       </div>
-    </template>
+</template>
 
-    <script>
+<script>
 import { ordersGet,ordersUpdate } from "@/api/order";
 import { getTime,getDateTimeFormat } from "@/utils/index";
 import store from '../../../store';
@@ -100,13 +101,13 @@ export default {
         TT:""
       },
       dialogFormVisible: false,
-      currentPage: 1,
-      pagesize: 10,
-      searchStr: "" ,// 新增
+      currentPage: 1,//当前页
+      pagesize: 10,//每页显示数量
+      searchStr: "" ,//搜索框的值
     };
   },
     computed: {
-    filterData() {
+    /*filterData() {
       return this.teams.filter(item => {
         if(this.searchStr == '未支付')
           this.searchStr = 'WAITING_FOR_PAYING';
@@ -116,7 +117,7 @@ export default {
         // console.log(item.orderState);
         return !this.searchStr || reg.test(item.money) || reg.test(item.merchantName)
       });
-    },
+    },*/
     total(){
       return this.teams.length;
     }
@@ -129,14 +130,16 @@ export default {
   },
   created() {
     this.getData();
-    console.log("weweweq")
-    console.log(store.getters.uid)
-    console.log(store.getters.role)
+  },
+  mounted () {
+    // 获取搜索按钮，并添加点击事件
+   var searchBtn = document.getElementsByClassName('el-input__icon')[0];
+   searchBtn.addEventListener('click',()=> {
+     this.getTeams();
+   },false)
   },
   methods: {
     judge(){
-      console.log("1asdasdsadadadadadasd2214142fdsfsdgsdgsdG");
-      console.log(store.getters.role);
       if(store.getters.role == 1)
           return true;
       else
@@ -165,16 +168,18 @@ export default {
        this.getTeams();
     },
     dateChange(val){
-      console.log(val);
       this.newRow.payTime = val;
+      this.getTeams();
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
       this.pagesize = val;
+      this.getTeams();
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
       this.currentPage = val;
+      this.getTeams();
     },
     getData() {
       this.getTeams();
@@ -199,7 +204,7 @@ export default {
       })
     },
     getTeams() {
-      ordersGet().then(response => {
+      ordersGet(this.searchStr,this.pagesize,this.currentPage).then(response => {
         console.log(response, "sdll");
         if (response.code != 200) {
           this.$message({
@@ -208,7 +213,9 @@ export default {
           });
         } else {
           if (response.data.length != 0) {
-            this.teams = response.data;
+            console.log("response.dataresponse.dataresponse.dataresponse.data");
+            console.log(response.data);
+            this.teams = response.data.content;
             this.teams.forEach(el => {
               el.time=getTime(el.time);
               if(el.payTime != null)
@@ -270,5 +277,6 @@ export default {
 };
 </script>
 
-    <style scoped>
+<style scoped>
+
 </style>
