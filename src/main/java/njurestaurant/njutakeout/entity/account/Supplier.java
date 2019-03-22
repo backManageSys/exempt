@@ -46,6 +46,8 @@ public class Supplier {
     private String codeCategory;
     @Transient
     private String codeType;
+    @Transient
+    private String applicant; //申请人
 
     public Supplier() {
     }
@@ -154,5 +156,11 @@ public class Supplier {
 
     public void setCodeType(String codeType) {
         this.codeType = codeType;
+    }
+
+    public void setApplicant(String applicant){this.applicant=applicant;}
+
+    public String getApplicant(){
+        return applicant;
     }
 }

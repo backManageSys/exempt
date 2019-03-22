@@ -1,6 +1,7 @@
 package njurestaurant.njutakeout.data.account;
 
 import njurestaurant.njutakeout.data.dao.account.SupplierDao;
+import njurestaurant.njutakeout.data.dao.account.UserDao;
 import njurestaurant.njutakeout.dataservice.account.SupplierDataService;
 import njurestaurant.njutakeout.entity.account.Supplier;
 import njurestaurant.njutakeout.publicdatas.account.SupplierState;
@@ -13,10 +14,12 @@ import java.util.Optional;
 @Service
 public class SupplierDataServiceImpl implements SupplierDataService {
     private final SupplierDao supplierDao;
+    private final UserDao userDao;
 
     @Autowired
-    public SupplierDataServiceImpl(SupplierDao supplierDao) {
+    public SupplierDataServiceImpl(SupplierDao supplierDao,UserDao userDao) {
         this.supplierDao = supplierDao;
+        this.userDao=userDao;
     }
 
     /**
@@ -46,7 +49,12 @@ public class SupplierDataServiceImpl implements SupplierDataService {
 
     @Override
     public List<Supplier> getAllSuppliers() {
-        return supplierDao.findAll();
+
+        List<Supplier> suppliers=supplierDao.findAll();
+        for (Supplier supplier:suppliers){
+             supplier.setApplicant(userDao.findUserById(supplier.getApplicantId()).getUsername());
+        }
+        return  suppliers;
     }
 
     @Override

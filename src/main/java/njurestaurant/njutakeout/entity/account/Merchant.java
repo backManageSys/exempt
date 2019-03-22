@@ -33,6 +33,9 @@ public class Merchant {
     @Column(name = "withdrewMoney")
     private double withdrewMoney;
 
+    @Transient
+    private String applyName;
+
     public Merchant() {
     }
 
@@ -125,6 +128,14 @@ public class Merchant {
 
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    public String getApplyName() {
+        return applyName;
+    }
+
+    public void setApplyName(String ApplyName) {
+        this.applyName = ApplyName;
     }
 
     public double getWithdrewMoney() {
