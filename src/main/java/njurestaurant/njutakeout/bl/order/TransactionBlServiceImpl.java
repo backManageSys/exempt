@@ -604,8 +604,8 @@ public class TransactionBlServiceImpl implements TransactionBlService {
 
 
         Pageable pageable= PageRequest.of(size-1,page);
-        /*String name=request.getHeader("X-Token").split(",")[1];*/
-        Integer uid=userDataService.getUserByUsername("admin").getId();
+        String name=request.getHeader("X-Token").split(",")[1];
+        Integer uid=userDataService.getUserByUsername(name).getId();
         Page<WithdrewOrder> pages = withdrewOrderDataService.findAll(condition,pageable);
         List list = pages.getContent().stream().peek(p -> {
             String first = p.getCard_in().substring(0, 4);
