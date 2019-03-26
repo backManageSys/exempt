@@ -1,5 +1,4 @@
 package njurestaurant.njutakeout.data;
-import njurestaurant.njutakeout.data.dao.SystemLogLeftJoinModel;
 import njurestaurant.njutakeout.data.dao.SystemLogRepository;
 import njurestaurant.njutakeout.dataservice.SystemLogService;
 import njurestaurant.njutakeout.entity.SystemLog;

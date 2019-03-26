@@ -84,6 +84,7 @@ public class PlatformOrder {
         this.merchantRate = merchantRate;
     }
 
+
     public String getMerchantName() {
         return merchantName;
     }

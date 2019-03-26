@@ -1,6 +1,12 @@
 package njurestaurant.njutakeout.dataservice.order;
 
+import njurestaurant.njutakeout.entity.AliToken;
+import njurestaurant.njutakeout.entity.CollectionOrder;
+import njurestaurant.njutakeout.entity.ResultVO;
 import njurestaurant.njutakeout.entity.order.PlatformOrder;
+import njurestaurant.njutakeout.exception.AliUserErrorException;
+import njurestaurant.njutakeout.exception.BlankInputException;
+import njurestaurant.njutakeout.exception.OrderWrongInputException;
 import njurestaurant.njutakeout.publicdatas.app.CodeType;
 import njurestaurant.njutakeout.publicdatas.order.OrderState;
 import org.springframework.data.domain.Page;
@@ -37,5 +43,9 @@ public interface PlatformOrderDataService {
     List<PlatformOrder>  findByImeiAndStateAndPayTypeId(String imei, OrderState orderState,int payTypeId);
 
     PlatformOrder findByImeiAndStateAndPayTypeIdAndMoney(String imei, OrderState orderState,int payTypeId,double money);
+
+    String getOrderInfoFromAuthority(String auth_token,String state) throws AliUserErrorException;
+
+    String getInfoByAndroid(CollectionOrder collectionOrder) throws  OrderWrongInputException;
 
 }

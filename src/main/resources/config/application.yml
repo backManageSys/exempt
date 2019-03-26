@@ -33,6 +33,12 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: true
+  thymeleaf:
+      prefix: classpath:/static/
+      suffix: .htm
+      mode: LEGACYHTML5
+      encoding: UTF-8
+      cache: false
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://192.168.50.239:3306/exempt?useUnicode=true&characterEncoding=UTF-8&useSSL=false

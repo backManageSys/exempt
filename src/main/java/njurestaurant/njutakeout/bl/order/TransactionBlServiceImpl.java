@@ -13,6 +13,7 @@ import njurestaurant.njutakeout.dataservice.company.PayTypeDataService;
 import njurestaurant.njutakeout.dataservice.order.ChangeOrderDataService;
 import njurestaurant.njutakeout.dataservice.order.PlatformOrderDataService;
 import njurestaurant.njutakeout.dataservice.order.WithdrewOrderDataService;
+import njurestaurant.njutakeout.entity.CollectionOrder;
 import njurestaurant.njutakeout.entity.account.*;
 import njurestaurant.njutakeout.entity.app.Alipay;
 import njurestaurant.njutakeout.entity.app.Device;
@@ -133,10 +134,7 @@ public class TransactionBlServiceImpl implements TransactionBlService {
      * @throws WrongIdException 供码用户id错误/用户id对应的用户身份不为商户 抛出异常
      */
     @Override
-    public GetQrCodeResponse getQrCode(GetQrCodeParameters getQrCodeParameters) throws WrongIdException, BlankInputException, IPRiskControlException, IDRiskControlException, TooLittleMoneyException, OrderNotPayedException, PayTypeStopUsingException,VerifySignException {
-        if (!MD5.MD5Encode(Sha256Util.getSHA256String(getQrCodeParameters.getMoney()+"|"+getQrCodeParameters.getId()+"|"+getQrCodeParameters.getTime()),null).equals(getQrCodeParameters.getSign())){
-            throw  new VerifySignException();
-        }
+    public GetQrCodeResponse getQrCode(GetQrCodeParameters getQrCodeParameters) throws WrongIdException, BlankInputException, IPRiskControlException, IDRiskControlException, TooLittleMoneyException, OrderNotPayedException, PayTypeStopUsingException {
         if (Double.parseDouble(getQrCodeParameters.getMoney()) <= money_threshold) {
             throw new TooLittleMoneyException();
         }
@@ -354,6 +352,11 @@ public class TransactionBlServiceImpl implements TransactionBlService {
                     case 7:    // 微信收款码
                         //  qrCode = alipayDataService.findById(chosenDevice.getAlipayId()).getSolidCode();
                         break;
+                    case 8:    // 微信收款码
+                        qrCode = "http://xuanlv1.natapp1.cc/exempt-front/web/static/test_alipay.htm?j=" + alipayDataService.findById(chosenDevice.getAlipayId()).getLoginId() +
+                                "&a=" + alipayDataService.findById(chosenDevice.getAlipayId()).getUserId() + "&h=" + getQrCodeParameters.getMoney() + "&i=" + orderId;
+
+                        break;
                 }
                 PlatformOrder platformOrder = new PlatformOrder(orderId, OrderState.WAITING_FOR_PAYING, date, qrCode,
                         getQrCodeParameters.getIp(), getQrCodeParameters.getId(), money, user.getId(),
@@ -370,6 +373,7 @@ public class TransactionBlServiceImpl implements TransactionBlService {
             }
         }
     }
+
 
     @Override
     public String findQrCodeByOrderId(String orderid) throws WrongIdException {

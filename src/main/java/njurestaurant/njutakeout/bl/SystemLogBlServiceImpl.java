@@ -1,7 +1,6 @@
 package njurestaurant.njutakeout.bl;
 
 import njurestaurant.njutakeout.blservice.SystemLogBlService;
-import njurestaurant.njutakeout.data.dao.SystemLogLeftJoinModel;
 import njurestaurant.njutakeout.data.dao.account.UserDao;
 import njurestaurant.njutakeout.dataservice.SystemLogService;
 import njurestaurant.njutakeout.entity.SystemLog;

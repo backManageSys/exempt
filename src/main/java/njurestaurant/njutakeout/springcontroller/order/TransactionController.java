@@ -12,6 +12,7 @@ import njurestaurant.njutakeout.dataservice.account.UserDataService;
 import njurestaurant.njutakeout.dataservice.company.CompanyCardDataService;
 import njurestaurant.njutakeout.dataservice.order.ChangeOrderDataService;
 import njurestaurant.njutakeout.dataservice.order.WithdrewOrderDataService;
+import njurestaurant.njutakeout.entity.CollectionOrder;
 import njurestaurant.njutakeout.entity.account.Agent;
 import njurestaurant.njutakeout.entity.account.Merchant;
 import njurestaurant.njutakeout.entity.account.User;
@@ -99,10 +100,10 @@ public class TransactionController {
             return new ResponseEntity<>(new JSONResponse(1015, new FailedToLoadCodeResponse("failed", "订单未支付，不可获取二维码。")), HttpStatus.OK);
         } catch (PayTypeStopUsingException e) {
             return new ResponseEntity<>(new JSONResponse(156, new FailedToLoadCodeResponse("failed", "该通道已停用")), HttpStatus.OK);
-        } catch (VerifySignException e) {
-            return new ResponseEntity<>(new JSONResponse(10121, new FailedToLoadCodeResponse("failed", "验证签名失败")), HttpStatus.OK);
         }
     }
+
+
 
     @SystemControllerLog(descrption = "发起提现请求", actionType = "1")
     @ApiOperation(value = "发起提现请求", notes = "发起提现请求")

@@ -1,6 +1,5 @@
 package njurestaurant.njutakeout.dataservice;
 
-import njurestaurant.njutakeout.data.dao.SystemLogLeftJoinModel;
 import njurestaurant.njutakeout.entity.SystemLog;
 import org.springframework.data.domain.Page;
 

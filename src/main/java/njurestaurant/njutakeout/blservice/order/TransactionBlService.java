@@ -1,5 +1,6 @@
 package njurestaurant.njutakeout.blservice.order;
 
+import njurestaurant.njutakeout.entity.CollectionOrder;
 import njurestaurant.njutakeout.entity.order.PlatformOrder;
 import njurestaurant.njutakeout.entity.order.WithdrewOrder;
 import njurestaurant.njutakeout.exception.*;
@@ -15,8 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface TransactionBlService {
-    GetQrCodeResponse getQrCode(GetQrCodeParameters getQrCodeParameters) throws WrongIdException, BlankInputException, IPRiskControlException, IDRiskControlException, TooLittleMoneyException, OrderNotPayedException, PayTypeStopUsingException, VerifySignException;
-
+    GetQrCodeResponse getQrCode(GetQrCodeParameters getQrCodeParameters) throws WrongIdException, BlankInputException, IPRiskControlException, IDRiskControlException, TooLittleMoneyException, OrderNotPayedException, PayTypeStopUsingException;
     void addDevice();
 
     String findQrCodeByOrderId(String orderid) throws WrongIdException;
